@@ -1,4 +1,4 @@
-# CSCI375_final_project
+# Secure MFA Healthcare Access Portal
 Final Project Repo
 
 A web-based secure access portal for sensitive healthcare-style data that uses:
