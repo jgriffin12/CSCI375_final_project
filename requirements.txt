@@ -1,0 +1,11 @@
+# Web framework for the application
+flask
+
+# Unit testing framework
+pytest
+
+# Property-based testing library
+hypothesis
+
+# Static type checker
+mypy

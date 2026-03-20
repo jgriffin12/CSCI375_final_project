@@ -1,26 +1,24 @@
 # Secure MFA Healthcare Access Portal
 
 ## Overview
-The Secure MFA Healthcare Access Portal is a Python web application designed to improve the security of systems that store sensitive healthcare-style information. The application addresses common weaknesses in password-only authentication by implementing multi-factor authentication, role-based access control, audit logging, and masking or tokenization of sensitive identifiers.
+The Secure MFA Healthcare Access Portal is a Python web application designed to protect sensitive healthcare-style data through layered security controls.
 
 ## Features
 - Username and password authentication
 - Multi-factor authentication
 - Role-based access control
-- Audit logging of security-related events
-- Masking or tokenization of sensitive fields
+- Audit logging
+- Sensitive data masking or tokenization
 - Web-based interface
 - Unit and property-based testing
 - Dockerized setup
 
-## Tech Stack
-- Python
-- Flask
-- pytest
-- hypothesis
-- Docker
-
-## How to run 
-make install
-make test
-make run
+## Project Structure
+- `app/routes/` handles URL endpoints
+- `app/controllers/` coordinates request flow
+- `app/models/` defines the core domain objects
+- `app/services/` contains business logic
+- `app/security/` contains lower-level security helpers and patterns
+- `app/repositories/` handles data access
+- `tests/` contains automated tests
+- `docs/uml/` stores UML diagrams and architecture documentation
