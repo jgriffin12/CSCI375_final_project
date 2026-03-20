@@ -14,7 +14,7 @@ class User {
 
 class Role {
   +role_name: str
-  +permissions: list
+  +permissions: List[str]
   +has_permission(permission): bool
 }
 
@@ -47,17 +47,19 @@ class SecurityEvent {
   +to_dict(): dict
 }
 
-class UserRepository {
-  +find_by_username(username)
+class LoginController {
+  +login_request(data): dict
+  +verify_mfa_request(data): dict
+  +logout_request(data): dict
 }
 
-class RecordRepository {
-  +find_by_id(record_id)
+class RecordController {
+  +view_record_request(record_id): dict
 }
 
-class AuditRepository {
-  +save(event)
-  +get_all()
+class AdminController {
+  +review_logs(): dict
+  +manage_users(): dict
 }
 
 class AuthService {
@@ -66,8 +68,8 @@ class AuthService {
 }
 
 class MFAService {
-  +send_mfa_code(user, method="email")
-  +verify_mfa_code(user, code, method="email"): bool
+  +send_mfa_code(user, method): void
+  +verify_mfa_code(user, code, method): bool
 }
 
 class AccessControlService {
@@ -79,24 +81,26 @@ class RecordService {
 }
 
 class AuditLogger {
-  +log_event(event_type, username, status)
+  +log_event(event_type, username, status): SecurityEvent
   +get_all_events()
+}
+
+class UserRepository {
+  +find_by_username(username)
+}
+
+class RecordRepository {
+  +find_by_id(record_id)
+}
+
+class AuditRepository {
+  +save(event): void
+  +get_all()
 }
 
 class PasswordHasher {
   +hash_password(password): str
   +verify_password(password, stored_hash): bool
-}
-
-interface MFAStrategy {
-  +send_code(user)
-  +verify_code(user, code): bool
-}
-
-class EmailOTPStrategy
-class TOTPStrategy
-class MFAFactory {
-  +create_strategy(method): MFAStrategy
 }
 
 class SensitiveDataMasker {
@@ -108,56 +112,63 @@ class Tokenizer {
   +tokenize(value): str
 }
 
-class LoginController {
-  +login_request(data): dict
-  +verify_mfa_request(data): dict
-  +logout_request(data): dict
+interface MFAStrategy {
+  +send_code(user): void
+  +verify_code(user, code): bool
 }
 
-class RecordController {
-  +view_record_request(...)
+class EmailOTPStrategy {
+  +send_code(user): void
+  +verify_code(user, code): bool
 }
 
-class AdminController {
-  +create_user(...)
-  +assign_role(...)
-  +review_logs(...)
+class TOTPStrategy {
+  +send_code(user): void
+  +verify_code(user, code): bool
 }
 
-User --> Role
-Role --> Permission
+class MFAFactory {
+  +create_strategy(method): MFAStrategy
+}
+
+LoginController --> AuthService
+RecordController --> RecordService
+AdminController --> AuditLogger
+
 AuthService --> UserRepository
 AuthService --> PasswordHasher
 AuthService --> MFAService
 AuthService --> AuditLogger
+
 MFAService --> MFAFactory
 MFAFactory --> MFAStrategy
 EmailOTPStrategy ..|> MFAStrategy
 TOTPStrategy ..|> MFAStrategy
+
 RecordService --> RecordRepository
 RecordService --> AccessControlService
 RecordService --> AuditLogger
 RecordService --> SensitiveDataMasker
 RecordService --> Tokenizer
+
 AuditLogger --> AuditRepository
 AuditLogger --> SecurityEvent
-LoginController --> AuthService
-RecordController --> RecordService
-AdminController --> UserRepository
-AdminController --> AuditLogger
 
-note right of MFAFactory
-Factory Method Pattern
-Creates the correct MFA strategy
-end note
+User --> Role
+Role --> Permission
+
+UserRepository --> User
+RecordRepository --> Record
 
 note right of MFAStrategy
 Strategy Pattern
-Switches MFA methods
+end note
+
+note right of MFAFactory
+Factory Method Pattern
 end note
 
 note right of AuditLogger
 Observer-style event logging
-Security actions trigger audit events
 end note
 @enduml

@@ -1,7 +1,8 @@
 @startuml
 skinparam shadowing false
+autonumber
 
-title Process View - Login, MFA, RBAC, and Record Access
+title Process View - Secure Login and Protected Record Access
 
 actor User
 participant Browser
@@ -10,7 +11,6 @@ participant AuthService
 participant UserRepository
 participant PasswordHasher
 participant MFAService
-participant MFAStrategy
 participant AuditLogger
 participant RecordController
 participant RecordService
@@ -19,7 +19,7 @@ participant RecordRepository
 participant SensitiveDataMasker
 participant Tokenizer
 
-User -> Browser : Enter username/password
+User -> Browser : Enter username and password
 Browser -> LoginController : POST /login
 LoginController -> AuthService : authenticate(username, password)
 AuthService -> UserRepository : find_by_username(username)
@@ -27,15 +27,16 @@ UserRepository --> AuthService : User
 AuthService -> PasswordHasher : verify_password(password, stored_hash)
 
 alt Invalid credentials
+  PasswordHasher --> AuthService : false
   AuthService -> AuditLogger : log_event("login_failed", username, "failure")
   AuthService --> LoginController : failure
-  LoginController --> Browser : show error
+  LoginController --> Browser : show login error
 else Valid credentials
+  PasswordHasher --> AuthService : true
   AuthService -> MFAService : send_mfa_code(user, "email")
-  MFAService -> MFAStrategy : send_code(user)
   AuthService -> AuditLogger : log_event("mfa_challenge_sent", username, "success")
-  AuthService --> LoginController : pending
-  LoginController --> Browser : prompt for MFA code
+  AuthService --> LoginController : pending MFA
+  LoginController --> Browser : show MFA form
 
   User -> Browser : Enter MFA code
   Browser -> LoginController : POST /verify-mfa
@@ -43,18 +44,19 @@ else Valid credentials
   AuthService -> UserRepository : find_by_username(username)
   UserRepository --> AuthService : User
   AuthService -> MFAService : verify_mfa_code(user, code, "email")
-  MFAService -> MFAStrategy : verify_code(user, code)
 
-  alt MFA invalid
+  alt MFA failed
+    MFAService --> AuthService : false
     AuthService -> AuditLogger : log_event("mfa_failed", username, "failure")
     AuthService --> LoginController : failure
     LoginController --> Browser : show MFA error
-  else MFA valid
+  else MFA success
+    MFAService --> AuthService : true
     AuthService -> AuditLogger : log_event("login_success", username, "success")
     AuthService --> LoginController : success
-    LoginController --> Browser : dashboard
+    LoginController --> Browser : show dashboard
 
-    User -> Browser : Request record
+    User -> Browser : Request protected record
     Browser -> RecordController : GET /records/{id}
     RecordController -> RecordService : get_masked_record(user, record_id)
     RecordService -> AccessControlService : is_authorized(user, "view_masked_record")
@@ -63,7 +65,7 @@ else Valid credentials
       AccessControlService --> RecordService : false
       RecordService -> AuditLogger : log_event("access_denied", username, "failure")
       RecordService --> RecordController : failure
-      RecordController --> Browser : 403 forbidden
+      RecordController --> Browser : 403 Forbidden
     else Access granted
       AccessControlService --> RecordService : true
       RecordService -> RecordRepository : find_by_id(record_id)
@@ -73,7 +75,7 @@ else Valid credentials
       RecordService -> Tokenizer : tokenize(ssn)
       RecordService -> AuditLogger : log_event("record_access", username, "success")
       RecordService --> RecordController : protected record
-      RecordController --> Browser : render masked/tokenized data
+      RecordController --> Browser : render protected record
     end
   end
 end

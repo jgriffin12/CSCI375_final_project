@@ -1,37 +1,30 @@
 @startuml
+left to right direction
 skinparam packageStyle rectangle
 skinparam shadowing false
 
-title Development View - Project Structure
+title Development View - Package Structure
 
 package "Apps" {
+  package "Routes" {
+    [authRoutes.py]
+    [recordRoutes.py]
+    [adminRoutes.py]
+  }
+
+  package "Controllers" {
+    [loginController.py]
+    [recordController.py]
+    [adminController.py]
+  }
+
   package "Models" {
     [user.py]
     [role.py]
     [permission.py]
     [record.py]
     [session.py]
-    [security_event.py]
-  }
-
-  package "Repositories" {
-    [userRepo.py]
-    [recordRepo.py]
-    [auditRepo.py]
-  }
-
-  package "Routes" {
-    [auth_routes.py]
-    [record_routes.py]
-    [admin_routes.py]
-  }
-
-  package "Security" {
-    [PassHash.py]
-    [masker.py]
-    [Tokenizer.py]
-    [mfaStrategies.py]
-    [mfaFactory.py]
+    [securityEvent.py]
   }
 
   package "Services" {
@@ -42,11 +35,30 @@ package "Apps" {
     [auditLogger.py]
   }
 
-  [main.py]
-}
+  package "Security" {
+    [PassHash.py]
+    [masker.py]
+    [Tokenizer.py]
+    [mfaStrategies.py]
+    [mfaFactory.py]
+  }
 
-package "Docs" {
-  [uml/]
+  package "Repositories" {
+    [userRepo.py]
+    [recordRepo.py]
+    [auditRepo.py]
+  }
+
+  package "Templates" {
+    [login.html]
+    [dashboard.html]
+  }
+
+  package "Static" {
+    [styles.css]
+  }
+
+  [main.py]
 }
 
 package "Tests" {
@@ -58,12 +70,21 @@ package "Tests" {
   [testRoutes.py]
 }
 
-[auth_routes.py] --> [authSvc.py]
-[record_routes.py] --> [recordSvc.py]
-[admin_routes.py] --> [auditLogger.py]
-[main.py] --> [auth_routes.py]
-[main.py] --> [record_routes.py]
-[main.py] --> [admin_routes.py]
+package "Docs" {
+  [UML]
+}
+
+[main.py] --> [authRoutes.py]
+[main.py] --> [recordRoutes.py]
+[main.py] --> [adminRoutes.py]
+
+[authRoutes.py] --> [loginController.py]
+[recordRoutes.py] --> [recordController.py]
+[adminRoutes.py] --> [adminController.py]
+
+[loginController.py] --> [authSvc.py]
+[recordController.py] --> [recordSvc.py]
+[adminController.py] --> [auditLogger.py]
 
 [authSvc.py] --> [userRepo.py]
 [authSvc.py] --> [PassHash.py]
@@ -80,14 +101,12 @@ package "Tests" {
 [recordSvc.py] --> [auditLogger.py]
 
 [auditLogger.py] --> [auditRepo.py]
-[userRepo.py] --> [user.py]
-[recordRepo.py] --> [record.py]
-[auditRepo.py] --> [security_event.py]
 
-authSvc.py .. testAuthSvc.py
-accessControlSvc.py .. testAccessControlSvc.py
-recordSvc.py .. testRoutes.py
-auditLogger.py .. testAuditLogger.py
-masker.py .. testMasker.py
-authSvc.py .. testPropAuth.py
+[testAuthSvc.py] --> [authSvc.py]
+[testAccessControlSvc.py] --> [accessControlSvc.py]
+[testAuditLogger.py] --> [auditLogger.py]
+[testMasker.py] --> [masker.py]
+[testPropAuth.py] --> [authSvc.py]
+[testRoutes.py] --> [authRoutes.py]
+[testRoutes.py] --> [recordRoutes.py]
 @enduml
