@@ -1,0 +1,93 @@
+@startuml
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+title Development View - Project Structure
+
+package "Apps" {
+  package "Models" {
+    [user.py]
+    [role.py]
+    [permission.py]
+    [record.py]
+    [session.py]
+    [security_event.py]
+  }
+
+  package "Repositories" {
+    [userRepo.py]
+    [recordRepo.py]
+    [auditRepo.py]
+  }
+
+  package "Routes" {
+    [auth_routes.py]
+    [record_routes.py]
+    [admin_routes.py]
+  }
+
+  package "Security" {
+    [PassHash.py]
+    [masker.py]
+    [Tokenizer.py]
+    [mfaStrategies.py]
+    [mfaFactory.py]
+  }
+
+  package "Services" {
+    [authSvc.py]
+    [mfaSvc.py]
+    [accessControlSvc.py]
+    [recordSvc.py]
+    [auditLogger.py]
+  }
+
+  [main.py]
+}
+
+package "Docs" {
+  [uml/]
+}
+
+package "Tests" {
+  [testAuthSvc.py]
+  [testAccessControlSvc.py]
+  [testAuditLogger.py]
+  [testMasker.py]
+  [testPropAuth.py]
+  [testRoutes.py]
+}
+
+[auth_routes.py] --> [authSvc.py]
+[record_routes.py] --> [recordSvc.py]
+[admin_routes.py] --> [auditLogger.py]
+[main.py] --> [auth_routes.py]
+[main.py] --> [record_routes.py]
+[main.py] --> [admin_routes.py]
+
+[authSvc.py] --> [userRepo.py]
+[authSvc.py] --> [PassHash.py]
+[authSvc.py] --> [mfaSvc.py]
+[authSvc.py] --> [auditLogger.py]
+
+[mfaSvc.py] --> [mfaFactory.py]
+[mfaFactory.py] --> [mfaStrategies.py]
+
+[recordSvc.py] --> [recordRepo.py]
+[recordSvc.py] --> [accessControlSvc.py]
+[recordSvc.py] --> [masker.py]
+[recordSvc.py] --> [Tokenizer.py]
+[recordSvc.py] --> [auditLogger.py]
+
+[auditLogger.py] --> [auditRepo.py]
+[userRepo.py] --> [user.py]
+[recordRepo.py] --> [record.py]
+[auditRepo.py] --> [security_event.py]
+
+authSvc.py .. testAuthSvc.py
+accessControlSvc.py .. testAccessControlSvc.py
+recordSvc.py .. testRoutes.py
+auditLogger.py .. testAuditLogger.py
+masker.py .. testMasker.py
+authSvc.py .. testPropAuth.py
+@enduml

@@ -1,0 +1,31 @@
+@startuml
+skinparam shadowing false
+
+title Physical View - Deployment Diagram
+
+node "User Device" {
+  artifact "Browser" as Browser
+}
+
+node "Docker Host / Codespace" {
+  node "Web App Container" {
+    artifact "Python Web Application" as WebApp
+    artifact "Authentication + MFA Logic" as Auth
+    artifact "RBAC + Record Services" as Logic
+    artifact "Audit Logging" as Audit
+  }
+
+  database "Application Data Store\n(in-memory now, DB later)" as DB
+}
+
+node "External Service" {
+  artifact "MFA Provider\n(Email OTP or TOTP)" as MFA
+}
+
+Browser --> WebApp : HTTPS / HTTP
+WebApp --> Auth
+WebApp --> Logic
+WebApp --> Audit
+WebApp --> DB : read/write users, records, logs
+Auth --> MFA : send/verify code
+@enduml

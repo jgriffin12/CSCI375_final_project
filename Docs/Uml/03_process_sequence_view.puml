@@ -1,0 +1,80 @@
+@startuml
+skinparam shadowing false
+
+title Process View - Login, MFA, RBAC, and Record Access
+
+actor User
+participant Browser
+participant LoginController
+participant AuthService
+participant UserRepository
+participant PasswordHasher
+participant MFAService
+participant MFAStrategy
+participant AuditLogger
+participant RecordController
+participant RecordService
+participant AccessControlService
+participant RecordRepository
+participant SensitiveDataMasker
+participant Tokenizer
+
+User -> Browser : Enter username/password
+Browser -> LoginController : POST /login
+LoginController -> AuthService : authenticate(username, password)
+AuthService -> UserRepository : find_by_username(username)
+UserRepository --> AuthService : User
+AuthService -> PasswordHasher : verify_password(password, stored_hash)
+
+alt Invalid credentials
+  AuthService -> AuditLogger : log_event("login_failed", username, "failure")
+  AuthService --> LoginController : failure
+  LoginController --> Browser : show error
+else Valid credentials
+  AuthService -> MFAService : send_mfa_code(user, "email")
+  MFAService -> MFAStrategy : send_code(user)
+  AuthService -> AuditLogger : log_event("mfa_challenge_sent", username, "success")
+  AuthService --> LoginController : pending
+  LoginController --> Browser : prompt for MFA code
+
+  User -> Browser : Enter MFA code
+  Browser -> LoginController : POST /verify-mfa
+  LoginController -> AuthService : verify_mfa(username, code)
+  AuthService -> UserRepository : find_by_username(username)
+  UserRepository --> AuthService : User
+  AuthService -> MFAService : verify_mfa_code(user, code, "email")
+  MFAService -> MFAStrategy : verify_code(user, code)
+
+  alt MFA invalid
+    AuthService -> AuditLogger : log_event("mfa_failed", username, "failure")
+    AuthService --> LoginController : failure
+    LoginController --> Browser : show MFA error
+  else MFA valid
+    AuthService -> AuditLogger : log_event("login_success", username, "success")
+    AuthService --> LoginController : success
+    LoginController --> Browser : dashboard
+
+    User -> Browser : Request record
+    Browser -> RecordController : GET /records/{id}
+    RecordController -> RecordService : get_masked_record(user, record_id)
+    RecordService -> AccessControlService : is_authorized(user, "view_masked_record")
+
+    alt Access denied
+      AccessControlService --> RecordService : false
+      RecordService -> AuditLogger : log_event("access_denied", username, "failure")
+      RecordService --> RecordController : failure
+      RecordController --> Browser : 403 forbidden
+    else Access granted
+      AccessControlService --> RecordService : true
+      RecordService -> RecordRepository : find_by_id(record_id)
+      RecordRepository --> RecordService : Record
+      RecordService -> SensitiveDataMasker : mask_name(patient_name)
+      RecordService -> SensitiveDataMasker : mask_ssn(ssn)
+      RecordService -> Tokenizer : tokenize(ssn)
+      RecordService -> AuditLogger : log_event("record_access", username, "success")
+      RecordService --> RecordController : protected record
+      RecordController --> Browser : render masked/tokenized data
+    end
+  end
+end
+@enduml
