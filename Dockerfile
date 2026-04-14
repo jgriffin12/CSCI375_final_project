@@ -2,7 +2,7 @@
 FROM python:3.12-slim
 
 # Set the working directory inside the container
-WORKDIR /app
+WORKDIR /apps
 
 # Copy dependency list first so Docker can cache this layer
 COPY requirements.txt .

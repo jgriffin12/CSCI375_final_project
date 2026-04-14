@@ -12,4 +12,4 @@ test:
 
 # Run static type checking on the app package
 typecheck:
-	mypy app
+	mypy apps
