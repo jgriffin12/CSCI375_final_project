@@ -43,9 +43,11 @@ CJ Secure is presented as a hospital security portal for CJ Hospital. The fronte
 - **Patient**
 
 The current backend demo account is:
+The current backend demo account is:
 - **Username:** `alice`
 - **Password:** `password123`
-- **MFA Code:** `123456`
+
+After login, a verification code is sent to the registered email address for the demo user.
 
 At the moment, the backend stores `alice` with an admin-level role, which makes that account best for provider or admin-style demonstrations such as secure record access and audit-log viewing.
 

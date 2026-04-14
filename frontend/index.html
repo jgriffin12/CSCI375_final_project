@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -26,10 +25,9 @@
       </div>
 
       <div class="info-panel">
-        <h2>Demo Credentials</h2>
-        <p><strong>Username:</strong> alice</p>
-        <p><strong>Password:</strong> password123</p>
-        <p><strong>MFA Code:</strong> 123456</p>
+        <h2>Verification Notice</h2>
+        <p>A verification code will be sent to the registered email address for the selected user account.</p>
+        <p><strong>Demo User:</strong> alice</p>
       </div>
     </aside>
 
@@ -39,11 +37,13 @@
           <p class="eyebrow">Hospital Security Demo</p>
           <h2>Protected Patient and Provider Access at CJ Hospital</h2>
           <p class="hero-text">
-            CJ Secure demonstrates hospital-focused authentication, MFA verification,
+            CJ Secure demonstrates hospital-focused authentication, email-based MFA,
             role-aware access, protected medical record retrieval, and audit logging.
           </p>
         </div>
       </header>
+
+      <div id="global-error" class="alert hidden"></div>
 
       <section class="card" id="login-card">
         <div class="card-header">
@@ -75,7 +75,7 @@
         </div>
 
         <div class="button-row">
-          <button id="login-btn">Sign In</button>
+          <button id="login-btn">Send Verification Code</button>
         </div>
       </section>
 
@@ -83,7 +83,7 @@
         <div class="card-header">
           <div>
             <p class="eyebrow">Step 2</p>
-            <h3>Verify MFA</h3>
+            <h3>Verify Email MFA</h3>
           </div>
         </div>
 
@@ -94,8 +94,8 @@
           </div>
 
           <div>
-            <label for="mfa-code">Verification Code</label>
-            <input id="mfa-code" type="text" placeholder="123456" />
+            <label for="mfa-code">Email Verification Code</label>
+            <input id="mfa-code" type="text" placeholder="Enter code from email" />
           </div>
         </div>
 

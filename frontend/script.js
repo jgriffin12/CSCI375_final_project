@@ -1,9 +1,10 @@
-const API_BASE = "https://cj-secure-webs.onrender.com/";
+const API_BASE = "https://cj-secure-webs.onrender.com";
 
 const outputEl = document.getElementById("output");
 const authStatusEl = document.getElementById("auth-status");
 const roleStatusEl = document.getElementById("role-status");
 const userStatusEl = document.getElementById("user-status");
+const globalErrorEl = document.getElementById("global-error");
 
 const patientCard = document.getElementById("patient-card");
 const providerCard = document.getElementById("provider-card");
@@ -21,6 +22,9 @@ function showOutput(data) {
 }
 
 function showError(message) {
+  globalErrorEl.textContent = message;
+  globalErrorEl.classList.remove("hidden");
+
   outputEl.textContent = JSON.stringify(
     { status: "failure", message },
     null,
@@ -28,11 +32,16 @@ function showError(message) {
   );
 }
 
+function clearError() {
+  globalErrorEl.textContent = "";
+  globalErrorEl.classList.add("hidden");
+}
+
 function updateStatusPanel() {
   authStatusEl.textContent = sessionState.mfaVerified
     ? "Authenticated"
     : sessionState.loggedIn
-      ? "Password accepted, MFA pending"
+      ? "Password accepted, email verification pending"
       : "Not signed in";
 
   roleStatusEl.textContent = sessionState.role || "None selected";
@@ -76,13 +85,15 @@ async function handleResponse(response) {
 
 function requireAuthenticatedSession() {
   if (!sessionState.mfaVerified) {
-    showError("Please complete login and MFA verification first.");
+    showError("Please complete login and email verification first.");
     return false;
   }
   return true;
 }
 
 async function login() {
+  clearError();
+
   const role = document.getElementById("login-role").value.trim();
   const username = document.getElementById("login-username").value.trim();
   const password = document.getElementById("login-password").value;
@@ -92,8 +103,13 @@ async function login() {
     return;
   }
 
-  if (!username || !password) {
-    showError("Username and password are required.");
+  if (!username) {
+    showError("Please enter your username.");
+    return;
+  }
+
+  if (!password) {
+    showError("Please enter your password.");
     return;
   }
 
@@ -134,11 +150,18 @@ async function login() {
 }
 
 async function verifyMfa() {
+  clearError();
+
   const username = document.getElementById("mfa-username").value.trim();
   const code = document.getElementById("mfa-code").value.trim();
 
-  if (!username || !code) {
-    showError("Username and MFA code are required.");
+  if (!username) {
+    showError("Please enter your username before verifying MFA.");
+    return;
+  }
+
+  if (!code) {
+    showError("Please enter the verification code sent to your email.");
     return;
   }
 
@@ -166,6 +189,8 @@ async function verifyMfa() {
 }
 
 async function getPatientRecord() {
+  clearError();
+
   if (!requireAuthenticatedSession()) {
     return;
   }
@@ -179,7 +204,7 @@ async function getPatientRecord() {
   const recordId = document.getElementById("patient-record-id").value.trim();
 
   if (!username || !recordId) {
-    showError("Username and medical record ID are required.");
+    showError("Please enter both your username and medical record ID.");
     return;
   }
 
@@ -196,6 +221,8 @@ async function getPatientRecord() {
 }
 
 async function getProviderRecord() {
+  clearError();
+
   if (!requireAuthenticatedSession()) {
     return;
   }
@@ -209,7 +236,7 @@ async function getProviderRecord() {
   const recordId = document.getElementById("provider-record-id").value.trim();
 
   if (!username || !recordId) {
-    showError("Provider username and patient record ID are required.");
+    showError("Please enter both provider username and patient record ID.");
     return;
   }
 
@@ -226,6 +253,8 @@ async function getProviderRecord() {
 }
 
 async function getAuditLogs() {
+  clearError();
+
   if (!requireAuthenticatedSession()) {
     return;
   }
@@ -238,7 +267,7 @@ async function getAuditLogs() {
   const username = document.getElementById("audit-username").value.trim();
 
   if (!username) {
-    showError("Username is required.");
+    showError("Please enter a username before viewing audit logs.");
     return;
   }
 
@@ -260,6 +289,7 @@ document.getElementById("patient-record-btn").addEventListener("click", getPatie
 document.getElementById("provider-record-btn").addEventListener("click", getProviderRecord);
 document.getElementById("audit-btn").addEventListener("click", getAuditLogs);
 document.getElementById("clear-output-btn").addEventListener("click", () => {
+  clearError();
   outputEl.textContent = "Responses will appear here.";
 });
 
