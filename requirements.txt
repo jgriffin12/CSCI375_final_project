@@ -4,6 +4,9 @@ flask
 # Accepts requests from different origins
 flask-cors
 
+#
+gunicorn
+
 # Unit testing framework
 pytest
 

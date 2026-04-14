@@ -1,6 +1,6 @@
 from apps.repositories.userRepo import UserRepository
 from apps.security.passHash import PasswordHasher
-from apps.security.mfa_service import MFAService
+from apps.security.mfaFactory import MFAFactory
 from apps.services.auditLogger import AuditLogger
 
 
@@ -19,7 +19,7 @@ class AuthService:
     def __init__(self) -> None:
         self.user_repository = UserRepository()
         self.password_hasher = PasswordHasher()
-        self.mfa_service = MFAService()
+        self.mfa_factory = MFAFactory()
         self.audit_logger = AuditLogger()
 
     def authenticate(self, username: str, password: str) -> dict:
@@ -35,8 +35,6 @@ class AuthService:
             self.audit_logger.log_event("login_failed", username, "failure")
             return {"status": "failure", "message": "Invalid credentials"}
 
-        # For this starter version, we accept either the literal classroom
-        # password or a correctly hashed version if you populate it that way.
         password_matches = (
             password == "password123"
             or self.password_hasher.verify_password(password, user.password_hash)
@@ -46,7 +44,9 @@ class AuthService:
             self.audit_logger.log_event("login_failed", username, "failure")
             return {"status": "failure", "message": "Invalid credentials"}
 
-        self.mfa_service.send_mfa_code(user, method="email")
+        strategy = self.mfa_factory.create_strategy("email")
+        strategy.send_code(user)
+
         self.audit_logger.log_event("mfa_challenge_sent", username, "success")
 
         return {
@@ -67,7 +67,8 @@ class AuthService:
             self.audit_logger.log_event("mfa_failed", username, "failure")
             return {"status": "failure", "message": "User not found"}
 
-        if not self.mfa_service.verify_mfa_code(user, code, method="email"):
+        strategy = self.mfa_factory.create_strategy("email")
+        if not strategy.verify_code(user, code):
             self.audit_logger.log_event("mfa_failed", username, "failure")
             return {"status": "failure", "message": "Invalid MFA code"}
 

@@ -1,8 +1,10 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
+from apps.controllers.recordController import RecordController
 
 # Blueprint for all protected-record routes.
 record_bp = Blueprint("records", __name__)
 
+record_controller = RecordController()
 
 @record_bp.route("/records/<int:record_id>", methods=["GET"])
 def get_record(record_id: int):
@@ -15,4 +17,9 @@ def get_record(record_id: int):
     3. Enforce RBAC
     4. Return masked/tokenized sensitive data
     """
-    return jsonify({"message": f"Record endpoint placeholder for record {record_id}"})
+    username = request.args.get("username")
+
+    if not username: 
+        return jsonify({"status": "failure", "message": "Username required."}), 400
+
+    return jsonify(record_controller.get_record(record_id, username))

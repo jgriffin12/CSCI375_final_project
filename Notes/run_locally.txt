@@ -1,0 +1,27 @@
+## How to Run Program Locally
+
+1. Create virtual environment (venv).
+
+    source venv/bin/activate
+
+2. Install Dependencies (Should only have to do once.)
+
+    pip install -r requirements.txt
+
+3. Run application. 
+
+    python3 -m apps.main
+
+4. Open a new terminal and run the following: 
+
+    Test Endpoints:
+    
+    Login: 
+    Note - Currently the only role
+    curl -X POST http://127.0.0.1:5000/login -H "Content-Type: application/json" -d '{"username":"alice","password":"password123"}'
+
+    MFA: 
+    curl -X POST http://127.0.0.1:5000/verify-mfa -H "Content-Type: application/json" -d '{"username":"alice","code":"123456"}'
+
+
+

@@ -1,6 +1,6 @@
 from apps.repositories.recordRepo import RecordRepository
 from apps.services.accessControlSvc import AccessControlService
-from apps.services.audit_logger import AuditLogger
+from apps.services.auditLogger import AuditLogger
 from apps.security.masker import SensitiveDataMasker
 from apps.security.tokenizer import Tokenizer
 
