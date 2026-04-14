@@ -1,5 +1,5 @@
 from typing import List
-from app.models.security_event import SecurityEvent
+from apps.models.secEvent import SecurityEvent
 
 
 class AuditRepository:

@@ -1,6 +1,6 @@
 from datetime import datetime
-from app.models.security_event import SecurityEvent
-from app.repositories.audit_repository import AuditRepository
+from apps.models.secEvent import SecurityEvent
+from apps.repositories.auditRepo import AuditRepository
 
 
 class AuditLogger:

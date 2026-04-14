@@ -23,6 +23,7 @@ The Secure MFA Healthcare Access Portal is a Python web application designed to 
 - `tests/` contains automated tests
 - `docs/uml/` stores UML diagrams and architecture documentation
 
+
 ## UML Diagrams
 
 <!--![Context / Use Case View](./Docs/Uml/01_context_use_case.puml)-->

@@ -1,7 +1,7 @@
-from app.repositories.user_repository import UserRepository
-from app.security.password_hasher import PasswordHasher
-from app.security.mfa_service import MFAService
-from app.services.audit_logger import AuditLogger
+from apps.repositories.userRepo import UserRepository
+from apps.security.passHash import PasswordHasher
+from apps.security.mfa_service import MFAService
+from apps.services.auditLogger import AuditLogger
 
 
 class AuthService:

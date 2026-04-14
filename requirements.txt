@@ -1,6 +1,9 @@
 # Web framework for the application
 flask
 
+# Accepts requests from different origins
+flask-cors
+
 # Unit testing framework
 pytest
 

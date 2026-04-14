@@ -1,9 +1,10 @@
 from flask import Flask
+from flask_cors import CORS
 
 # Import each blueprint so the application can register its route groups.
-from app.routes.auth_routes import auth_bp
-from app.routes.record_routes import record_bp
-from app.routes.admin_routes import admin_bp
+from apps.routes.authRoutes import auth_bp
+from apps.routes.recordroutes import record_bp
+from apps.routes.adminroutes import admin_bp
 
 
 def create_app() -> Flask:
@@ -14,6 +15,8 @@ def create_app() -> Flask:
     Using a factory makes the app easier to test and easier to scale later.
     """
     app = Flask(__name__)
+
+    CORS(app)
 
     # Secret key is used by Flask for sessions and other security-related features.
     # This hardcoded value is fine for early development, but later it should come

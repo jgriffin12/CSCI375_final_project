@@ -1,4 +1,4 @@
-from app.services.auth_service import AuthService
+from apps.services.authSvc import AuthService
 
 
 class LoginController:

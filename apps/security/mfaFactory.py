@@ -1,4 +1,4 @@
-from app.security.mfa_strategies import EmailOTPStrategy, TOTPStrategy, MFAStrategy
+from apps.security.mfaStrategies import EmailOTPStrategy, TOTPStrategy, MFAStrategy
 
 
 class MFAFactory:

@@ -1,5 +1,5 @@
-from app.models.user import User
-from app.security.password_hasher import PasswordHasher
+from apps.models.user import User
+from apps.security.passHash import PasswordHasher
 
 
 class UserRepository:

@@ -1,4 +1,4 @@
-from app.models.record import Record
+from apps.models.record import Record
 
 
 class RecordRepository:

@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from app.controllers.login_controller import LoginController
+from apps.controllers.loginController import LoginController
 
 # Blueprint groups together all authentication-related routes.
 # This keeps auth endpoints separate from records and admin endpoints.

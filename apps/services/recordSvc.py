@@ -1,8 +1,8 @@
-from app.repositories.record_repository import RecordRepository
-from app.services.access_control_service import AccessControlService
-from app.services.audit_logger import AuditLogger
-from app.security.masker import SensitiveDataMasker
-from app.security.tokenizer import Tokenizer
+from apps.repositories.recordRepo import RecordRepository
+from apps.services.accessControlSvc import AccessControlService
+from apps.services.audit_logger import AuditLogger
+from apps.security.masker import SensitiveDataMasker
+from apps.security.tokenizer import Tokenizer
 
 
 class RecordService:

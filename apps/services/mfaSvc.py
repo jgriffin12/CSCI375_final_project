@@ -1,4 +1,4 @@
-from app.security.mfa_factory import MFAFactory
+from apps.security.mfaFactory import MFAFactory
 
 
 class MFAService:
