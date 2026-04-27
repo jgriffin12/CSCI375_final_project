@@ -114,7 +114,7 @@ class UserRepository:
         self._save_users()
 
         return user
-    
+
     def find_by_email(self, email: str) -> User | None:
         """
         Find a user by email address.

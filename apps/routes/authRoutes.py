@@ -11,6 +11,7 @@ auth_bp = Blueprint("auth", __name__)
 # Create one controller instance to handle auth request logic.
 login_controller = LoginController()
 
+
 @auth_bp.route("/check-email", methods=["POST"])
 def check_email():
     """
@@ -24,6 +25,7 @@ def check_email():
 
     status_code = 400 if result.get("status") == "error" else 200
     return jsonify(result), status_code
+
 
 @auth_bp.route("/register", methods=["POST"])
 def register():

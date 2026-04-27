@@ -193,3 +193,98 @@ def test_record_get_summary():
     )
 
     assert record.get_summary() == "Record 1 for Alice Anderson"
+
+
+def test_user_repository_find_by_email_existing_and_missing(tmp_path, monkeypatch):
+    """UserRepository should find users by stored email."""
+    monkeypatch.chdir(tmp_path)
+
+    repository = UserRepository()
+
+    existing = repository.find_by_email("DEMO@EXAMPLE.COM")
+    missing = repository.find_by_email("missing@example.com")
+
+    assert existing is not None
+    assert existing.username == "alice"
+    assert missing is None
+
+
+def test_login_controller_check_email_invalid_new_and_existing(tmp_path, monkeypatch):
+    """LoginController should support the email-first account lookup flow."""
+    monkeypatch.chdir(tmp_path)
+
+    from apps.controllers.loginController import LoginController
+
+    controller = LoginController()
+
+    invalid = controller.check_email_request({"email": "bad-email"})
+    assert invalid["status"] == "error"
+
+    new_user = controller.check_email_request({"email": "new@example.com"})
+    assert new_user["status"] == "new_user"
+
+    controller.auth_service.register_user(
+        username="chica",
+        password="password123",
+        role="provider",
+        email="chica@example.com",
+    )
+
+    existing = controller.check_email_request({"email": "chica@example.com"})
+    assert existing["status"] == "existing_user"
+    assert existing["username"] == "chica"
+    assert existing["role"] == "provider"
+
+
+def test_check_email_route(monkeypatch):
+    """The /check-email route should return the controller lookup result."""
+    from apps.main import create_app
+    from apps.routes import authRoutes
+
+    class FakeLoginController:
+        def check_email_request(self, data):
+            return {
+                "status": "existing_user",
+                "email": data["email"],
+                "username": "chica",
+                "role": "provider",
+            }
+
+    authRoutes.login_controller = FakeLoginController()
+
+    app = create_app()
+    client = app.test_client()
+
+    response = client.post(
+        "/check-email",
+        json={"email": "chica@example.com"},
+    )
+
+    assert response.status_code == 200
+    assert response.get_json()["status"] == "existing_user"
+
+
+def test_check_email_route_error(monkeypatch):
+    """The /check-email route should return 400 for invalid email data."""
+    from apps.main import create_app
+    from apps.routes import authRoutes
+
+    class FakeLoginController:
+        def check_email_request(self, data):
+            return {
+                "status": "error",
+                "message": "A valid email is required.",
+            }
+
+    authRoutes.login_controller = FakeLoginController()
+
+    app = create_app()
+    client = app.test_client()
+
+    response = client.post(
+        "/check-email",
+        json={"email": "bad-email"},
+    )
+
+    assert response.status_code == 400
+    assert response.get_json()["status"] == "error"

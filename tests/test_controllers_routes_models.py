@@ -389,7 +389,10 @@ def test_email_otp_strategy_no_email(capsys):
     assert "No email provided" in captured.out
 
 
-def test_email_otp_strategy_missing_environment(capsys):
+def test_email_otp_strategy_missing_environment(monkeypatch, capsys):
+    monkeypatch.delenv("FROM_EMAIL", raising=False)
+    monkeypatch.delenv("SENDGRID_API_KEY", raising=False)
+
     strategy = EmailOTPStrategy()
     user = SimpleNamespace(username="alice", email="alice@example.com")
 
