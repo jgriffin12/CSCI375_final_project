@@ -6,29 +6,31 @@ body {
   margin: 0;
   min-height: 100vh;
   font-family: Inter, Arial, sans-serif;
-  background: linear-gradient(135deg, #91b9ff, #7ca4f6);
-  color: #252a35;
+  background:
+    radial-gradient(circle at 15% 10%, rgba(196, 143, 255, 0.28), transparent 26%),
+    linear-gradient(135deg, #2d164f, #6d3dd1 45%, #a855f7);
+  color: #241a35;
 }
 
 .auth-shell {
-  width: min(1500px, calc(100% - 4rem));
-  min-height: calc(100vh - 4rem);
-  margin: 2rem auto;
+  width: min(1180px, calc(100% - 3rem));
+  min-height: calc(100vh - 5rem);
+  margin: 2.5rem auto;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 0.9fr 1fr;
   overflow: hidden;
-  border-radius: 28px;
+  border-radius: 24px;
   background: #ffffff;
-  box-shadow: 0 24px 80px rgba(25, 43, 95, 0.25);
+  box-shadow: 0 24px 80px rgba(31, 16, 64, 0.35);
 }
 
 .welcome-panel {
   position: relative;
-  padding: 3rem;
+  padding: 2.4rem;
   background:
-    radial-gradient(circle at 12% 12%, rgba(255, 255, 255, 0.9) 0 18%, transparent 19%),
-    radial-gradient(circle at 0% 100%, rgba(95, 210, 190, 0.28) 0 26%, transparent 27%),
-    linear-gradient(135deg, #e8fbf7, #a8e3db);
+    radial-gradient(circle at 10% 10%, rgba(255, 255, 255, 0.9) 0 18%, transparent 19%),
+    radial-gradient(circle at 0% 100%, rgba(168, 85, 247, 0.22) 0 26%, transparent 27%),
+    linear-gradient(135deg, #f3e8ff, #ddd6fe);
   overflow: hidden;
 }
 
@@ -36,20 +38,20 @@ body {
   display: flex;
   gap: 1rem;
   align-items: center;
-  margin-bottom: 4rem;
+  margin-bottom: 3rem;
 }
 
 .brand-icon {
-  width: 58px;
-  height: 58px;
+  width: 54px;
+  height: 54px;
   display: grid;
   place-items: center;
   border-radius: 18px;
   color: white;
   font-size: 2rem;
   font-weight: 900;
-  background: linear-gradient(135deg, #80d9c8, #4eb5e6);
-  box-shadow: 0 12px 28px rgba(50, 160, 190, 0.3);
+  background: linear-gradient(135deg, #7c3aed, #c084fc);
+  box-shadow: 0 12px 28px rgba(124, 58, 237, 0.32);
 }
 
 .brand-row h1,
@@ -57,64 +59,69 @@ body {
   margin: 0;
 }
 
+.brand-row h1 {
+  color: #241a35;
+}
+
 .doctor-card {
   position: relative;
-  min-height: 470px;
+  min-height: 390px;
 }
 
 .doctor-card h2 {
-  margin: 0 0 1.5rem;
-  font-size: 4.2rem;
+  margin: 0 0 1.2rem;
+  font-size: 3.8rem;
   letter-spacing: 0.03em;
+  color: #241a35;
 }
 
-.doctor-card h2 span,
-.hospital-logo span {
-  color: #35c6a9;
+.doctor-card h2 span {
+  color: #7c3aed;
 }
 
 .doctor-card p {
-  max-width: 300px;
-  font-size: 1.35rem;
+  max-width: 285px;
+  font-size: 1.25rem;
   line-height: 1.5;
-  color: #6d7480;
+  color: #665878;
 }
 
 .doctor-emoji {
   position: absolute;
-  right: 4rem;
+  right: 3rem;
   bottom: 1rem;
-  font-size: 10rem;
-  filter: drop-shadow(0 18px 30px rgba(30, 80, 120, 0.2));
+  font-size: 7rem;
+  filter: drop-shadow(0 18px 30px rgba(76, 29, 149, 0.22));
 }
 
 .circle {
   position: absolute;
   border-radius: 50%;
-  border: 14px solid rgba(52, 198, 169, 0.18);
+  border: 12px solid rgba(124, 58, 237, 0.16);
 }
 
 .circle-one {
   top: -1rem;
   right: 2rem;
-  width: 90px;
-  height: 90px;
+  width: 80px;
+  height: 80px;
 }
 
 .circle-two {
-  top: 7rem;
+  top: 6.5rem;
   left: 8rem;
-  width: 48px;
-  height: 48px;
-  border-color: rgba(255, 197, 88, 0.25);
+  width: 42px;
+  height: 42px;
+  border-color: rgba(192, 132, 252, 0.28);
 }
 
 .session-card {
-  margin-top: 2rem;
-  padding: 1.4rem;
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.64);
+  margin-top: 1.5rem;
+  padding: 1.2rem;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.66);
   backdrop-filter: blur(12px);
+  box-shadow: 0 14px 30px rgba(76, 29, 149, 0.12);
 }
 
 .session-card h3 {
@@ -122,50 +129,51 @@ body {
 }
 
 .access-panel {
-  padding: 4rem 5rem;
-  background: #f7f9fc;
+  padding: 3rem 4rem;
+  background: #faf7ff;
 }
 
 .hospital-logo {
-  margin-bottom: 3rem;
+  margin-bottom: 2.2rem;
   text-align: center;
-  font-size: 1.9rem;
-  color: #4c5360;
 }
 
-.hospital-logo span {
-  font-weight: 900;
+.hospital-logo img {
+  width: min(360px, 80%);
+  height: auto;
+  display: inline-block;
 }
 
 .form-panel {
   display: grid;
-  gap: 1.1rem;
+  gap: 1rem;
 }
 
 .form-panel h2 {
   margin: 0;
-  font-size: 2rem;
+  font-size: 1.8rem;
+  color: #241a35;
 }
 
 .form-panel p {
-  margin: 0 0 1rem;
-  color: #6f7783;
+  margin: 0 0 0.8rem;
+  color: #6b5c7f;
 }
 
 label {
   display: grid;
   gap: 0.45rem;
   font-weight: 700;
-  color: #343b46;
+  color: #342647;
 }
 
 input,
 select {
   width: 100%;
-  min-height: 58px;
+  min-height: 52px;
   padding: 0 1rem;
-  border: 2px solid transparent;
-  border-radius: 6px;
+  border: 2px solid #ede9fe;
+  border-radius: 10px;
   background: #ffffff;
   font: inherit;
   outline: none;
@@ -173,11 +181,12 @@ select {
 
 input:focus,
 select:focus {
-  border-color: #54b9e6;
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.14);
 }
 
 button {
-  min-height: 58px;
+  min-height: 54px;
   padding: 0 2rem;
   border: 0;
   border-radius: 999px;
@@ -185,8 +194,8 @@ button {
   font: inherit;
   font-weight: 800;
   cursor: pointer;
-  background: linear-gradient(135deg, #98d4e5, #4f79e6);
-  box-shadow: 0 10px 24px rgba(79, 121, 230, 0.22);
+  background: linear-gradient(135deg, #7c3aed, #a855f7);
+  box-shadow: 0 10px 24px rgba(124, 58, 237, 0.26);
 }
 
 button:hover {
@@ -195,40 +204,41 @@ button:hover {
 
 .secondary-btn {
   margin-left: 0.75rem;
-  background: #667085;
+  background: #6d5b83;
 }
 
 .message {
-  margin-bottom: 1.25rem;
-  padding: 1rem;
-  border-radius: 10px;
+  margin-bottom: 1.15rem;
+  padding: 0.9rem 1rem;
+  border-radius: 12px;
   font-weight: 700;
 }
 
 .message.info {
-  background: #eef5ff;
-  color: #315c9a;
+  background: #f3e8ff;
+  color: #5b21b6;
 }
 
 .message.success {
-  background: #e7f8f0;
-  color: #147a4f;
+  background: #ecfdf5;
+  color: #047857;
 }
 
 .message.error {
-  background: #fff0f0;
-  color: #c0392b;
+  background: #fff0f6;
+  color: #be185d;
 }
 
 .output-panel {
-  margin-top: 2rem;
+  margin-top: 1.5rem;
   padding: 1rem;
   border-radius: 16px;
   background: #ffffff;
+  box-shadow: 0 12px 30px rgba(76, 29, 149, 0.08);
 }
 
 pre {
-  min-height: 130px;
+  min-height: 110px;
   overflow: auto;
   white-space: pre-wrap;
 }
@@ -241,6 +251,7 @@ pre {
   .auth-shell {
     grid-template-columns: 1fr;
     width: min(100% - 1rem, 760px);
+    margin: 0.5rem auto;
   }
 
   .access-panel,
@@ -250,6 +261,6 @@ pre {
 
   .doctor-emoji {
     position: static;
-    font-size: 6rem;
+    font-size: 5rem;
   }
 }
