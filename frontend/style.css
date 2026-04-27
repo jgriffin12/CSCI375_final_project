@@ -82,7 +82,7 @@ body {
 
 .doctor-card {
   position: relative;
-  min-height: 535px;
+  min-height: 560px;
   padding-top: 0.5rem;
 }
 
@@ -135,9 +135,9 @@ body {
 
 .doctor-illustration {
   position: absolute;
-  right: -0.9rem;
-  bottom: -3.2rem;
-  width: min(410px, 77%);
+  right: -0.75rem;
+  bottom: -9.5rem;
+  width: min(430px, 80%);
   z-index: 2;
   pointer-events: none;
 }
@@ -158,7 +158,7 @@ body {
   width: min(300px, 60%);
   padding: 0.85rem 1rem;
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.56);
+  background: rgba(255, 255, 255, 0.52);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border: 1px solid rgba(255, 255, 255, 0.58);
