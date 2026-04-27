@@ -48,11 +48,11 @@ body {
 
 .brand-row {
   position: relative;
-  z-index: 5;
+  z-index: 8;
   display: flex;
   gap: 1rem;
   align-items: center;
-  margin-bottom: 2.5rem;
+  margin-bottom: 2.2rem;
 }
 
 .brand-icon {
@@ -82,28 +82,30 @@ body {
 
 .doctor-card {
   position: relative;
-  min-height: 520px;
+  min-height: 535px;
   padding-top: 0.5rem;
 }
 
-.doctor-card h2 {
+.welcome-copy {
   position: relative;
-  z-index: 4;
-  margin: 0 0 1.1rem;
+  z-index: 5;
+}
+
+.welcome-copy h2 {
+  margin: 0 0 1rem;
   max-width: 270px;
   font-size: 3.8rem;
   letter-spacing: 0.03em;
   color: #241a35;
 }
 
-.doctor-card h2 span {
+.welcome-copy h2 span {
   color: #7c3aed;
 }
 
-.doctor-card > p {
-  position: relative;
-  z-index: 4;
+.welcome-copy p {
   max-width: 245px;
+  margin: 0;
   font-size: 1.2rem;
   line-height: 1.45;
   color: #665878;
@@ -133,10 +135,10 @@ body {
 
 .doctor-illustration {
   position: absolute;
-  right: -1.2rem;
-  bottom: 3.3rem;
-  width: min(420px, 78%);
-  z-index: 1;
+  right: -0.9rem;
+  bottom: -3.2rem;
+  width: min(410px, 77%);
+  z-index: 2;
   pointer-events: none;
 }
 
@@ -151,25 +153,27 @@ body {
 .session-card {
   position: absolute;
   left: 0;
-  bottom: 0.25rem;
-  z-index: 6;
-  width: min(315px, 62%);
-  padding: 0.95rem 1.05rem;
+  bottom: 0.75rem;
+  z-index: 7;
+  width: min(300px, 60%);
+  padding: 0.85rem 1rem;
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.88);
-  backdrop-filter: blur(12px);
-  box-shadow: 0 14px 30px rgba(76, 29, 149, 0.16);
+  background: rgba(255, 255, 255, 0.56);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.58);
+  box-shadow: 0 14px 30px rgba(76, 29, 149, 0.14);
 }
 
 .session-card h3 {
-  margin: 0 0 0.65rem;
-  font-size: 1.1rem;
+  margin: 0 0 0.55rem;
+  font-size: 1.05rem;
 }
 
 .session-card p {
-  margin: 0.35rem 0;
-  font-size: 0.93rem;
-  line-height: 1.35;
+  margin: 0.32rem 0;
+  font-size: 0.9rem;
+  line-height: 1.32;
   color: #241a35;
 }
 
@@ -179,16 +183,19 @@ body {
 }
 
 .hospital-logo {
-  margin-bottom: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 115px;
+  margin-bottom: 1.85rem;
   text-align: center;
 }
 
 .hospital-logo img {
-  width: min(320px, 82%);
-  max-height: 95px;
+  width: min(390px, 92%);
+  max-height: 125px;
   height: auto;
   display: block;
-  margin: 0 auto;
   object-fit: contain;
 }
 
