@@ -129,3 +129,34 @@ class LoginController:
         Check whether an email looks valid enough to send MFA.
         """
         return bool(email and "@" in email and "." in email.split("@")[-1])
+
+    def check_email_request(self, data: dict[str, Any]) -> dict[str, Any]:
+        """
+        Check whether an email already belongs to a registered user.
+
+        This supports the email-first login/register flow.
+        """
+        email = data.get("email", "").strip()
+
+        if not self._is_valid_email(email):
+            return {
+                "status": "error",
+                "message": "A valid email is required.",
+            }
+
+        user = self.auth_service.user_repository.find_by_email(email)
+
+        if user is None:
+            return {
+                "status": "new_user",
+                "message": "No account found. Please register.",
+                "email": email,
+            }
+
+        return {
+            "status": "existing_user",
+            "message": "Account found. Please enter your password.",
+            "email": email,
+            "username": user.username,
+            "role": user.role,
+        }

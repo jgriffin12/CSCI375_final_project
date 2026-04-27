@@ -114,3 +114,17 @@ class UserRepository:
         self._save_users()
 
         return user
+    
+    def find_by_email(self, email: str) -> User | None:
+        """
+        Find a user by email address.
+
+        This supports the email-first frontend flow.
+        """
+        normalized_email = email.strip().lower()
+
+        for user in self.users.values():
+            if user.email.strip().lower() == normalized_email:
+                return user
+
+        return None

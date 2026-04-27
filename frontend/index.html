@@ -7,82 +7,97 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <aside class="sidebar">
-    <div class="brand">
-      <div class="brand-icon">+</div>
-      <div>
-        <h1>CJ Secure</h1>
-        <p>Secure Access Portal for CJ Hospital</p>
+  <main class="auth-shell">
+    <section class="welcome-panel">
+      <div class="brand-row">
+        <div class="brand-icon">+</div>
+        <div>
+          <h1>CJ Secure</h1>
+          <p>Secure Access Portal for CJ Hospital</p>
+        </div>
       </div>
-    </div>
 
-    <section class="side-card">
-      <h3>Session Status</h3>
-      <p><strong>Authentication:</strong> <span id="auth-status">Not signed in</span></p>
-      <p><strong>Role:</strong> <span id="role-status">None selected</span></p>
-      <p><strong>User:</strong> <span id="user-status">None</span></p>
-    </section>
+      <div class="doctor-card">
+        <div class="circle circle-one"></div>
+        <div class="circle circle-two"></div>
+        <h2>HELLO<span>!</span></h2>
+        <p>Please enter your email to continue.</p>
+        <div class="doctor-emoji">🩺</div>
+      </div>
 
-    <section class="side-card">
-      <h3>Verification Notice</h3>
-      <p>
-        New users must register with an email address first.
-        Later logins send MFA codes to the stored email.
-      </p>
-    </section>
-  </aside>
-
-  <main class="main-content">
-    <section class="hero card">
-      <p class="eyebrow">HOSPITAL SECURITY DEMO</p>
-      <h1>Protected Patient and Provider Access at CJ Hospital</h1>
-      <p>
-        CJ Secure demonstrates hospital-focused authentication, email-based MFA,
-        role-aware access, protected medical record retrieval, and audit logging.
-      </p>
-    </section>
-
-    <div id="global-error" class="status-message hidden"></div>
-
-    <section class="card">
-      <p class="eyebrow">ACCOUNT ACCESS</p>
-      <h2>Are you registering or logging in?</h2>
-
-      <div class="mode-choice">
-        <label>
-          <input
-            id="mode-register"
-            name="auth-mode"
-            type="radio"
-            value="register"
-            checked
-          />
-          Register a new account
-        </label>
-
-        <label>
-          <input
-            id="mode-login"
-            name="auth-mode"
-            type="radio"
-            value="login"
-          />
-          Log in to an existing account
-        </label>
+      <div class="session-card">
+        <h3>Session Status</h3>
+        <p><strong>Authentication:</strong> <span id="auth-status">Not signed in</span></p>
+        <p><strong>Role:</strong> <span id="role-status">None selected</span></p>
+        <p><strong>User:</strong> <span id="user-status">None</span></p>
       </div>
     </section>
 
-    <section id="register-panel" class="card">
-      <p class="eyebrow">STEP 0</p>
-      <h2>Register for CJ Secure</h2>
-      <p>
-        Register once with your real email. This email will be stored with your
-        account and used later for SendGrid MFA codes.
-      </p>
+    <section class="access-panel">
+      <div class="hospital-logo">
+        <span>LOGO</span> Hospital
+      </div>
 
-      <div class="form-grid">
+      <div id="message" class="message hidden"></div>
+
+      <section id="email-panel" class="form-panel">
+        <h2>Start Secure Access</h2>
+        <p>
+          Enter your email. If an account exists, you will log in. If not,
+          you will register first.
+        </p>
+
         <label>
-          I am registering as
+          Email
+          <input id="email-input" type="email" placeholder="you@example.com" />
+        </label>
+
+        <button id="email-continue-btn" type="button">Continue</button>
+      </section>
+
+      <section id="login-panel" class="form-panel hidden">
+        <h2>Log In</h2>
+        <p>Your email is already registered. Enter your password to receive MFA.</p>
+
+        <label>
+          Email
+          <input id="login-email" type="email" disabled />
+        </label>
+
+        <label>
+          Username
+          <input id="login-username" type="text" readonly />
+        </label>
+
+        <label>
+          Role
+          <input id="login-role" type="text" readonly />
+        </label>
+
+        <label>
+          Password
+          <input id="login-password" type="password" placeholder="Password" />
+        </label>
+
+        <button id="login-btn" type="button">Send Verification Code</button>
+      </section>
+
+      <section id="register-panel" class="form-panel hidden">
+        <h2>Register</h2>
+        <p>No account was found. Create one and receive a SendGrid MFA code.</p>
+
+        <label>
+          Email
+          <input id="register-email" type="email" readonly />
+        </label>
+
+        <label>
+          Username
+          <input id="register-username" type="text" placeholder="Create username" />
+        </label>
+
+        <label>
+          Role
           <select id="register-role">
             <option value="">Select role</option>
             <option value="provider">Provider</option>
@@ -91,149 +106,54 @@
         </label>
 
         <label>
-          Username
-          <input
-            id="register-username"
-            type="text"
-            placeholder="Create username"
-          />
-        </label>
-
-        <label>
-          Email for MFA
-          <input
-            id="register-email"
-            type="email"
-            placeholder="you@example.com"
-          />
-        </label>
-
-        <label>
           Password
-          <input
-            id="register-password"
-            type="password"
-            placeholder="Create password"
-          />
+          <input id="register-password" type="password" placeholder="Create password" />
         </label>
-      </div>
 
-      <button id="register-btn" type="button">Register Account</button>
-    </section>
+        <button id="register-btn" type="button">Register and Send Code</button>
+      </section>
 
-    <section id="login-panel" class="card hidden">
-      <p class="eyebrow">STEP 1</p>
-      <h2>Log In to CJ Secure</h2>
-      <p>
-        Existing users log in with role, username, and password. The system uses
-        the email stored during registration for MFA.
-      </p>
-
-      <div class="form-grid">
-        <label>
-          I am signing in as
-          <select id="login-role">
-            <option value="">Select role</option>
-            <option value="provider">Provider</option>
-            <option value="patient">Patient</option>
-          </select>
-        </label>
+      <section id="mfa-panel" class="form-panel hidden">
+        <h2>Email Verification</h2>
+        <p>Enter the verification code sent through SendGrid.</p>
 
         <label>
           Username
-          <input id="login-username" type="text" placeholder="Username" />
+          <input id="mfa-username" type="text" readonly />
         </label>
 
         <label>
-          Password
-          <input id="login-password" type="password" placeholder="Password" />
-        </label>
-      </div>
-
-      <button id="login-btn" type="button">Send Verification Code</button>
-    </section>
-
-    <section class="card">
-      <p class="eyebrow">STEP 2</p>
-      <h2>Verify Email MFA</h2>
-
-      <div class="form-grid">
-        <label>
-          Username
-          <input id="mfa-username" type="text" placeholder="Username" />
+          Verification Code
+          <input id="mfa-code" type="text" placeholder="Code from email" />
         </label>
 
-        <label>
-          Email Verification Code
-          <input id="mfa-code" type="text" placeholder="Enter code from email" />
-        </label>
-      </div>
+        <button id="mfa-btn" type="button">Verify MFA</button>
+      </section>
 
-      <button id="mfa-btn" type="button">Verify MFA</button>
-      <button id="logout-btn" type="button" class="secondary-btn">Sign Out</button>
-    </section>
+      <section id="protected-panel" class="form-panel hidden">
+        <h2>Protected Record Access</h2>
+        <p>
+          MFA is complete. Providers can retrieve masked and tokenized patient records.
+        </p>
 
-    <section id="patient-card" class="card hidden">
-      <p class="eyebrow">PATIENT ACCESS</p>
-      <h2>View My Protected Record</h2>
-
-      <div class="form-grid">
         <label>
           Username
-          <input id="patient-username" type="text" placeholder="Username" />
+          <input id="record-username" type="text" readonly />
         </label>
 
         <label>
-          Medical Record ID
-          <input id="patient-record-id" type="number" value="1" />
-        </label>
-      </div>
-
-      <button id="patient-record-btn" type="button">View My Record</button>
-    </section>
-
-    <section id="provider-card" class="card hidden">
-      <p class="eyebrow">PROVIDER ACCESS</p>
-      <h2>Retrieve Protected Patient Record</h2>
-
-      <div class="form-grid">
-        <label>
-          Provider Username
-          <input id="provider-username" type="text" placeholder="Provider username" />
+          Record ID
+          <input id="record-id" type="number" value="1" />
         </label>
 
-        <label>
-          Patient Record ID
-          <input id="provider-record-id" type="number" value="1" />
-        </label>
-      </div>
+        <button id="record-btn" type="button">Retrieve Protected Record</button>
+        <button id="signout-btn" type="button" class="secondary-btn">Sign Out</button>
+      </section>
 
-      <button id="provider-record-btn" type="button">Retrieve Protected Record</button>
-    </section>
-
-    <section id="audit-card" class="card hidden">
-      <p class="eyebrow">AUDIT LOGGING</p>
-      <h2>Review Security Events</h2>
-
-      <div class="form-grid">
-        <label>
-          Provider Username
-          <input id="audit-username" type="text" placeholder="Provider username" />
-        </label>
-      </div>
-
-      <button id="audit-btn" type="button">View Audit Logs</button>
-    </section>
-
-    <section class="card">
-      <p class="eyebrow">SYSTEM OUTPUT</p>
-      <h2>Backend Response</h2>
-
-      <pre id="output">Responses will appear here.</pre>
-
-      <button id="clear-output-btn" type="button" class="secondary-btn">
-        Clear Output
-      </button>
+      <section class="output-panel">
+        <h3>System Output</h3>
+        <pre id="output">Responses will appear here.</pre>
+      </section>
     </section>
   </main>
 
