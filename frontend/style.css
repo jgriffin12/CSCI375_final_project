@@ -7,13 +7,17 @@ body {
   min-height: 100vh;
   font-family: Inter, Arial, sans-serif;
   background:
-    radial-gradient(circle at 15% 10%, rgba(196, 143, 255, 0.28), transparent 26%),
+    radial-gradient(
+      circle at 15% 10%,
+      rgba(196, 143, 255, 0.28),
+      transparent 26%
+    ),
     linear-gradient(135deg, #2d164f, #6d3dd1 45%, #a855f7);
   color: #241a35;
 }
 
 .auth-shell {
-  width: min(1050px, calc(100% - 4rem));
+  width: min(1080px, calc(100% - 4rem));
   min-height: 680px;
   margin: 2rem auto;
   display: grid;
@@ -26,29 +30,38 @@ body {
 
 .welcome-panel {
   position: relative;
-  padding: 2.4rem;
+  padding: 2rem;
   background:
-    radial-gradient(circle at 10% 10%, rgba(255, 255, 255, 0.9) 0 18%, transparent 19%),
-    radial-gradient(circle at 0% 100%, rgba(168, 85, 247, 0.22) 0 26%, transparent 27%),
+    radial-gradient(
+      circle at 10% 10%,
+      rgba(255, 255, 255, 0.9) 0 18%,
+      transparent 19%
+    ),
+    radial-gradient(
+      circle at 0% 100%,
+      rgba(168, 85, 247, 0.22) 0 26%,
+      transparent 27%
+    ),
     linear-gradient(135deg, #f3e8ff, #ddd6fe);
   overflow: hidden;
 }
 
 .brand-row {
+  position: relative;
+  z-index: 5;
   display: flex;
   gap: 1rem;
   align-items: center;
-  margin-bottom: 3rem;
+  margin-bottom: 2.5rem;
 }
 
 .brand-icon {
   width: 58px;
   height: 58px;
+  display: block;
   object-fit: contain;
-  border-radius: 16px;
-  background: #ffffff;
-  padding: 6px;
-  box-shadow: 0 12px 28px rgba(124, 58, 237, 0.25);
+  flex-shrink: 0;
+  border-radius: 14px;
 }
 
 .brand-row h1,
@@ -58,15 +71,26 @@ body {
 
 .brand-row h1 {
   color: #241a35;
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.brand-row p {
+  margin-top: 0.35rem;
+  color: #4c3f60;
 }
 
 .doctor-card {
   position: relative;
-  min-height: 390px;
+  min-height: 520px;
+  padding-top: 0.5rem;
 }
 
 .doctor-card h2 {
-  margin: 0 0 1.2rem;
+  position: relative;
+  z-index: 4;
+  margin: 0 0 1.1rem;
+  max-width: 270px;
   font-size: 3.8rem;
   letter-spacing: 0.03em;
   color: #241a35;
@@ -76,23 +100,18 @@ body {
   color: #7c3aed;
 }
 
-.doctor-card p {
-  max-width: 285px;
-  font-size: 1.25rem;
-  line-height: 1.5;
+.doctor-card > p {
+  position: relative;
+  z-index: 4;
+  max-width: 245px;
+  font-size: 1.2rem;
+  line-height: 1.45;
   color: #665878;
-}
-
-.doctor-emoji {
-  position: absolute;
-  right: 3rem;
-  bottom: 1rem;
-  font-size: 7rem;
-  filter: drop-shadow(0 18px 30px rgba(76, 29, 149, 0.22));
 }
 
 .circle {
   position: absolute;
+  z-index: 0;
   border-radius: 50%;
   border: 12px solid rgba(124, 58, 237, 0.16);
 }
@@ -112,33 +131,65 @@ body {
   border-color: rgba(192, 132, 252, 0.28);
 }
 
+.doctor-illustration {
+  position: absolute;
+  right: -1.2rem;
+  bottom: 3.3rem;
+  width: min(420px, 78%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.doctor-illustration img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: contain;
+  filter: drop-shadow(0 18px 30px rgba(76, 29, 149, 0.16));
+}
+
 .session-card {
-  margin-top: 1.5rem;
-  padding: 1.2rem;
+  position: absolute;
+  left: 0;
+  bottom: 0.25rem;
+  z-index: 6;
+  width: min(315px, 62%);
+  padding: 0.95rem 1.05rem;
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.66);
+  background: rgba(255, 255, 255, 0.88);
   backdrop-filter: blur(12px);
-  box-shadow: 0 14px 30px rgba(76, 29, 149, 0.12);
+  box-shadow: 0 14px 30px rgba(76, 29, 149, 0.16);
 }
 
 .session-card h3 {
-  margin-top: 0;
+  margin: 0 0 0.65rem;
+  font-size: 1.1rem;
+}
+
+.session-card p {
+  margin: 0.35rem 0;
+  font-size: 0.93rem;
+  line-height: 1.35;
+  color: #241a35;
 }
 
 .access-panel {
-  padding: 3rem 4rem;
+  padding: 2.5rem 3rem;
   background: #faf7ff;
 }
 
 .hospital-logo {
-  margin-bottom: 2.2rem;
+  margin-bottom: 2rem;
   text-align: center;
 }
 
 .hospital-logo img {
-  width: min(360px, 80%);
+  width: min(320px, 82%);
+  max-height: 95px;
   height: auto;
-  display: inline-block;
+  display: block;
+  margin: 0 auto;
+  object-fit: contain;
 }
 
 .form-panel {
@@ -256,51 +307,23 @@ pre {
     padding: 2rem;
   }
 
-  .doctor-emoji {
-    position: static;
-    font-size: 5rem;
+  .doctor-card {
+    min-height: auto;
   }
-}
 
-.doctor-illustration {
-  position: absolute;
-  right: -0.5rem;
-  bottom: -1rem;
-  width: min(390px, 78%);
-  z-index: 1;
-}
+  .doctor-illustration {
+    position: relative;
+    right: auto;
+    bottom: auto;
+    width: min(380px, 95%);
+    margin: 1rem auto 0;
+  }
 
-.doctor-illustration img {
-  width: 100%;
-  height: auto;
-  display: block;
-  object-fit: contain;
-  filter: drop-shadow(0 18px 30px rgba(76, 29, 149, 0.18));
-}
-
-.hospital-logo img {
-  width: min(260px, 75%);
-  max-height: 90px;
-  object-fit: contain;
-}
-
-.doctor-illustration {
-  position: absolute;
-  right: -1rem;
-  bottom: 7rem;
-  width: min(330px, 68%);
-  z-index: 1;
-}
-
-.doctor-illustration img {
-  width: 100%;
-  height: auto;
-  display: block;
-  object-fit: contain;
-  filter: drop-shadow(0 18px 30px rgba(76, 29, 149, 0.18));
-}
-
-.session-card {
-  position: relative;
-  z-index: 2;
+  .session-card {
+    position: relative;
+    left: auto;
+    bottom: auto;
+    width: 100%;
+    margin-top: 1rem;
+  }
 }

@@ -10,7 +10,11 @@
   <main class="auth-shell">
     <section class="welcome-panel">
       <div class="brand-row">
-        <img class="brand-icon" src="assets/LogoChat.png" alt="CJ Secure logo" />
+        <img
+          class="brand-icon"
+          src="assets/LogoChat.png"
+          alt="CJ Secure logo"
+        />
         <div>
           <h1>CJ Secure</h1>
           <p>Secure Access Portal for CJ Hospital</p>
@@ -20,19 +24,32 @@
       <div class="doctor-card">
         <div class="circle circle-one"></div>
         <div class="circle circle-two"></div>
+
         <h2>HELLO<span>!</span></h2>
         <p>Please enter your email to continue.</p>
 
         <div class="doctor-illustration">
-          <img src="assets/CJCartoon.png" alt="CJ Secure doctors illustration" />
+          <img
+            src="assets/CJCartoon.png"
+            alt="CJ Secure doctors illustration"
+          />
         </div>
-      </div>
 
-      <div class="session-card">
-        <h3>Session Status</h3>
-        <p><strong>Authentication:</strong> <span id="auth-status">Not signed in</span></p>
-        <p><strong>Role:</strong> <span id="role-status">None selected</span></p>
-        <p><strong>User:</strong> <span id="user-status">None</span></p>
+        <div class="session-card">
+          <h3>Session Status</h3>
+          <p>
+            <strong>Authentication:</strong>
+            <span id="auth-status">Not signed in</span>
+          </p>
+          <p>
+            <strong>Role:</strong>
+            <span id="role-status">None selected</span>
+          </p>
+          <p>
+            <strong>User:</strong>
+            <span id="user-status">None</span>
+          </p>
+        </div>
       </div>
     </section>
 
@@ -52,7 +69,11 @@
 
         <label>
           Email
-          <input id="email-input" type="email" placeholder="you@example.com" />
+          <input
+            id="email-input"
+            type="email"
+            placeholder="you@example.com"
+          />
         </label>
 
         <button id="email-continue-btn" type="button">Continue</button>
@@ -60,7 +81,9 @@
 
       <section id="login-panel" class="form-panel hidden">
         <h2>Log In</h2>
-        <p>Your email is already registered. Enter your password to receive MFA.</p>
+        <p>
+          Your email is already registered. Enter your password to receive MFA.
+        </p>
 
         <label>
           Email
@@ -79,7 +102,11 @@
 
         <label>
           Password
-          <input id="login-password" type="password" placeholder="Password" />
+          <input
+            id="login-password"
+            type="password"
+            placeholder="Password"
+          />
         </label>
 
         <button id="login-btn" type="button">Send Verification Code</button>
@@ -87,7 +114,9 @@
 
       <section id="register-panel" class="form-panel hidden">
         <h2>Register</h2>
-        <p>No account was found. Create one and receive a SendGrid MFA code.</p>
+        <p>
+          No account was found. Create one and receive a SendGrid MFA code.
+        </p>
 
         <label>
           Email
@@ -96,7 +125,11 @@
 
         <label>
           Username
-          <input id="register-username" type="text" placeholder="Create username" />
+          <input
+            id="register-username"
+            type="text"
+            placeholder="Create username"
+          />
         </label>
 
         <label>
@@ -110,7 +143,11 @@
 
         <label>
           Password
-          <input id="register-password" type="password" placeholder="Create password" />
+          <input
+            id="register-password"
+            type="password"
+            placeholder="Create password"
+          />
         </label>
 
         <button id="register-btn" type="button">Register and Send Code</button>
@@ -127,7 +164,11 @@
 
         <label>
           Verification Code
-          <input id="mfa-code" type="text" placeholder="Code from email" />
+          <input
+            id="mfa-code"
+            type="text"
+            placeholder="Code from email"
+          />
         </label>
 
         <button id="mfa-btn" type="button">Verify MFA</button>
@@ -136,7 +177,8 @@
       <section id="protected-panel" class="form-panel hidden">
         <h2>Protected Record Access</h2>
         <p>
-          MFA is complete. Providers can retrieve masked and tokenized patient records.
+          MFA is complete. Providers can retrieve masked and tokenized patient
+          records.
         </p>
 
         <label>
@@ -150,7 +192,9 @@
         </label>
 
         <button id="record-btn" type="button">Retrieve Protected Record</button>
-        <button id="signout-btn" type="button" class="secondary-btn">Sign Out</button>
+        <button id="signout-btn" type="button" class="secondary-btn">
+          Sign Out
+        </button>
       </section>
 
       <section class="output-panel">
