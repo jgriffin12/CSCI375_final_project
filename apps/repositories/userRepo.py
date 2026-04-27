@@ -11,13 +11,20 @@ class UserRepository:
         hasher = PasswordHasher()
 
         self.users = {
-            "alice": User(
+            "doctor": User(
                 user_id=1,
-                username="alice",
+                username="doctor",
                 password_hash=hasher.hash_password("password123"),
-                email="lia03gomes@gmail.com",
-                role="admin",
-            )
+                email="your@email.com",  # replace if needed
+                role="provider",
+            ),
+            "patient": User(
+                user_id=2,
+                username="patient",
+                password_hash=hasher.hash_password("password123"),
+                email="your@email.com",  # replace if needed
+                role="patient",
+            ),
         }
 
     def find_by_username(self, username: str):

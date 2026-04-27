@@ -119,7 +119,12 @@ async function login() {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ username, password, role })
+      body: JSON.stringify({
+        username: username,
+        password: password,
+        role: role,
+        email: email
+      })
     });
 
     const data = await handleResponse(response);

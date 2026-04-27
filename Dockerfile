@@ -17,4 +17,4 @@ COPY . .
 EXPOSE 5000
 
 # Start the application when the container runs
-CMD ["python", "-m", "app.main"]
+CMD ["python", "-m", "apps.main"]

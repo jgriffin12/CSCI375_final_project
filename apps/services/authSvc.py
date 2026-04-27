@@ -1,68 +1,95 @@
+"""Authentication service for login and MFA."""
+
+from typing import Any
+
 from apps.repositories.userRepo import UserRepository
 from apps.security.passHash import PasswordHasher
-from apps.security.mfaFactory import MFAFactory
-from apps.services.auditLogger import AuditLogger
+from apps.services.mfaSvc import MFAService
 
 
 class AuthService:
     """
-    Service responsible for authentication and MFA workflow.
+    Service responsible for authentication.
+
+    This class handles username/password login, starts MFA, and verifies
+    MFA codes after the user enters the email code.
     """
 
     def __init__(self) -> None:
+        """Create the dependencies needed for authentication."""
         self.user_repository = UserRepository()
         self.password_hasher = PasswordHasher()
-        self.mfa_factory = MFAFactory()
-        self.audit_logger = AuditLogger()
+        self.mfa_service = MFAService()
 
-    def authenticate(self, username: str, password: str) -> dict:
+    def authenticate(
+        self,
+        username: str,
+        password: str,
+        role: str,
+        email: str,
+    ) -> dict[str, Any]:
         """
-        First step of login.
-        Validate username and password, then send an MFA challenge.
+        Authenticate a user and send an MFA code by email.
+
+        The email comes from the frontend and is used by the SendGrid
+        MFA strategy.
         """
         user = self.user_repository.find_by_username(username)
 
         if user is None:
-            self.audit_logger.log_event("login_failed", username, "failure")
-            return {"status": "failure", "message": "Invalid credentials"}
+            return {
+                "status": "error",
+                "message": "Invalid username or password.",
+            }
 
-        password_matches = self.password_hasher.verify_password(password, user.password_hash)
+        if user.role != role:
+            return {
+                "status": "error",
+                "message": "Selected role does not match this user.",
+            }
 
-        if not password_matches:
-            self.audit_logger.log_event("login_failed", username, "failure")
-            return {"status": "failure", "message": "Invalid credentials"}
+        if not self.password_hasher.verify_password(password, user.password_hash):
+            return {
+                "status": "error",
+                "message": "Invalid username or password.",
+            }
 
-        try:
-            strategy = self.mfa_factory.create_strategy("email")
-            strategy.send_code(user)
-        except Exception as exc:
-            self.audit_logger.log_event("mfa_send_failed", username, "failure")
-            return {"status": "failure", "message": f"Failed to send MFA code: {exc}"}
+        # Add the frontend email to the user object so SendGrid knows
+        # where to send the MFA code.
+        user.email = email
 
-        self.audit_logger.log_event("mfa_challenge_sent", username, "success")
+        self.mfa_service.send_mfa_code(user, "email")
 
         return {
             "status": "pending",
-            "message": "MFA challenge sent to your email",
+            "message": "Login successful. MFA code sent to email.",
             "username": username,
+            "role": role,
         }
 
-    def verify_mfa(self, username: str, code: str) -> dict:
+    def verify_mfa(self, username: str, code: str) -> dict[str, Any]:
         """
-        Second step of login.
-        Verify the submitted MFA code.
+        Verify the MFA code entered by the user.
         """
         user = self.user_repository.find_by_username(username)
 
         if user is None:
-            self.audit_logger.log_event("mfa_failed", username, "failure")
-            return {"status": "failure", "message": "User not found"}
+            return {
+                "status": "error",
+                "message": "User not found.",
+            }
 
-        strategy = self.mfa_factory.create_strategy("email")
+        verified = self.mfa_service.verify_mfa_code(user, code, "email")
 
-        if not strategy.verify_code(user, code):
-            self.audit_logger.log_event("mfa_failed", username, "failure")
-            return {"status": "failure", "message": "Invalid MFA code"}
+        if not verified:
+            return {
+                "status": "error",
+                "message": "Invalid MFA code.",
+            }
 
-        self.audit_logger.log_event("login_success", username, "success")
-        return {"status": "success", "message": "Login successful"}
+        return {
+            "status": "success",
+            "message": "MFA verified. Login complete.",
+            "username": username,
+            "role": user.role,
+        }
