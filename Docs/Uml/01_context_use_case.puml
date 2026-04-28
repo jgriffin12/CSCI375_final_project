@@ -1,49 +1,32 @@
 @startuml
 left to right direction
-skinparam packageStyle rectangle
-skinparam shadowing false
-skinparam actorStyle awesome
 
-title Context / Use Case View - Secure MFA Healthcare Access Portal
-
-actor User
+actor Patient
+actor Provider
 actor Admin
-actor Auditor
-actor "MFA Provider" as MFA
 
-rectangle "Secure MFA Healthcare Access Portal" {
-  usecase "Log In" as UC1
-  usecase "Submit Username\nand Password" as UC2
-  usecase "Complete MFA\nVerification" as UC3
-  usecase "View Authorized\nRecords" as UC4
-  usecase "View Masked or\nTokenized Data" as UC5
-  usecase "Log Out" as UC6
-  usecase "Manage Users" as UC7
-  usecase "Assign Roles" as UC8
-  usecase "Reset MFA" as UC9
-  usecase "Review Audit Logs" as UC10
-  usecase "Record Security Event" as UC11
+rectangle "CJ Secure Portal" {
+  usecase "Login" as UC1
+  usecase "Verify MFA" as UC2
+  usecase "View Protected Record" as UC3
+  usecase "View Masked Patient Data" as UC4
+  usecase "Review Audit Logs" as UC5
 }
 
-User --> UC1
-User --> UC2
-User --> UC3
-User --> UC4
-User --> UC5
-User --> UC6
+Patient --> UC1
+Patient --> UC2
+Patient --> UC3
 
-Admin --> UC7
-Admin --> UC8
-Admin --> UC9
-Admin --> UC10
+Provider --> UC1
+Provider --> UC2
+Provider --> UC3
+Provider --> UC4
 
-Auditor --> UC10
-MFA --> UC3
+Admin --> UC1
+Admin --> UC2
+Admin --> UC5
 
-UC1 .> UC2 : <<include>>
-UC1 .> UC3 : <<include>>
-UC4 .> UC5 : <<include>>
-UC1 .> UC11 : <<include>>
-UC4 .> UC11 : <<include>>
-UC10 .> UC11 : <<extend>>
+UC1 --> UC2 : requires
+UC3 --> UC4 : protects data
+
 @enduml

@@ -1,104 +1,69 @@
-@startuml
-title 04 - Development / Package View
+@startuml Development
 
-skinparam packageStyle rectangle
-
-package "frontend/" {
+package "frontend" {
   [index.html]
   [style.css]
   [script.js]
 }
 
-package "apps/" {
-  [main.py]
-
-  package "routes/" {
-    [authRoutes.py]
-    [recordroutes.py]
-    [adminroutes.py]
-  }
-
-  package "controllers/" {
-    [AuthController]
-  }
-
-  package "services/" {
-    [AuthService]
-    [MFAService]
-    [RecordService]
-    [AccessControlService]
-    [AuditLogger]
-  }
-
-  package "security/" {
-    [PasswordHasher]
-    [MFAFactory]
-    [MFAStrategy]
-    [EmailMFAStrategy]
-    [SensitiveDataMasker]
-    [Tokenizer]
-  }
-
-  package "repositories/" {
-    [UserRepository]
-    [RecordRepository]
-    [AuditRepository]
-  }
-
-  package "models/" {
-    [User]
-    [MedicalRecord]
-    [SecurityEvent]
-  }
+package "apps.routes" {
+  [authRoutes]
+  [recordRoutes]
+  [adminRoutes]
 }
 
-package "tests/" {
-  [Unit Tests]
-  [Property-Based Tests]
+package "apps.controllers" {
+  [AuthController]
+  [RecordController]
 }
 
-package "Docs/Uml/" {
-  [UML Diagrams]
+package "apps.services" {
+  [AuthService]
+  [MFAService]
+  [RecordService]
+  [AccessControlService]
 }
 
-[index.html] --> [script.js]
-[script.js] --> [authRoutes.py] : API calls
-[script.js] --> [recordroutes.py] : API calls
-[script.js] --> [adminroutes.py] : API calls
+package "apps.repositories" {
+  [UserRepository]
+  [RecordRepository]
+  [AuditRepository]
+}
 
-[main.py] --> [authRoutes.py]
-[main.py] --> [recordroutes.py]
-[main.py] --> [adminroutes.py]
+package "apps.security" {
+  [PasswordHasher]
+  [MFAFactory]
+  [MFAStrategy]
+  [SensitiveDataMasker]
+  [Tokenizer]
+}
 
-[authRoutes.py] --> [AuthController]
+package "apps.models" {
+  [User]
+  [MedicalRecord]
+  [SecurityEvent]
+}
+
+[script.js] --> [authRoutes]
+[script.js] --> [recordRoutes]
+
+[authRoutes] --> [AuthController]
+[recordRoutes] --> [RecordController]
+
 [AuthController] --> [AuthService]
-
-[recordroutes.py] --> [RecordService]
-[adminroutes.py] --> [AuditLogger]
+[RecordController] --> [RecordService]
 
 [AuthService] --> [UserRepository]
-[AuthService] --> [PasswordHasher]
 [AuthService] --> [MFAService]
-[AuthService] --> [AuditLogger]
-
-[MFAService] --> [MFAFactory]
-[MFAFactory] --> [MFAStrategy]
-[MFAStrategy] <|.. [EmailMFAStrategy]
-
 [RecordService] --> [RecordRepository]
-[RecordService] --> [AccessControlService]
+
+[AuthService] --> [PasswordHasher]
+[MFAService] --> [MFAFactory]
 [RecordService] --> [SensitiveDataMasker]
 [RecordService] --> [Tokenizer]
-[RecordService] --> [AuditLogger]
-
-[AuditLogger] --> [AuditRepository]
 
 [UserRepository] --> [User]
 [RecordRepository] --> [MedicalRecord]
 [AuditRepository] --> [SecurityEvent]
-
-[Unit Tests] --> [services/]
-[Unit Tests] --> [security/]
-[Property-Based Tests] --> [security/]
 
 @enduml

@@ -1,82 +1,39 @@
 @startuml
-skinparam shadowing false
-autonumber
-
-title Process View - Secure Login and Protected Record Access
 
 actor User
-participant Browser
-participant LoginController
-participant AuthService
-participant UserRepository
-participant PasswordHasher
-participant MFAService
-participant AuditLogger
-participant RecordController
-participant RecordService
-participant AccessControlService
-participant RecordRepository
-participant SensitiveDataMasker
-participant Tokenizer
+participant "Frontend" as FE
+participant "Auth Route" as Route
+participant "AuthService" as Auth
+participant "UserRepository" as Repo
+participant "MFAService" as MFA
+participant "MFAFactory" as Factory
+participant "MFAStrategy" as Strategy
+participant "AuditLogger" as Audit
 
-User -> Browser : Enter username and password
-Browser -> LoginController : POST /login
-LoginController -> AuthService : authenticate(username, password)
-AuthService -> UserRepository : find_by_username(username)
-UserRepository --> AuthService : User
-AuthService -> PasswordHasher : verify_password(password, stored_hash)
+User -> FE : enter username/password
+FE -> Route : POST /login
+Route -> Auth : login(username, password)
+Auth -> Repo : find user
+Repo --> Auth : user
 
-alt Invalid credentials
-  PasswordHasher --> AuthService : false
-  AuthService -> AuditLogger : log_event("login_failed", username, "failure")
-  AuthService --> LoginController : failure
-  LoginController --> Browser : show login error
-else Valid credentials
-  PasswordHasher --> AuthService : true
-  AuthService -> MFAService : send_mfa_code(user, "email")
-  AuthService -> AuditLogger : log_event("mfa_challenge_sent", username, "success")
-  AuthService --> LoginController : pending MFA
-  LoginController --> Browser : show MFA form
+Auth -> MFA : send MFA code
+MFA -> Factory : create strategy
+Factory --> MFA : strategy
+MFA -> Strategy : send code
 
-  User -> Browser : Enter MFA code
-  Browser -> LoginController : POST /verify-mfa
-  LoginController -> AuthService : verify_mfa(username, code)
-  AuthService -> UserRepository : find_by_username(username)
-  UserRepository --> AuthService : User
-  AuthService -> MFAService : verify_mfa_code(user, code, "email")
+Auth -> Audit : log login attempt
+Auth --> Route : MFA required
+Route --> FE : response
 
-  alt MFA failed
-    MFAService --> AuthService : false
-    AuthService -> AuditLogger : log_event("mfa_failed", username, "failure")
-    AuthService --> LoginController : failure
-    LoginController --> Browser : show MFA error
-  else MFA success
-    MFAService --> AuthService : true
-    AuthService -> AuditLogger : log_event("login_success", username, "success")
-    AuthService --> LoginController : success
-    LoginController --> Browser : show dashboard
+User -> FE : enter MFA code
+FE -> Route : POST /verify-mfa
+Route -> Auth : verify code
+Auth -> MFA : verify MFA
+MFA -> Strategy : verify code
+Strategy --> MFA : valid/invalid
+MFA --> Auth : result
+Auth -> Audit : log MFA result
+Auth --> Route : access granted
+Route --> FE : login complete
 
-    User -> Browser : Request protected record
-    Browser -> RecordController : GET /records/{id}
-    RecordController -> RecordService : get_masked_record(user, record_id)
-    RecordService -> AccessControlService : is_authorized(user, "view_masked_record")
-
-    alt Access denied
-      AccessControlService --> RecordService : false
-      RecordService -> AuditLogger : log_event("access_denied", username, "failure")
-      RecordService --> RecordController : failure
-      RecordController --> Browser : 403 Forbidden
-    else Access granted
-      AccessControlService --> RecordService : true
-      RecordService -> RecordRepository : find_by_id(record_id)
-      RecordRepository --> RecordService : Record
-      RecordService -> SensitiveDataMasker : mask_name(patient_name)
-      RecordService -> SensitiveDataMasker : mask_ssn(ssn)
-      RecordService -> Tokenizer : tokenize(ssn)
-      RecordService -> AuditLogger : log_event("record_access", username, "success")
-      RecordService --> RecordController : protected record
-      RecordController --> Browser : render protected record
-    end
-  end
-end
 @enduml

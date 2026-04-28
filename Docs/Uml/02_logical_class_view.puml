@@ -1,174 +1,49 @@
 @startuml
-skinparam classAttributeIconSize 0
-skinparam shadowing false
 
-title Logical View - Secure MFA Healthcare Access Portal
+class AuthController
+class RecordController
+class AdminController
 
-class User {
-  +user_id: int
-  +username: str
-  +password_hash: str
-  +email: str
-  +role: str
-}
+class AuthService
+class MFAService
+class RecordService
+class AccessControlService
+class AuditLogger
 
-class Role {
-  +role_name: str
-  +permissions: List[str]
-  +has_permission(permission): bool
-}
+class UserRepository
+class RecordRepository
+class AuditRepository
 
-class Permission {
-  +permission_name: str
-}
+class MFAFactory
+interface MFAStrategy
+class EmailOTPStrategy
+class TOTPStrategy
 
-class Record {
-  +record_id: int
-  +patient_name: str
-  +ssn: str
-  +medical_notes: str
-  +get_summary(): str
-}
+class User
+class MedicalRecord
+class SecurityEvent
 
-class Session {
-  +session_id: str
-  +username: str
-  +created_at: datetime
-  +expires_at: datetime
-  +is_valid(): bool
-}
-
-class SecurityEvent {
-  +event_id: int
-  +timestamp: datetime
-  +event_type: str
-  +username: str
-  +status: str
-  +to_dict(): dict
-}
-
-class LoginController {
-  +login_request(data): dict
-  +verify_mfa_request(data): dict
-  +logout_request(data): dict
-}
-
-class RecordController {
-  +view_record_request(record_id): dict
-}
-
-class AdminController {
-  +review_logs(): dict
-  +manage_users(): dict
-}
-
-class AuthService {
-  +authenticate(username, password): dict
-  +verify_mfa(username, code): dict
-}
-
-class MFAService {
-  +send_mfa_code(user, method): void
-  +verify_mfa_code(user, code, method): bool
-}
-
-class AccessControlService {
-  +is_authorized(user, action): bool
-}
-
-class RecordService {
-  +get_masked_record(user, record_id): dict
-}
-
-class AuditLogger {
-  +log_event(event_type, username, status): SecurityEvent
-  +get_all_events()
-}
-
-class UserRepository {
-  +find_by_username(username)
-}
-
-class RecordRepository {
-  +find_by_id(record_id)
-}
-
-class AuditRepository {
-  +save(event): void
-  +get_all()
-}
-
-class PasswordHasher {
-  +hash_password(password): str
-  +verify_password(password, stored_hash): bool
-}
-
-class SensitiveDataMasker {
-  +mask_ssn(ssn): str
-  +mask_name(name): str
-}
-
-class Tokenizer {
-  +tokenize(value): str
-}
-
-interface MFAStrategy {
-  +send_code(user): void
-  +verify_code(user, code): bool
-}
-
-class EmailOTPStrategy {
-  +send_code(user): void
-  +verify_code(user, code): bool
-}
-
-class TOTPStrategy {
-  +send_code(user): void
-  +verify_code(user, code): bool
-}
-
-class MFAFactory {
-  +create_strategy(method): MFAStrategy
-}
-
-LoginController --> AuthService
+AuthController --> AuthService
 RecordController --> RecordService
 AdminController --> AuditLogger
 
 AuthService --> UserRepository
-AuthService --> PasswordHasher
 AuthService --> MFAService
 AuthService --> AuditLogger
 
 MFAService --> MFAFactory
 MFAFactory --> MFAStrategy
-EmailOTPStrategy ..|> MFAStrategy
-TOTPStrategy ..|> MFAStrategy
+MFAStrategy <|.. EmailOTPStrategy
+MFAStrategy <|.. TOTPStrategy
 
 RecordService --> RecordRepository
 RecordService --> AccessControlService
 RecordService --> AuditLogger
-RecordService --> SensitiveDataMasker
-RecordService --> Tokenizer
 
 AuditLogger --> AuditRepository
-AuditLogger --> SecurityEvent
-
-User --> Role
-Role --> Permission
 
 UserRepository --> User
-RecordRepository --> Record
+RecordRepository --> MedicalRecord
+AuditRepository --> SecurityEvent
 
-note right of MFAStrategy
-Strategy Pattern
-end note
-
-note right of MFAFactory
-Factory Method Pattern
-end note
-
-note right of AuditLogger
-Observer-style event logging
-end note
 @enduml

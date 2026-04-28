@@ -1,45 +1,23 @@
-@startuml
-title 05 - Physical / Deployment View
+@startuml Physical Deployment
 
-skinparam componentStyle rectangle
-skinparam nodeStyle rectangle
-
-actor "User / Provider / Admin" as User
-
-node "User Device\n(Web Browser)" {
-  artifact "Static Frontend\nfrontend/index.html\nfrontend/style.css\nfrontend/script.js" as Frontend
+node "User Browser" {
+  artifact "CJ Secure Frontend"
 }
 
-node "GitHub Pages\nFrontend Hosting" {
-  artifact "CJ Secure Static Site" as GitHubPages
+node "GitHub Pages" {
+  artifact "Static HTML/CSS/JS"
 }
 
-node "Render\nBackend Hosting" {
-  node "Flask Web Service" {
-    artifact "apps/main.py" as Main
-    component "Flask API Routes\napps/routes/" as Routes
-    component "Controllers\napps/controllers/" as Controllers
-    component "Services\napps/services/" as Services
-    component "Security Layer\napps/security/" as Security
-    component "Repositories\napps/repositories/" as Repositories
-    component "Models\napps/models/" as Models
-  }
+node "Render or Local Docker" {
+  artifact "Flask Backend API"
 }
 
-node "Runtime Memory\nDemo Storage" {
-  database "In-Memory Repositories\nUsers, Records, Audit Events" as MemoryStore
+database "Data Files / Repository Layer" {
+  artifact "users / records / audit logs"
 }
 
-User --> Frontend : uses portal
-Frontend --> GitHubPages : loads static files
-Frontend --> Routes : HTTPS API requests
-
-Main --> Routes : registers blueprints
-Routes --> Controllers : delegates requests
-Controllers --> Services : coordinates logic
-Services --> Security : password hashing,\nMFA, masking, tokenization
-Services --> Repositories : reads/writes demo data
-Repositories --> Models : creates domain objects
-Repositories --> MemoryStore : stores demo state
+"User Browser" --> "GitHub Pages" : loads frontend
+"User Browser" --> "Render or Local Docker" : API requests
+"Render or Local Docker" --> "Data Files / Repository Layer" : read/write data
 
 @enduml
