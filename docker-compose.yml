@@ -5,7 +5,9 @@ services:
     ports:
       - "5000:5000"
     environment:
-      - MFA_METHOD=totp
+      - MFA_METHOD=${MFA_METHOD:-totp}
+      - SENDGRID_API_KEY=${SENDGRID_API_KEY}
+      - FROM_EMAIL=${FROM_EMAIL}
       - PYTHONPATH=/app
     volumes:
       - .:/app
