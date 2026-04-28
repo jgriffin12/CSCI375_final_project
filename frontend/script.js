@@ -50,7 +50,52 @@ function updateSession(authenticated, username = "", role = "") {
   userStatusEl.textContent = username || "None";
 }
 
+function resetDashboards() {
+  patientDashboard.classList.add("hidden");
+  providerDashboard.classList.add("hidden");
 
+  dashboardTitle.textContent = "Protected Record Access";
+  dashboardDescription.textContent =
+    "MFA is complete. Providers can retrieve masked and tokenized patient records.";
+
+  recordUsernameInput.value = "";
+  recordIdInput.value = "1";
+  recordButton.disabled = false;
+  recordAccessNote.textContent =
+    "Record access is assigned after MFA based on the authenticated user's role.";
+}
+
+function assignRecordAccess(username, role) {
+  recordUsernameInput.value = username;
+
+  patientDashboard.classList.add("hidden");
+  providerDashboard.classList.add("hidden");
+
+  if (role === "provider") {
+    dashboardTitle.textContent = "Provider Dashboard";
+    dashboardDescription.textContent =
+      "MFA is complete. Provider access is verified for assigned protected records.";
+
+    providerDashboard.classList.remove("hidden");
+
+    recordIdInput.value = "1";
+    recordButton.disabled = false;
+    recordAccessNote.textContent =
+      "Provider access granted. Assigned record ID is ready for retrieval.";
+    return;
+  }
+
+  dashboardTitle.textContent = "Patient Dashboard";
+  dashboardDescription.textContent =
+    "MFA is complete. Patient access is verified.";
+
+  patientDashboard.classList.remove("hidden");
+
+  recordIdInput.value = "2";
+  recordButton.disabled = true;
+  recordAccessNote.textContent =
+    "Patient login verified. Protected record retrieval is restricted to providers.";
+}
 
 async function handleResponse(response) {
   const data = await response.json();
@@ -223,7 +268,6 @@ async function verifyMfa() {
     selectedRole = data.role || selectedRole;
 
     updateSession(true, selectedUsername, selectedRole);
-
     assignRecordAccess(selectedUsername, selectedRole);
 
     showMessage("MFA verified. You are signed in.", "success");
@@ -234,11 +278,11 @@ async function verifyMfa() {
 }
 
 async function getRecord() {
-  const username = document.getElementById("record-username").value.trim();
-  const recordId = document.getElementById("record-id").value.trim();
+  const username = recordUsernameInput.value.trim();
+  const recordId = recordIdInput.value.trim();
 
   if (!username || !recordId) {
-    showMessage("Username and record ID are required.", "error");
+    showMessage("Username and assigned record ID are required.", "error");
     return;
   }
 
@@ -262,11 +306,8 @@ function signOut() {
   selectedRole = "";
 
   updateSession(false);
-  recordUsernameInput.value = "";
-  recordIdInput.value = "1";
-  recordButton.disabled = false;
-  recordAccessNote.textContent =
-  "Record access is assigned after MFA based on the authenticated user's role.";
+  resetDashboards();
+
   showMessage("Signed out. Enter an email to begin again.", "success");
   showPanel(emailPanel);
 }
@@ -288,5 +329,6 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("signout-btn").addEventListener("click", signOut);
 
   updateSession(false);
+  resetDashboards();
   showPanel(emailPanel);
 });

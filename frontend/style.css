@@ -257,22 +257,15 @@ button:hover {
   transform: translateY(-1px);
 }
 
-.secondary-btn {
-  margin-left: 0.75rem;
-  background: #6d5b83;
-}
-
-.access-note {
-  margin: -0.35rem 0 0.25rem;
-  color: #6b5c7f;
-  font-size: 0.95rem;
-  line-height: 1.35;
-}
-
 button:disabled {
   cursor: not-allowed;
   opacity: 0.55;
   transform: none;
+}
+
+.secondary-btn {
+  margin-left: 0.75rem;
+  background: #6d5b83;
 }
 
 .dashboard-card {
@@ -297,12 +290,6 @@ button:disabled {
   color: #6b5c7f;
   font-size: 0.95rem;
   line-height: 1.35;
-}
-
-button:disabled {
-  cursor: not-allowed;
-  opacity: 0.55;
-  transform: none;
 }
 
 .message {
