@@ -9,57 +9,85 @@ from apps.security.passHash import PasswordHasher
 
 
 class UserRepository:
-    """
-    Repository for user profiles.
-
-    Users are stored in a JSON text file so registered providers and patients
-    persist after the app restarts.
-    """
+    """Repository for user profiles stored in a JSON text file."""
 
     def __init__(self, file_path: str = "data/users.json") -> None:
-        """Create the repository and ensure the storage file exists."""
+        """Create the repository and ensure demo users exist."""
         self.file_path = Path(file_path)
         self.password_hasher = PasswordHasher()
         self.file_path.parent.mkdir(parents=True, exist_ok=True)
         self._ensure_seed_users()
 
-    def _ensure_seed_users(self) -> None:
-        """
-        Create the user file with demo users if it does not exist.
-
-        This keeps the original demo accounts working while also supporting
-        newly registered users.
-        """
-        if self.file_path.exists():
-            return
-
-        seed_users = [
+    def _seed_users(self) -> list[dict[str, Any]]:
+        """Return the default demo users."""
+        return [
             {
                 "user_id": 1,
                 "username": "alice",
                 "email": "demo@example.com",
                 "role": "provider",
-                "password_hash": self.password_hasher.hash_password(
-                    "password123"
-                ),
+                "password_hash": self.password_hasher.hash_password("password123"),
             },
             {
                 "user_id": 2,
                 "username": "bob",
                 "email": "bob@example.com",
                 "role": "patient",
-                "password_hash": self.password_hasher.hash_password(
-                    "password123"
-                ),
+                "password_hash": self.password_hasher.hash_password("password123"),
+            },
+            {
+                "user_id": 3,
+                "username": "admin",
+                "email": "admin@example.com",
+                "role": "admin",
+                "password_hash": self.password_hasher.hash_password("admin123"),
             },
         ]
 
-        self._write_users(seed_users)
+    def _ensure_seed_users(self) -> None:
+        """Create the default demo users only when the user file is missing or valid."""
+        if self.file_path.exists():
+            try:
+                with self.file_path.open("r", encoding="utf-8") as file:
+                    raw_data = json.load(file)
+            except json.JSONDecodeError:
+                return
+
+            if not isinstance(raw_data, list):
+                return
+
+            users = raw_data
+        else:
+            users = []
+
+        existing_usernames = {
+            str(user_data.get("username", "")).strip().lower()
+            for user_data in users
+        }
+
+        changed = False
+
+        for seed_user in self._seed_users():
+            username = str(seed_user["username"]).strip().lower()
+
+            if username not in existing_usernames:
+                users.append(seed_user)
+                existing_usernames.add(username)
+                changed = True
+
+        if changed or not self.file_path.exists():
+            self._write_users(users)
 
     def _read_users(self) -> list[dict[str, Any]]:
         """Read all users from the JSON text file."""
-        with self.file_path.open("r", encoding="utf-8") as file:
-            data = json.load(file)
+        if not self.file_path.exists():
+            return []
+
+        try:
+            with self.file_path.open("r", encoding="utf-8") as file:
+                data = json.load(file)
+        except json.JSONDecodeError:
+            return []
 
         if not isinstance(data, list):
             return []
@@ -84,8 +112,8 @@ class UserRepository:
             user_id=int(data["user_id"]),
             username=str(data["username"]),
             password_hash=str(data["password_hash"]),
-            role=str(data["role"]),
             email=str(data["email"]),
+            role=str(data["role"]),
         )
 
     def find_by_username(self, username: str) -> User | None:
@@ -94,6 +122,7 @@ class UserRepository:
 
         for user_data in self._read_users():
             stored_username = str(user_data["username"]).strip().lower()
+
             if stored_username == normalized_username:
                 return self._to_user(user_data)
 
@@ -105,6 +134,7 @@ class UserRepository:
 
         for user_data in self._read_users():
             stored_email = str(user_data["email"]).strip().lower()
+
             if stored_email == normalized_email:
                 return self._to_user(user_data)
 
@@ -117,11 +147,7 @@ class UserRepository:
         role: str,
         email: str,
     ) -> User:
-        """
-        Create and persist a new user profile.
-
-        Duplicate usernames or emails are rejected.
-        """
+        """Create and persist a new user profile."""
         if self.find_by_username(username) is not None:
             raise ValueError("Username already exists.")
 
@@ -134,8 +160,8 @@ class UserRepository:
             user_id=self._next_user_id(users),
             username=username.strip(),
             password_hash=self.password_hasher.hash_password(password),
-            role=role.strip().lower(),
             email=email.strip().lower(),
+            role=role.strip().lower(),
         )
 
         users.append(
@@ -147,6 +173,7 @@ class UserRepository:
                 "password_hash": user.password_hash,
             }
         )
+
         self._write_users(users)
 
         return user

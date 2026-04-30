@@ -142,6 +142,7 @@
             <option value="">Select role</option>
             <option value="provider">Provider</option>
             <option value="patient">Patient</option>
+            <option value="admin">Admin</option>
           </select>
         </label>
 
@@ -181,27 +182,50 @@
       </section>
 
       <section id="protected-panel" class="form-panel hidden">
-        <h2 id="dashboard-title">Protected Record Access</h2>
+        <h2 id="dashboard-title">Secure Dashboard</h2>
 
         <p id="dashboard-description">
-          MFA is complete. Providers can retrieve masked and tokenized patient
-          records.
+          MFA is complete. Access is assigned based on the authenticated role.
         </p>
 
         <section id="patient-dashboard" class="dashboard-card hidden">
           <h3>Patient Dashboard</h3>
           <p>
-            Your identity has been verified. Patients can view their session
-            status, but protected record retrieval is restricted to providers.
+            Your identity has been verified. There are no appointments or
+            records available to display at this time.
+          </p>
+          <p>
+            No appointments, please book one by calling 12345678910 to schedule.
           </p>
         </section>
 
         <section id="provider-dashboard" class="dashboard-card hidden">
           <h3>Provider Dashboard</h3>
           <p>
-            Provider access is verified. You can retrieve assigned masked and
-            tokenized patient records.
+            Provider access is verified. You can retrieve the assigned masked
+            and tokenized patient record for Jane Doe.
           </p>
+          <p>
+            Assigned patient: Jane Doe. Medical note: asthma.
+          </p>
+        </section>
+
+        <section id="admin-dashboard" class="dashboard-card hidden">
+          <h3>Admin Dashboard</h3>
+          <p>
+            Admin access is verified. Admin users can review security audit
+            logs for login attempts, MFA activity, protected record access,
+            denied access, and audit review events.
+          </p>
+
+          <label>
+            Admin Username
+            <input id="audit-username" type="text" value="admin" readonly />
+          </label>
+
+          <button id="audit-btn" type="button">
+            View Audit Logs
+          </button>
         </section>
 
         <label>

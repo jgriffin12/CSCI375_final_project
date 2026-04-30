@@ -42,6 +42,9 @@
             <li>
                     <a class="function" href="#get_audit_logs">get_audit_logs</a>
             </li>
+            <li>
+                    <a class="function" href="#get_audit_log_text">get_audit_log_text</a>
+            </li>
     </ul>
 
 
@@ -58,43 +61,55 @@
                     <h1 class="modulename">
 <a href="./../../apps.html">apps</a><wbr>.<a href="./../routes.html">routes</a><wbr>.adminroutes    </h1>
 
-                
+                        <div class="docstring"><p>Administrative route definitions.</p>
+</div>
+
                         <input id="mod-adminroutes-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
 
                         <label class="view-source-button" for="mod-adminroutes-view-source"><span>View Source</span></label>
 
-                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos"> 1</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">Blueprint</span><span class="p">,</span> <span class="n">jsonify</span><span class="p">,</span> <span class="n">request</span>
-</span><span id="L-2"><a href="#L-2"><span class="linenos"> 2</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">apps.controllers.adminController</span><span class="w"> </span><span class="kn">import</span> <span class="n">AdminController</span>
-</span><span id="L-3"><a href="#L-3"><span class="linenos"> 3</span></a>
-</span><span id="L-4"><a href="#L-4"><span class="linenos"> 4</span></a><span class="c1"># Blueprint for administrative routes such as user management or log review.</span>
-</span><span id="L-5"><a href="#L-5"><span class="linenos"> 5</span></a><span class="n">admin_bp</span> <span class="o">=</span> <span class="n">Blueprint</span><span class="p">(</span><span class="s2">&quot;admin&quot;</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">)</span>
+                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos"> 1</span></a><span class="sd">&quot;&quot;&quot;Administrative route definitions.&quot;&quot;&quot;</span>
+</span><span id="L-2"><a href="#L-2"><span class="linenos"> 2</span></a>
+</span><span id="L-3"><a href="#L-3"><span class="linenos"> 3</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">Blueprint</span><span class="p">,</span> <span class="n">jsonify</span><span class="p">,</span> <span class="n">request</span>
+</span><span id="L-4"><a href="#L-4"><span class="linenos"> 4</span></a>
+</span><span id="L-5"><a href="#L-5"><span class="linenos"> 5</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">apps.controllers.adminController</span><span class="w"> </span><span class="kn">import</span> <span class="n">AdminController</span>
 </span><span id="L-6"><a href="#L-6"><span class="linenos"> 6</span></a>
-</span><span id="L-7"><a href="#L-7"><span class="linenos"> 7</span></a><span class="n">admin_controller</span> <span class="o">=</span> <span class="n">AdminController</span><span class="p">()</span>
-</span><span id="L-8"><a href="#L-8"><span class="linenos"> 8</span></a>
+</span><span id="L-7"><a href="#L-7"><span class="linenos"> 7</span></a><span class="n">admin_bp</span> <span class="o">=</span> <span class="n">Blueprint</span><span class="p">(</span><span class="s2">&quot;admin&quot;</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">)</span>
+</span><span id="L-8"><a href="#L-8"><span class="linenos"> 8</span></a><span class="n">admin_controller</span> <span class="o">=</span> <span class="n">AdminController</span><span class="p">()</span>
 </span><span id="L-9"><a href="#L-9"><span class="linenos"> 9</span></a>
-</span><span id="L-10"><a href="#L-10"><span class="linenos">10</span></a><span class="nd">@admin_bp</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/admin/health&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;GET&quot;</span><span class="p">])</span>
-</span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a><span class="k">def</span><span class="w"> </span><span class="nf">admin_health</span><span class="p">():</span>
-</span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a><span class="sd">    Simple placeholder route to confirm that the admin blueprint is active.</span>
-</span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a>
-</span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a><span class="sd">    This is useful early in development to verify that blueprint</span>
-</span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a><span class="sd">    registration works.</span>
-</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a>    <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;admin route ready&quot;</span><span class="p">})</span>
-</span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a>
-</span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a>
-</span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a><span class="nd">@admin_bp</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/admin/audit&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;GET&quot;</span><span class="p">])</span>
-</span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a><span class="k">def</span><span class="w"> </span><span class="nf">get_audit_logs</span><span class="p">():</span>
-</span><span id="L-23"><a href="#L-23"><span class="linenos">23</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="L-24"><a href="#L-24"><span class="linenos">24</span></a><span class="sd">    Return audit logs for authorized admin users.</span>
-</span><span id="L-25"><a href="#L-25"><span class="linenos">25</span></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="L-26"><a href="#L-26"><span class="linenos">26</span></a>    <span class="n">username</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;username&quot;</span><span class="p">)</span>
+</span><span id="L-10"><a href="#L-10"><span class="linenos">10</span></a>
+</span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a><span class="nd">@admin_bp</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/admin/health&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;GET&quot;</span><span class="p">])</span>
+</span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a><span class="k">def</span><span class="w"> </span><span class="nf">admin_health</span><span class="p">():</span>
+</span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Confirm that the admin blueprint is active.&quot;&quot;&quot;</span>
+</span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a>    <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;admin route ready&quot;</span><span class="p">})</span>
+</span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a>
+</span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a>
+</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a><span class="nd">@admin_bp</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/admin/audit&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;GET&quot;</span><span class="p">])</span>
+</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a><span class="k">def</span><span class="w"> </span><span class="nf">get_audit_logs</span><span class="p">():</span>
+</span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Return structured audit logs for authorized admin users.&quot;&quot;&quot;</span>
+</span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a>    <span class="n">username</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;username&quot;</span><span class="p">)</span>
+</span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a>
+</span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">username</span><span class="p">:</span>
+</span><span id="L-23"><a href="#L-23"><span class="linenos">23</span></a>        <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;failure&quot;</span><span class="p">,</span> <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;Username required&quot;</span><span class="p">}),</span> <span class="mi">400</span>
+</span><span id="L-24"><a href="#L-24"><span class="linenos">24</span></a>
+</span><span id="L-25"><a href="#L-25"><span class="linenos">25</span></a>    <span class="n">result</span> <span class="o">=</span> <span class="n">admin_controller</span><span class="o">.</span><span class="n">get_audit_logs</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
+</span><span id="L-26"><a href="#L-26"><span class="linenos">26</span></a>    <span class="n">status_code</span> <span class="o">=</span> <span class="mi">400</span> <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;status&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;failure&quot;</span> <span class="k">else</span> <span class="mi">200</span>
 </span><span id="L-27"><a href="#L-27"><span class="linenos">27</span></a>
-</span><span id="L-28"><a href="#L-28"><span class="linenos">28</span></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">username</span><span class="p">:</span>
-</span><span id="L-29"><a href="#L-29"><span class="linenos">29</span></a>        <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span>
-</span><span id="L-30"><a href="#L-30"><span class="linenos">30</span></a>            <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;failure&quot;</span><span class="p">,</span> <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;Username required&quot;</span><span class="p">}),</span> <span class="mi">400</span>
-</span><span id="L-31"><a href="#L-31"><span class="linenos">31</span></a>
-</span><span id="L-32"><a href="#L-32"><span class="linenos">32</span></a>    <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">admin_controller</span><span class="o">.</span><span class="n">get_audit_logs</span><span class="p">(</span><span class="n">username</span><span class="p">))</span>
+</span><span id="L-28"><a href="#L-28"><span class="linenos">28</span></a>    <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">result</span><span class="p">),</span> <span class="n">status_code</span>
+</span><span id="L-29"><a href="#L-29"><span class="linenos">29</span></a>
+</span><span id="L-30"><a href="#L-30"><span class="linenos">30</span></a>
+</span><span id="L-31"><a href="#L-31"><span class="linenos">31</span></a><span class="nd">@admin_bp</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/admin/audit-text&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;GET&quot;</span><span class="p">])</span>
+</span><span id="L-32"><a href="#L-32"><span class="linenos">32</span></a><span class="k">def</span><span class="w"> </span><span class="nf">get_audit_log_text</span><span class="p">():</span>
+</span><span id="L-33"><a href="#L-33"><span class="linenos">33</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Return readable audit log text for authorized admin users.&quot;&quot;&quot;</span>
+</span><span id="L-34"><a href="#L-34"><span class="linenos">34</span></a>    <span class="n">username</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;username&quot;</span><span class="p">)</span>
+</span><span id="L-35"><a href="#L-35"><span class="linenos">35</span></a>
+</span><span id="L-36"><a href="#L-36"><span class="linenos">36</span></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">username</span><span class="p">:</span>
+</span><span id="L-37"><a href="#L-37"><span class="linenos">37</span></a>        <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;failure&quot;</span><span class="p">,</span> <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;Username required&quot;</span><span class="p">}),</span> <span class="mi">400</span>
+</span><span id="L-38"><a href="#L-38"><span class="linenos">38</span></a>
+</span><span id="L-39"><a href="#L-39"><span class="linenos">39</span></a>    <span class="n">result</span> <span class="o">=</span> <span class="n">admin_controller</span><span class="o">.</span><span class="n">get_audit_log_text</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
+</span><span id="L-40"><a href="#L-40"><span class="linenos">40</span></a>    <span class="n">status_code</span> <span class="o">=</span> <span class="mi">400</span> <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;status&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;failure&quot;</span> <span class="k">else</span> <span class="mi">200</span>
+</span><span id="L-41"><a href="#L-41"><span class="linenos">41</span></a>
+</span><span id="L-42"><a href="#L-42"><span class="linenos">42</span></a>    <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">result</span><span class="p">),</span> <span class="n">status_code</span>
 </span></pre></div>
 
 
@@ -135,22 +150,14 @@
 
     </div>
     <a class="headerlink" href="#admin_health"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="admin_health-11"><a href="#admin_health-11"><span class="linenos">11</span></a><span class="nd">@admin_bp</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/admin/health&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;GET&quot;</span><span class="p">])</span>
-</span><span id="admin_health-12"><a href="#admin_health-12"><span class="linenos">12</span></a><span class="k">def</span><span class="w"> </span><span class="nf">admin_health</span><span class="p">():</span>
-</span><span id="admin_health-13"><a href="#admin_health-13"><span class="linenos">13</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="admin_health-14"><a href="#admin_health-14"><span class="linenos">14</span></a><span class="sd">    Simple placeholder route to confirm that the admin blueprint is active.</span>
-</span><span id="admin_health-15"><a href="#admin_health-15"><span class="linenos">15</span></a>
-</span><span id="admin_health-16"><a href="#admin_health-16"><span class="linenos">16</span></a><span class="sd">    This is useful early in development to verify that blueprint</span>
-</span><span id="admin_health-17"><a href="#admin_health-17"><span class="linenos">17</span></a><span class="sd">    registration works.</span>
-</span><span id="admin_health-18"><a href="#admin_health-18"><span class="linenos">18</span></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="admin_health-19"><a href="#admin_health-19"><span class="linenos">19</span></a>    <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;admin route ready&quot;</span><span class="p">})</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="admin_health-12"><a href="#admin_health-12"><span class="linenos">12</span></a><span class="nd">@admin_bp</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/admin/health&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;GET&quot;</span><span class="p">])</span>
+</span><span id="admin_health-13"><a href="#admin_health-13"><span class="linenos">13</span></a><span class="k">def</span><span class="w"> </span><span class="nf">admin_health</span><span class="p">():</span>
+</span><span id="admin_health-14"><a href="#admin_health-14"><span class="linenos">14</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Confirm that the admin blueprint is active.&quot;&quot;&quot;</span>
+</span><span id="admin_health-15"><a href="#admin_health-15"><span class="linenos">15</span></a>    <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;admin route ready&quot;</span><span class="p">})</span>
 </span></pre></div>
 
 
-            <div class="docstring"><p>Simple placeholder route to confirm that the admin blueprint is active.</p>
-
-<p>This is useful early in development to verify that blueprint
-registration works.</p>
+            <div class="docstring"><p>Confirm that the admin blueprint is active.</p>
 </div>
 
 
@@ -167,22 +174,54 @@ registration works.</p>
 
     </div>
     <a class="headerlink" href="#get_audit_logs"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="get_audit_logs-22"><a href="#get_audit_logs-22"><span class="linenos">22</span></a><span class="nd">@admin_bp</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/admin/audit&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;GET&quot;</span><span class="p">])</span>
-</span><span id="get_audit_logs-23"><a href="#get_audit_logs-23"><span class="linenos">23</span></a><span class="k">def</span><span class="w"> </span><span class="nf">get_audit_logs</span><span class="p">():</span>
-</span><span id="get_audit_logs-24"><a href="#get_audit_logs-24"><span class="linenos">24</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="get_audit_logs-25"><a href="#get_audit_logs-25"><span class="linenos">25</span></a><span class="sd">    Return audit logs for authorized admin users.</span>
-</span><span id="get_audit_logs-26"><a href="#get_audit_logs-26"><span class="linenos">26</span></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="get_audit_logs-27"><a href="#get_audit_logs-27"><span class="linenos">27</span></a>    <span class="n">username</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;username&quot;</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="get_audit_logs-18"><a href="#get_audit_logs-18"><span class="linenos">18</span></a><span class="nd">@admin_bp</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/admin/audit&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;GET&quot;</span><span class="p">])</span>
+</span><span id="get_audit_logs-19"><a href="#get_audit_logs-19"><span class="linenos">19</span></a><span class="k">def</span><span class="w"> </span><span class="nf">get_audit_logs</span><span class="p">():</span>
+</span><span id="get_audit_logs-20"><a href="#get_audit_logs-20"><span class="linenos">20</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Return structured audit logs for authorized admin users.&quot;&quot;&quot;</span>
+</span><span id="get_audit_logs-21"><a href="#get_audit_logs-21"><span class="linenos">21</span></a>    <span class="n">username</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;username&quot;</span><span class="p">)</span>
+</span><span id="get_audit_logs-22"><a href="#get_audit_logs-22"><span class="linenos">22</span></a>
+</span><span id="get_audit_logs-23"><a href="#get_audit_logs-23"><span class="linenos">23</span></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">username</span><span class="p">:</span>
+</span><span id="get_audit_logs-24"><a href="#get_audit_logs-24"><span class="linenos">24</span></a>        <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;failure&quot;</span><span class="p">,</span> <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;Username required&quot;</span><span class="p">}),</span> <span class="mi">400</span>
+</span><span id="get_audit_logs-25"><a href="#get_audit_logs-25"><span class="linenos">25</span></a>
+</span><span id="get_audit_logs-26"><a href="#get_audit_logs-26"><span class="linenos">26</span></a>    <span class="n">result</span> <span class="o">=</span> <span class="n">admin_controller</span><span class="o">.</span><span class="n">get_audit_logs</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
+</span><span id="get_audit_logs-27"><a href="#get_audit_logs-27"><span class="linenos">27</span></a>    <span class="n">status_code</span> <span class="o">=</span> <span class="mi">400</span> <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;status&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;failure&quot;</span> <span class="k">else</span> <span class="mi">200</span>
 </span><span id="get_audit_logs-28"><a href="#get_audit_logs-28"><span class="linenos">28</span></a>
-</span><span id="get_audit_logs-29"><a href="#get_audit_logs-29"><span class="linenos">29</span></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">username</span><span class="p">:</span>
-</span><span id="get_audit_logs-30"><a href="#get_audit_logs-30"><span class="linenos">30</span></a>        <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span>
-</span><span id="get_audit_logs-31"><a href="#get_audit_logs-31"><span class="linenos">31</span></a>            <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;failure&quot;</span><span class="p">,</span> <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;Username required&quot;</span><span class="p">}),</span> <span class="mi">400</span>
-</span><span id="get_audit_logs-32"><a href="#get_audit_logs-32"><span class="linenos">32</span></a>
-</span><span id="get_audit_logs-33"><a href="#get_audit_logs-33"><span class="linenos">33</span></a>    <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">admin_controller</span><span class="o">.</span><span class="n">get_audit_logs</span><span class="p">(</span><span class="n">username</span><span class="p">))</span>
+</span><span id="get_audit_logs-29"><a href="#get_audit_logs-29"><span class="linenos">29</span></a>    <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">result</span><span class="p">),</span> <span class="n">status_code</span>
 </span></pre></div>
 
 
-            <div class="docstring"><p>Return audit logs for authorized admin users.</p>
+            <div class="docstring"><p>Return structured audit logs for authorized admin users.</p>
+</div>
+
+
+                </section>
+                <section id="get_audit_log_text">
+                            <input id="get_audit_log_text-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+<div class="attr function">
+                    <div class="decorator decorator-admin_bp.route">@admin_bp.route(&#39;/admin/audit-text&#39;, methods=[&#39;GET&#39;])</div>
+
+        <span class="def">def</span>
+        <span class="name">get_audit_log_text</span><span class="signature pdoc-code condensed">(<span class="return-annotation">):</span></span>
+
+                <label class="view-source-button" for="get_audit_log_text-view-source"><span>View Source</span></label>
+
+    </div>
+    <a class="headerlink" href="#get_audit_log_text"></a>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="get_audit_log_text-32"><a href="#get_audit_log_text-32"><span class="linenos">32</span></a><span class="nd">@admin_bp</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/admin/audit-text&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;GET&quot;</span><span class="p">])</span>
+</span><span id="get_audit_log_text-33"><a href="#get_audit_log_text-33"><span class="linenos">33</span></a><span class="k">def</span><span class="w"> </span><span class="nf">get_audit_log_text</span><span class="p">():</span>
+</span><span id="get_audit_log_text-34"><a href="#get_audit_log_text-34"><span class="linenos">34</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Return readable audit log text for authorized admin users.&quot;&quot;&quot;</span>
+</span><span id="get_audit_log_text-35"><a href="#get_audit_log_text-35"><span class="linenos">35</span></a>    <span class="n">username</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;username&quot;</span><span class="p">)</span>
+</span><span id="get_audit_log_text-36"><a href="#get_audit_log_text-36"><span class="linenos">36</span></a>
+</span><span id="get_audit_log_text-37"><a href="#get_audit_log_text-37"><span class="linenos">37</span></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">username</span><span class="p">:</span>
+</span><span id="get_audit_log_text-38"><a href="#get_audit_log_text-38"><span class="linenos">38</span></a>        <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;failure&quot;</span><span class="p">,</span> <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;Username required&quot;</span><span class="p">}),</span> <span class="mi">400</span>
+</span><span id="get_audit_log_text-39"><a href="#get_audit_log_text-39"><span class="linenos">39</span></a>
+</span><span id="get_audit_log_text-40"><a href="#get_audit_log_text-40"><span class="linenos">40</span></a>    <span class="n">result</span> <span class="o">=</span> <span class="n">admin_controller</span><span class="o">.</span><span class="n">get_audit_log_text</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
+</span><span id="get_audit_log_text-41"><a href="#get_audit_log_text-41"><span class="linenos">41</span></a>    <span class="n">status_code</span> <span class="o">=</span> <span class="mi">400</span> <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;status&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;failure&quot;</span> <span class="k">else</span> <span class="mi">200</span>
+</span><span id="get_audit_log_text-42"><a href="#get_audit_log_text-42"><span class="linenos">42</span></a>
+</span><span id="get_audit_log_text-43"><a href="#get_audit_log_text-43"><span class="linenos">43</span></a>    <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">result</span><span class="p">),</span> <span class="n">status_code</span>
+</span></pre></div>
+
+
+            <div class="docstring"><p>Return readable audit log text for authorized admin users.</p>
 </div>
 
 

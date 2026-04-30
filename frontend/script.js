@@ -21,11 +21,14 @@ const dashboardTitle = document.getElementById("dashboard-title");
 const dashboardDescription = document.getElementById("dashboard-description");
 const patientDashboard = document.getElementById("patient-dashboard");
 const providerDashboard = document.getElementById("provider-dashboard");
+const adminDashboard = document.getElementById("admin-dashboard");
 
 const recordUsernameInput = document.getElementById("record-username");
 const recordIdInput = document.getElementById("record-id");
 const recordButton = document.getElementById("record-btn");
 const recordAccessNote = document.getElementById("record-access-note");
+
+const auditUsernameInput = document.getElementById("audit-username");
 
 function showPanel(panel) {
   [emailPanel, loginPanel, registerPanel, mfaPanel, protectedPanel].forEach(
@@ -44,6 +47,10 @@ function showOutput(data) {
   outputEl.textContent = JSON.stringify(data, null, 2);
 }
 
+function showTextOutput(text) {
+  outputEl.textContent = text;
+}
+
 function updateSession(authenticated, username = "", role = "") {
   authStatusEl.textContent = authenticated ? "Authenticated" : "Not signed in";
   roleStatusEl.textContent = role || "None selected";
@@ -53,16 +60,26 @@ function updateSession(authenticated, username = "", role = "") {
 function resetDashboards() {
   patientDashboard.classList.add("hidden");
   providerDashboard.classList.add("hidden");
+  adminDashboard.classList.add("hidden");
 
   dashboardTitle.textContent = "Protected Record Access";
   dashboardDescription.textContent =
-    "MFA is complete. Providers can retrieve masked and tokenized patient records.";
+    "MFA is complete. Access is assigned based on the authenticated role.";
 
   recordUsernameInput.value = "";
   recordIdInput.value = "1";
+
   recordButton.disabled = false;
+  recordButton.classList.remove("hidden");
+
+  if (auditUsernameInput) {
+    auditUsernameInput.value = "admin";
+  }
+
   recordAccessNote.textContent =
     "Record access is assigned after MFA based on the authenticated user's role.";
+
+  outputEl.textContent = "Responses will appear here.";
 }
 
 function assignRecordAccess(username, role) {
@@ -70,6 +87,9 @@ function assignRecordAccess(username, role) {
 
   patientDashboard.classList.add("hidden");
   providerDashboard.classList.add("hidden");
+  adminDashboard.classList.add("hidden");
+
+  recordButton.classList.remove("hidden");
 
   if (role === "provider") {
     dashboardTitle.textContent = "Provider Dashboard";
@@ -81,7 +101,43 @@ function assignRecordAccess(username, role) {
     recordIdInput.value = "1";
     recordButton.disabled = false;
     recordAccessNote.textContent =
-      "Provider access granted. Assigned record ID is ready for retrieval.";
+      "Provider access granted. Assigned record ID 1 is Jane Doe's asthma record.";
+
+    showOutput({
+      role: "provider",
+      access: "assigned_record_available",
+      assigned_record_id: 1,
+      patient: "Jane Doe",
+      note: "Click Retrieve Protected Record to view the masked and tokenized record.",
+    });
+
+    return;
+  }
+
+  if (role === "admin") {
+    dashboardTitle.textContent = "Admin Dashboard";
+    dashboardDescription.textContent =
+      "MFA is complete. Admin access is verified for audit log review only.";
+
+    adminDashboard.classList.remove("hidden");
+
+    if (auditUsernameInput) {
+      auditUsernameInput.value = username;
+    }
+
+    recordIdInput.value = "1";
+    recordButton.disabled = true;
+    recordButton.classList.add("hidden");
+
+    recordAccessNote.textContent =
+      "Admin access is limited to audit logs. Admin users cannot retrieve patient records from this screen.";
+
+    showOutput({
+      role: "admin",
+      access: "audit_logs_only",
+      note: "Click View Audit Logs to review security events.",
+    });
+
     return;
   }
 
@@ -91,10 +147,19 @@ function assignRecordAccess(username, role) {
 
   patientDashboard.classList.remove("hidden");
 
-  recordIdInput.value = "2";
+  recordIdInput.value = "";
   recordButton.disabled = true;
+  recordButton.classList.add("hidden");
+
   recordAccessNote.textContent =
-    "Patient login verified. Protected record retrieval is restricted to providers.";
+    "No appointments, please book one by calling 12345678910 to schedule.";
+
+  showOutput({
+    role: "patient",
+    access: "patient_record_view",
+    records: [],
+    message: "No appointments, please book one by calling 12345678910 to schedule.",
+  });
 }
 
 async function handleResponse(response) {
@@ -281,6 +346,15 @@ async function getRecord() {
   const username = recordUsernameInput.value.trim();
   const recordId = recordIdInput.value.trim();
 
+  if (selectedRole !== "provider") {
+    showMessage("Only providers can retrieve Jane Doe's protected record.", "error");
+    showOutput({
+      status: "failure",
+      message: "Only providers can retrieve Jane Doe's protected record.",
+    });
+    return;
+  }
+
   if (!username || !recordId) {
     showMessage("Username and assigned record ID are required.", "error");
     return;
@@ -294,7 +368,43 @@ async function getRecord() {
     const data = await handleResponse(response);
     showOutput(data);
 
-    showMessage("Protected record retrieved.", "success");
+    showMessage("Jane Doe's protected asthma record retrieved.", "success");
+  } catch (error) {
+    showMessage(error.message, "error");
+  }
+}
+
+async function getAuditLogs() {
+  const username = auditUsernameInput.value.trim();
+
+  if (selectedRole !== "admin") {
+    showMessage("Only admins can view audit logs.", "error");
+    showOutput({
+      status: "failure",
+      message: "Only admins can view audit logs.",
+    });
+    return;
+  }
+
+  if (!username) {
+    showMessage("Admin username is required to view audit logs.", "error");
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      `${API_BASE}/admin/audit-text?username=${encodeURIComponent(username)}`
+    );
+
+    const data = await handleResponse(response);
+
+    if (data.audit_text) {
+      showTextOutput(data.audit_text);
+    } else {
+      showOutput(data);
+    }
+
+    showMessage("Audit logs retrieved.", "success");
   } catch (error) {
     showMessage(error.message, "error");
   }
@@ -326,6 +436,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("login-btn").addEventListener("click", loginUser);
   document.getElementById("mfa-btn").addEventListener("click", verifyMfa);
   document.getElementById("record-btn").addEventListener("click", getRecord);
+  document.getElementById("audit-btn").addEventListener("click", getAuditLogs);
   document.getElementById("signout-btn").addEventListener("click", signOut);
 
   updateSession(false);

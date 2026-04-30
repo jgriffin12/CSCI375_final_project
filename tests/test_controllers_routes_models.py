@@ -224,7 +224,7 @@ def test_record_controller_user_not_found():
 
 
 def test_record_controller_success():
-    user = SimpleNamespace(username="alice", role="admin")
+    user = SimpleNamespace(username="alice", role="provider")
     controller = RecordController()
     controller.user_repository = FakeUserRepository(user=user)
     controller.record_service = FakeRecordService()

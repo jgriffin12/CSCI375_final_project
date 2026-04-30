@@ -50,3 +50,4 @@ npm-debug.log*
 !.env.example
 # Local demo user storage
 data/users.json
+data/audit_log.txt

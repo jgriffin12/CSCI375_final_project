@@ -1,49 +1,43 @@
+"""Singleton audit logging service."""
+
 from datetime import datetime, timezone
+
 from apps.models.secEvent import SecurityEvent
 from apps.repositories.auditRepo import AuditRepository
 
 
 class AuditLogger:
-    """
-    Singleton service responsible for recording security-related actions.
-
-    This ensures the application uses one shared audit logger so audit
-    events are collected in a single place across the system.
-    """
+    """Centralized singleton service for recording security events."""
 
     _instance = None
     _initialized = False
 
-    def __new__(cls):
-        """
-        Ensure only one AuditLogger instance is ever created.
-        """
+    def __new__(cls) -> "AuditLogger":
+        """Create or return the shared AuditLogger instance."""
         if cls._instance is None:
             cls._instance = super(AuditLogger, cls).__new__(cls)
         return cls._instance
 
     def __init__(self) -> None:
-        """
-        Initialize the singleton only once.
-
-        Without this guard, every call to AuditLogger() would reset the
-        repository and event counter.
-        """
+        """Initialize the audit logger once."""
         if self.__class__._initialized:
             return
 
         self.audit_repository = AuditRepository()
-        self.next_event_id = 1
+        existing_events = self.audit_repository.get_all()
+        self.next_event_id = (
+            max((event.event_id for event in existing_events), default=0) + 1
+        )
+
         self.__class__._initialized = True
 
     def log_event(
-            self,
-            event_type: str,
-            username: str,
-            status: str) -> SecurityEvent:
-        """
-        Create and store a new security event.
-        """
+        self,
+        event_type: str,
+        username: str,
+        status: str,
+    ) -> SecurityEvent:
+        """Create, store, and return a new security event."""
         event = SecurityEvent(
             event_id=self.next_event_id,
             timestamp=datetime.now(timezone.utc),
@@ -51,12 +45,16 @@ class AuditLogger:
             username=username,
             status=status,
         )
+
         self.audit_repository.save(event)
         self.next_event_id += 1
+
         return event
 
-    def get_all_events(self):
-        """
-        Return every stored audit event.
-        """
+    def get_all_events(self) -> list[SecurityEvent]:
+        """Return every stored audit event."""
         return self.audit_repository.get_all()
+
+    def get_log_text(self) -> str:
+        """Return a readable text version of the audit log."""
+        return self.audit_repository.get_log_text()

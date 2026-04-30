@@ -61,9 +61,10 @@ def test_security_event_optional_methods():
         assert event.to_dict()["event_type"] == "login_success"
 
 
-def test_audit_repository_get_all_events():
+def test_audit_repository_get_all_events(tmp_path):
     """AuditRepository should return saved events."""
-    repository = AuditRepository()
+    log_file = tmp_path / "audit_log.txt"
+    repository = AuditRepository(file_path=str(log_file))
 
     event = SecurityEvent(
         event_id=1,
@@ -82,6 +83,8 @@ def test_audit_repository_get_all_events():
 
     if hasattr(repository, "get_all_events"):
         events = repository.get_all_events()
+    elif hasattr(repository, "get_all"):
+        events = repository.get_all()
     else:
         events = repository.events
 
@@ -89,15 +92,23 @@ def test_audit_repository_get_all_events():
     assert events[0].event_type == "login_success"
 
 
-def test_audit_logger_get_all_events():
+def test_audit_logger_get_all_events(tmp_path, monkeypatch):
     """AuditLogger should return logged events."""
-    logger = AuditLogger()
+    monkeypatch.chdir(tmp_path)
 
+    AuditLogger._instance = None
+    AuditLogger._initialized = False
+
+    logger = AuditLogger()
     logger.log_event("login_success", "alice", "success")
+
     events = logger.get_all_events()
 
     assert len(events) == 1
     assert events[0].event_type == "login_success"
+
+    AuditLogger._instance = None
+    AuditLogger._initialized = False
 
 
 def test_user_repository_duplicate_create_user(tmp_path, monkeypatch):
@@ -330,8 +341,6 @@ def test_user_repository_read_users_returns_empty_for_invalid_json_shape(
     tmp_path,
 ):
     """_read_users should return an empty list if JSON is not a list."""
-    from apps.repositories.userRepo import UserRepository
-
     users_file = tmp_path / "users.json"
     users_file.write_text('{"bad": "shape"}', encoding="utf-8")
 

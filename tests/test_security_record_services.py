@@ -13,7 +13,7 @@ from apps.services.mfaSvc import MFAService
 from apps.services.recordSvc import RecordService
 
 
-def make_user(role: str = "admin") -> User:
+def make_user(role: str = "provider") -> User:
     """Create a user object for service tests."""
     return User(
         user_id=1,
@@ -71,7 +71,7 @@ def test_record_repository_finds_existing_record():
 
     assert record is not None
     assert record.record_id == 1
-    assert record.patient_name == "Alice Anderson"
+    assert record.patient_name == "Jane Doe"
 
 
 def test_record_repository_returns_none_for_missing_record():
@@ -81,12 +81,31 @@ def test_record_repository_returns_none_for_missing_record():
     assert repository.find_by_id(999) is None
 
 
-def test_access_control_allows_admin():
-    """Admin users should be authorized for masked record viewing."""
+def test_access_control_allows_provider_record_access():
+    """Provider users should be authorized for masked record viewing."""
+    service = AccessControlService()
+    user = make_user(role="provider")
+
+    assert service.is_authorized(user, "view_masked_record") is True
+
+
+def test_access_control_allows_admin_audit_logs_only():
+    """Admin users should be authorized for audit logs, not patient records."""
     service = AccessControlService()
     user = make_user(role="admin")
 
-    assert service.is_authorized(user, "view_masked_record") is True
+    assert service.is_authorized(user, "review_logs") is True
+    assert service.is_authorized(user, "view_masked_record") is False
+
+
+def test_access_control_allows_patient_own_record_only():
+    """Patient users should only have patient-level access."""
+    service = AccessControlService()
+    user = make_user(role="patient")
+
+    assert service.is_authorized(user, "view_own_record") is True
+    assert service.is_authorized(user, "view_masked_record") is False
+    assert service.is_authorized(user, "review_logs") is False
 
 
 def test_access_control_denies_unknown_role():
@@ -97,17 +116,40 @@ def test_access_control_denies_unknown_role():
     assert service.is_authorized(user, "view_masked_record") is False
 
 
-def test_record_service_returns_masked_record_for_authorized_user():
-    """Authorized users should receive masked and tokenized record data."""
+def test_record_service_returns_masked_record_for_authorized_provider():
+    """Authorized providers should receive masked and tokenized record data."""
+    service = RecordService()
+    user = make_user(role="provider")
+
+    result = service.get_masked_record(user, 1)
+
+    assert result["status"] == "success"
+    assert result["record"]["patient_name"] == "J*******"
+    assert result["record"]["ssn_masked"] == "***-**-6789"
+    assert result["record"]["ssn_token"].startswith("TOKEN-")
+    assert "asthma" in result["record"]["medical_notes"].lower()
+
+
+def test_record_service_denies_admin_record_access():
+    """Admin users should not receive protected patient records."""
     service = RecordService()
     user = make_user(role="admin")
 
     result = service.get_masked_record(user, 1)
 
-    assert result["status"] == "success"
-    assert result["record"]["patient_name"] == "A*************"
-    assert result["record"]["ssn_masked"] == "***-**-6789"
-    assert result["record"]["ssn_token"].startswith("TOKEN-")
+    assert result["status"] == "failure"
+    assert result["message"] == "Access denied"
+
+
+def test_record_service_denies_patient_record_access():
+    """Patient users should not receive protected provider records."""
+    service = RecordService()
+    user = make_user(role="patient")
+
+    result = service.get_masked_record(user, 1)
+
+    assert result["status"] == "failure"
+    assert result["message"] == "Access denied"
 
 
 def test_record_service_denies_unauthorized_user():
@@ -122,9 +164,9 @@ def test_record_service_denies_unauthorized_user():
 
 
 def test_record_service_handles_missing_record():
-    """Authorized users should receive a not-found message for missing records."""
+    """Authorized providers should receive a not-found message for missing records."""
     service = RecordService()
-    user = make_user(role="admin")
+    user = make_user(role="provider")
 
     result = service.get_masked_record(user, 999)
 

@@ -34,6 +34,9 @@
                     <a class="class" href="#RecordRepository">RecordRepository</a>
                             <ul class="memberlist">
                         <li>
+                                <a class="function" href="#RecordRepository.__init__">RecordRepository</a>
+                        </li>
+                        <li>
                                 <a class="variable" href="#RecordRepository.records">records</a>
                         </li>
                         <li>
@@ -58,43 +61,47 @@
                     <h1 class="modulename">
 <a href="./../../apps.html">apps</a><wbr>.<a href="./../repositories.html">repositories</a><wbr>.recordRepo    </h1>
 
-                
+                        <div class="docstring"><p>Repository for protected patient record data.</p>
+</div>
+
                         <input id="mod-recordRepo-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
 
                         <label class="view-source-button" for="mod-recordRepo-view-source"><span>View Source</span></label>
 
-                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos"> 1</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">apps.models.record</span><span class="w"> </span><span class="kn">import</span> <span class="n">Record</span>
+                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos"> 1</span></a><span class="sd">&quot;&quot;&quot;Repository for protected patient record data.&quot;&quot;&quot;</span>
 </span><span id="L-2"><a href="#L-2"><span class="linenos"> 2</span></a>
-</span><span id="L-3"><a href="#L-3"><span class="linenos"> 3</span></a>
-</span><span id="L-4"><a href="#L-4"><span class="linenos"> 4</span></a><span class="k">class</span><span class="w"> </span><span class="nc">RecordRepository</span><span class="p">:</span>
-</span><span id="L-5"><a href="#L-5"><span class="linenos"> 5</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="L-6"><a href="#L-6"><span class="linenos"> 6</span></a><span class="sd">    Repository responsible for record data access.</span>
-</span><span id="L-7"><a href="#L-7"><span class="linenos"> 7</span></a>
-</span><span id="L-8"><a href="#L-8"><span class="linenos"> 8</span></a><span class="sd">    This starter version uses in-memory data so the project can run before</span>
-</span><span id="L-9"><a href="#L-9"><span class="linenos"> 9</span></a><span class="sd">    the database layer is implemented.</span>
-</span><span id="L-10"><a href="#L-10"><span class="linenos">10</span></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a>
-</span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">records</span> <span class="o">=</span> <span class="p">{</span>
-</span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a>            <span class="mi">1</span><span class="p">:</span> <span class="n">Record</span><span class="p">(</span>
-</span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a>                <span class="n">record_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-</span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a>                <span class="n">patient_name</span><span class="o">=</span><span class="s2">&quot;Alice Anderson&quot;</span><span class="p">,</span>
-</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a>                <span class="n">ssn</span><span class="o">=</span><span class="s2">&quot;123-45-6789&quot;</span><span class="p">,</span>
-</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a>                <span class="n">medical_notes</span><span class="o">=</span><span class="s2">&quot;Patient has a follow-up appointment next week.&quot;</span><span class="p">,</span>
-</span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a>            <span class="p">),</span>
-</span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a>            <span class="mi">2</span><span class="p">:</span> <span class="n">Record</span><span class="p">(</span>
-</span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a>                <span class="n">record_id</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-</span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a>                <span class="n">patient_name</span><span class="o">=</span><span class="s2">&quot;Bob Brown&quot;</span><span class="p">,</span>
-</span><span id="L-23"><a href="#L-23"><span class="linenos">23</span></a>                <span class="n">ssn</span><span class="o">=</span><span class="s2">&quot;987-65-4321&quot;</span><span class="p">,</span>
-</span><span id="L-24"><a href="#L-24"><span class="linenos">24</span></a>                <span class="n">medical_notes</span><span class="o">=</span><span class="s2">&quot;Patient is recovering well after treatment.&quot;</span><span class="p">,</span>
-</span><span id="L-25"><a href="#L-25"><span class="linenos">25</span></a>            <span class="p">),</span>
-</span><span id="L-26"><a href="#L-26"><span class="linenos">26</span></a>        <span class="p">}</span>
-</span><span id="L-27"><a href="#L-27"><span class="linenos">27</span></a>
-</span><span id="L-28"><a href="#L-28"><span class="linenos">28</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">find_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-</span><span id="L-29"><a href="#L-29"><span class="linenos">29</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="L-30"><a href="#L-30"><span class="linenos">30</span></a><span class="sd">        Return the record if it exists, otherwise return None.</span>
-</span><span id="L-31"><a href="#L-31"><span class="linenos">31</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="L-32"><a href="#L-32"><span class="linenos">32</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">records</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">record_id</span><span class="p">)</span>
+</span><span id="L-3"><a href="#L-3"><span class="linenos"> 3</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">apps.models.record</span><span class="w"> </span><span class="kn">import</span> <span class="n">Record</span>
+</span><span id="L-4"><a href="#L-4"><span class="linenos"> 4</span></a>
+</span><span id="L-5"><a href="#L-5"><span class="linenos"> 5</span></a>
+</span><span id="L-6"><a href="#L-6"><span class="linenos"> 6</span></a><span class="k">class</span><span class="w"> </span><span class="nc">RecordRepository</span><span class="p">:</span>
+</span><span id="L-7"><a href="#L-7"><span class="linenos"> 7</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Repository responsible for protected medical record access.</span>
+</span><span id="L-8"><a href="#L-8"><span class="linenos"> 8</span></a>
+</span><span id="L-9"><a href="#L-9"><span class="linenos"> 9</span></a><span class="sd">    CJ Secure currently uses one demo provider-accessible patient record.</span>
+</span><span id="L-10"><a href="#L-10"><span class="linenos">10</span></a>
+</span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a><span class="sd">    Record behavior:</span>
+</span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a><span class="sd">    - Providers can retrieve record ID 1.</span>
+</span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a><span class="sd">    - Record ID 1 belongs to Jane Doe.</span>
+</span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a><span class="sd">    - Jane Doe&#39;s medical note states that she has asthma.</span>
+</span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a><span class="sd">    - Patients and admins should not retrieve this record.</span>
+</span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a>
+</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create the demo patient record set.&quot;&quot;&quot;</span>
+</span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">records</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Record</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+</span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a>            <span class="mi">1</span><span class="p">:</span> <span class="n">Record</span><span class="p">(</span>
+</span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a>                <span class="n">record_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+</span><span id="L-23"><a href="#L-23"><span class="linenos">23</span></a>                <span class="n">patient_name</span><span class="o">=</span><span class="s2">&quot;Jane Doe&quot;</span><span class="p">,</span>
+</span><span id="L-24"><a href="#L-24"><span class="linenos">24</span></a>                <span class="n">ssn</span><span class="o">=</span><span class="s2">&quot;123-45-6789&quot;</span><span class="p">,</span>
+</span><span id="L-25"><a href="#L-25"><span class="linenos">25</span></a>                <span class="n">medical_notes</span><span class="o">=</span><span class="p">(</span>
+</span><span id="L-26"><a href="#L-26"><span class="linenos">26</span></a>                    <span class="s2">&quot;Patient has asthma. Patient uses an inhaler as needed &quot;</span>
+</span><span id="L-27"><a href="#L-27"><span class="linenos">27</span></a>                    <span class="s2">&quot;and should avoid known respiratory triggers.&quot;</span>
+</span><span id="L-28"><a href="#L-28"><span class="linenos">28</span></a>                <span class="p">),</span>
+</span><span id="L-29"><a href="#L-29"><span class="linenos">29</span></a>            <span class="p">),</span>
+</span><span id="L-30"><a href="#L-30"><span class="linenos">30</span></a>        <span class="p">}</span>
+</span><span id="L-31"><a href="#L-31"><span class="linenos">31</span></a>
+</span><span id="L-32"><a href="#L-32"><span class="linenos">32</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">find_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Record</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="L-33"><a href="#L-33"><span class="linenos">33</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a record by ID if it exists.&quot;&quot;&quot;</span>
+</span><span id="L-34"><a href="#L-34"><span class="linenos">34</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">records</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">record_id</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -110,48 +117,87 @@
 
     </div>
     <a class="headerlink" href="#RecordRepository"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="RecordRepository-5"><a href="#RecordRepository-5"><span class="linenos"> 5</span></a><span class="k">class</span><span class="w"> </span><span class="nc">RecordRepository</span><span class="p">:</span>
-</span><span id="RecordRepository-6"><a href="#RecordRepository-6"><span class="linenos"> 6</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="RecordRepository-7"><a href="#RecordRepository-7"><span class="linenos"> 7</span></a><span class="sd">    Repository responsible for record data access.</span>
-</span><span id="RecordRepository-8"><a href="#RecordRepository-8"><span class="linenos"> 8</span></a>
-</span><span id="RecordRepository-9"><a href="#RecordRepository-9"><span class="linenos"> 9</span></a><span class="sd">    This starter version uses in-memory data so the project can run before</span>
-</span><span id="RecordRepository-10"><a href="#RecordRepository-10"><span class="linenos">10</span></a><span class="sd">    the database layer is implemented.</span>
-</span><span id="RecordRepository-11"><a href="#RecordRepository-11"><span class="linenos">11</span></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="RecordRepository-12"><a href="#RecordRepository-12"><span class="linenos">12</span></a>
-</span><span id="RecordRepository-13"><a href="#RecordRepository-13"><span class="linenos">13</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="RecordRepository-14"><a href="#RecordRepository-14"><span class="linenos">14</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">records</span> <span class="o">=</span> <span class="p">{</span>
-</span><span id="RecordRepository-15"><a href="#RecordRepository-15"><span class="linenos">15</span></a>            <span class="mi">1</span><span class="p">:</span> <span class="n">Record</span><span class="p">(</span>
-</span><span id="RecordRepository-16"><a href="#RecordRepository-16"><span class="linenos">16</span></a>                <span class="n">record_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-</span><span id="RecordRepository-17"><a href="#RecordRepository-17"><span class="linenos">17</span></a>                <span class="n">patient_name</span><span class="o">=</span><span class="s2">&quot;Alice Anderson&quot;</span><span class="p">,</span>
-</span><span id="RecordRepository-18"><a href="#RecordRepository-18"><span class="linenos">18</span></a>                <span class="n">ssn</span><span class="o">=</span><span class="s2">&quot;123-45-6789&quot;</span><span class="p">,</span>
-</span><span id="RecordRepository-19"><a href="#RecordRepository-19"><span class="linenos">19</span></a>                <span class="n">medical_notes</span><span class="o">=</span><span class="s2">&quot;Patient has a follow-up appointment next week.&quot;</span><span class="p">,</span>
-</span><span id="RecordRepository-20"><a href="#RecordRepository-20"><span class="linenos">20</span></a>            <span class="p">),</span>
-</span><span id="RecordRepository-21"><a href="#RecordRepository-21"><span class="linenos">21</span></a>            <span class="mi">2</span><span class="p">:</span> <span class="n">Record</span><span class="p">(</span>
-</span><span id="RecordRepository-22"><a href="#RecordRepository-22"><span class="linenos">22</span></a>                <span class="n">record_id</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-</span><span id="RecordRepository-23"><a href="#RecordRepository-23"><span class="linenos">23</span></a>                <span class="n">patient_name</span><span class="o">=</span><span class="s2">&quot;Bob Brown&quot;</span><span class="p">,</span>
-</span><span id="RecordRepository-24"><a href="#RecordRepository-24"><span class="linenos">24</span></a>                <span class="n">ssn</span><span class="o">=</span><span class="s2">&quot;987-65-4321&quot;</span><span class="p">,</span>
-</span><span id="RecordRepository-25"><a href="#RecordRepository-25"><span class="linenos">25</span></a>                <span class="n">medical_notes</span><span class="o">=</span><span class="s2">&quot;Patient is recovering well after treatment.&quot;</span><span class="p">,</span>
-</span><span id="RecordRepository-26"><a href="#RecordRepository-26"><span class="linenos">26</span></a>            <span class="p">),</span>
-</span><span id="RecordRepository-27"><a href="#RecordRepository-27"><span class="linenos">27</span></a>        <span class="p">}</span>
-</span><span id="RecordRepository-28"><a href="#RecordRepository-28"><span class="linenos">28</span></a>
-</span><span id="RecordRepository-29"><a href="#RecordRepository-29"><span class="linenos">29</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">find_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-</span><span id="RecordRepository-30"><a href="#RecordRepository-30"><span class="linenos">30</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="RecordRepository-31"><a href="#RecordRepository-31"><span class="linenos">31</span></a><span class="sd">        Return the record if it exists, otherwise return None.</span>
-</span><span id="RecordRepository-32"><a href="#RecordRepository-32"><span class="linenos">32</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="RecordRepository-33"><a href="#RecordRepository-33"><span class="linenos">33</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">records</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">record_id</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="RecordRepository-7"><a href="#RecordRepository-7"><span class="linenos"> 7</span></a><span class="k">class</span><span class="w"> </span><span class="nc">RecordRepository</span><span class="p">:</span>
+</span><span id="RecordRepository-8"><a href="#RecordRepository-8"><span class="linenos"> 8</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Repository responsible for protected medical record access.</span>
+</span><span id="RecordRepository-9"><a href="#RecordRepository-9"><span class="linenos"> 9</span></a>
+</span><span id="RecordRepository-10"><a href="#RecordRepository-10"><span class="linenos">10</span></a><span class="sd">    CJ Secure currently uses one demo provider-accessible patient record.</span>
+</span><span id="RecordRepository-11"><a href="#RecordRepository-11"><span class="linenos">11</span></a>
+</span><span id="RecordRepository-12"><a href="#RecordRepository-12"><span class="linenos">12</span></a><span class="sd">    Record behavior:</span>
+</span><span id="RecordRepository-13"><a href="#RecordRepository-13"><span class="linenos">13</span></a><span class="sd">    - Providers can retrieve record ID 1.</span>
+</span><span id="RecordRepository-14"><a href="#RecordRepository-14"><span class="linenos">14</span></a><span class="sd">    - Record ID 1 belongs to Jane Doe.</span>
+</span><span id="RecordRepository-15"><a href="#RecordRepository-15"><span class="linenos">15</span></a><span class="sd">    - Jane Doe&#39;s medical note states that she has asthma.</span>
+</span><span id="RecordRepository-16"><a href="#RecordRepository-16"><span class="linenos">16</span></a><span class="sd">    - Patients and admins should not retrieve this record.</span>
+</span><span id="RecordRepository-17"><a href="#RecordRepository-17"><span class="linenos">17</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="RecordRepository-18"><a href="#RecordRepository-18"><span class="linenos">18</span></a>
+</span><span id="RecordRepository-19"><a href="#RecordRepository-19"><span class="linenos">19</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="RecordRepository-20"><a href="#RecordRepository-20"><span class="linenos">20</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create the demo patient record set.&quot;&quot;&quot;</span>
+</span><span id="RecordRepository-21"><a href="#RecordRepository-21"><span class="linenos">21</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">records</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Record</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+</span><span id="RecordRepository-22"><a href="#RecordRepository-22"><span class="linenos">22</span></a>            <span class="mi">1</span><span class="p">:</span> <span class="n">Record</span><span class="p">(</span>
+</span><span id="RecordRepository-23"><a href="#RecordRepository-23"><span class="linenos">23</span></a>                <span class="n">record_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+</span><span id="RecordRepository-24"><a href="#RecordRepository-24"><span class="linenos">24</span></a>                <span class="n">patient_name</span><span class="o">=</span><span class="s2">&quot;Jane Doe&quot;</span><span class="p">,</span>
+</span><span id="RecordRepository-25"><a href="#RecordRepository-25"><span class="linenos">25</span></a>                <span class="n">ssn</span><span class="o">=</span><span class="s2">&quot;123-45-6789&quot;</span><span class="p">,</span>
+</span><span id="RecordRepository-26"><a href="#RecordRepository-26"><span class="linenos">26</span></a>                <span class="n">medical_notes</span><span class="o">=</span><span class="p">(</span>
+</span><span id="RecordRepository-27"><a href="#RecordRepository-27"><span class="linenos">27</span></a>                    <span class="s2">&quot;Patient has asthma. Patient uses an inhaler as needed &quot;</span>
+</span><span id="RecordRepository-28"><a href="#RecordRepository-28"><span class="linenos">28</span></a>                    <span class="s2">&quot;and should avoid known respiratory triggers.&quot;</span>
+</span><span id="RecordRepository-29"><a href="#RecordRepository-29"><span class="linenos">29</span></a>                <span class="p">),</span>
+</span><span id="RecordRepository-30"><a href="#RecordRepository-30"><span class="linenos">30</span></a>            <span class="p">),</span>
+</span><span id="RecordRepository-31"><a href="#RecordRepository-31"><span class="linenos">31</span></a>        <span class="p">}</span>
+</span><span id="RecordRepository-32"><a href="#RecordRepository-32"><span class="linenos">32</span></a>
+</span><span id="RecordRepository-33"><a href="#RecordRepository-33"><span class="linenos">33</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">find_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Record</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="RecordRepository-34"><a href="#RecordRepository-34"><span class="linenos">34</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a record by ID if it exists.&quot;&quot;&quot;</span>
+</span><span id="RecordRepository-35"><a href="#RecordRepository-35"><span class="linenos">35</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">records</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">record_id</span><span class="p">)</span>
 </span></pre></div>
 
 
-            <div class="docstring"><p>Repository responsible for record data access.</p>
+            <div class="docstring"><p>Repository responsible for protected medical record access.</p>
 
-<p>This starter version uses in-memory data so the project can run before
-the database layer is implemented.</p>
+<p>CJ Secure currently uses one demo provider-accessible patient record.</p>
+
+<p>Record behavior:</p>
+
+<ul>
+<li>Providers can retrieve record ID 1.</li>
+<li>Record ID 1 belongs to Jane Doe.</li>
+<li>Jane Doe's medical note states that she has asthma.</li>
+<li>Patients and admins should not retrieve this record.</li>
+</ul>
 </div>
 
 
+                            <div id="RecordRepository.__init__" class="classattr">
+                                        <input id="RecordRepository.__init__-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+<div class="attr function">
+            
+        <span class="name">RecordRepository</span><span class="signature pdoc-code condensed">()</span>
+
+                <label class="view-source-button" for="RecordRepository.__init__-view-source"><span>View Source</span></label>
+
+    </div>
+    <a class="headerlink" href="#RecordRepository.__init__"></a>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="RecordRepository.__init__-19"><a href="#RecordRepository.__init__-19"><span class="linenos">19</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="RecordRepository.__init__-20"><a href="#RecordRepository.__init__-20"><span class="linenos">20</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create the demo patient record set.&quot;&quot;&quot;</span>
+</span><span id="RecordRepository.__init__-21"><a href="#RecordRepository.__init__-21"><span class="linenos">21</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">records</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Record</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+</span><span id="RecordRepository.__init__-22"><a href="#RecordRepository.__init__-22"><span class="linenos">22</span></a>            <span class="mi">1</span><span class="p">:</span> <span class="n">Record</span><span class="p">(</span>
+</span><span id="RecordRepository.__init__-23"><a href="#RecordRepository.__init__-23"><span class="linenos">23</span></a>                <span class="n">record_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+</span><span id="RecordRepository.__init__-24"><a href="#RecordRepository.__init__-24"><span class="linenos">24</span></a>                <span class="n">patient_name</span><span class="o">=</span><span class="s2">&quot;Jane Doe&quot;</span><span class="p">,</span>
+</span><span id="RecordRepository.__init__-25"><a href="#RecordRepository.__init__-25"><span class="linenos">25</span></a>                <span class="n">ssn</span><span class="o">=</span><span class="s2">&quot;123-45-6789&quot;</span><span class="p">,</span>
+</span><span id="RecordRepository.__init__-26"><a href="#RecordRepository.__init__-26"><span class="linenos">26</span></a>                <span class="n">medical_notes</span><span class="o">=</span><span class="p">(</span>
+</span><span id="RecordRepository.__init__-27"><a href="#RecordRepository.__init__-27"><span class="linenos">27</span></a>                    <span class="s2">&quot;Patient has asthma. Patient uses an inhaler as needed &quot;</span>
+</span><span id="RecordRepository.__init__-28"><a href="#RecordRepository.__init__-28"><span class="linenos">28</span></a>                    <span class="s2">&quot;and should avoid known respiratory triggers.&quot;</span>
+</span><span id="RecordRepository.__init__-29"><a href="#RecordRepository.__init__-29"><span class="linenos">29</span></a>                <span class="p">),</span>
+</span><span id="RecordRepository.__init__-30"><a href="#RecordRepository.__init__-30"><span class="linenos">30</span></a>            <span class="p">),</span>
+</span><span id="RecordRepository.__init__-31"><a href="#RecordRepository.__init__-31"><span class="linenos">31</span></a>        <span class="p">}</span>
+</span></pre></div>
+
+
+            <div class="docstring"><p>Create the demo patient record set.</p>
+</div>
+
+
+                            </div>
                             <div id="RecordRepository.records" class="classattr">
                                 <div class="attr variable">
-            <span class="name">records</span>
+            <span class="name">records</span><span class="annotation">: dict[int, <a href="../models/record.html#Record">apps.models.record.Record</a>]</span>
 
         
     </div>
@@ -165,21 +211,19 @@ the database layer is implemented.</p>
 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">find_by_id</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="n">record_id</span><span class="p">:</span> <span class="nb">int</span></span><span class="return-annotation">):</span></span>
+        <span class="name">find_by_id</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="n">record_id</span><span class="p">:</span> <span class="nb">int</span></span><span class="return-annotation">) -> <span class="n"><a href="../models/record.html#Record">apps.models.record.Record</a></span> <span class="o">|</span> <span class="kc">None</span>:</span></span>
 
                 <label class="view-source-button" for="RecordRepository.find_by_id-view-source"><span>View Source</span></label>
 
     </div>
     <a class="headerlink" href="#RecordRepository.find_by_id"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="RecordRepository.find_by_id-29"><a href="#RecordRepository.find_by_id-29"><span class="linenos">29</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">find_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-</span><span id="RecordRepository.find_by_id-30"><a href="#RecordRepository.find_by_id-30"><span class="linenos">30</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="RecordRepository.find_by_id-31"><a href="#RecordRepository.find_by_id-31"><span class="linenos">31</span></a><span class="sd">        Return the record if it exists, otherwise return None.</span>
-</span><span id="RecordRepository.find_by_id-32"><a href="#RecordRepository.find_by_id-32"><span class="linenos">32</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="RecordRepository.find_by_id-33"><a href="#RecordRepository.find_by_id-33"><span class="linenos">33</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">records</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">record_id</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="RecordRepository.find_by_id-33"><a href="#RecordRepository.find_by_id-33"><span class="linenos">33</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">find_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Record</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="RecordRepository.find_by_id-34"><a href="#RecordRepository.find_by_id-34"><span class="linenos">34</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a record by ID if it exists.&quot;&quot;&quot;</span>
+</span><span id="RecordRepository.find_by_id-35"><a href="#RecordRepository.find_by_id-35"><span class="linenos">35</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">records</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">record_id</span><span class="p">)</span>
 </span></pre></div>
 
 
-            <div class="docstring"><p>Return the record if it exists, otherwise return None.</p>
+            <div class="docstring"><p>Return a record by ID if it exists.</p>
 </div>
 
 

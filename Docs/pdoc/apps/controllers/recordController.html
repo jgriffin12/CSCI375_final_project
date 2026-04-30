@@ -34,10 +34,19 @@
                     <a class="class" href="#RecordController">RecordController</a>
                             <ul class="memberlist">
                         <li>
+                                <a class="function" href="#RecordController.__init__">RecordController</a>
+                        </li>
+                        <li>
                                 <a class="variable" href="#RecordController.record_service">record_service</a>
                         </li>
                         <li>
                                 <a class="variable" href="#RecordController.user_repository">user_repository</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#RecordController.access_control_service">access_control_service</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#RecordController.audit_logger">audit_logger</a>
                         </li>
                         <li>
                                 <a class="function" href="#RecordController.get_record">get_record</a>
@@ -61,38 +70,107 @@
                     <h1 class="modulename">
 <a href="./../../apps.html">apps</a><wbr>.<a href="./../controllers.html">controllers</a><wbr>.recordController    </h1>
 
-                
+                        <div class="docstring"><p>Controller for protected patient record requests.</p>
+</div>
+
                         <input id="mod-recordController-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
 
                         <label class="view-source-button" for="mod-recordController-view-source"><span>View Source</span></label>
 
-                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos"> 1</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">apps.services.recordSvc</span><span class="w"> </span><span class="kn">import</span> <span class="n">RecordService</span>
-</span><span id="L-2"><a href="#L-2"><span class="linenos"> 2</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">apps.repositories.userRepo</span><span class="w"> </span><span class="kn">import</span> <span class="n">UserRepository</span>
-</span><span id="L-3"><a href="#L-3"><span class="linenos"> 3</span></a>
+                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos"> 1</span></a><span class="sd">&quot;&quot;&quot;Controller for protected patient record requests.&quot;&quot;&quot;</span>
+</span><span id="L-2"><a href="#L-2"><span class="linenos"> 2</span></a>
+</span><span id="L-3"><a href="#L-3"><span class="linenos"> 3</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 </span><span id="L-4"><a href="#L-4"><span class="linenos"> 4</span></a>
-</span><span id="L-5"><a href="#L-5"><span class="linenos"> 5</span></a><span class="k">class</span><span class="w"> </span><span class="nc">RecordController</span><span class="p">:</span>
-</span><span id="L-6"><a href="#L-6"><span class="linenos"> 6</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="L-7"><a href="#L-7"><span class="linenos"> 7</span></a><span class="sd">    Controller for protected record requests.</span>
-</span><span id="L-8"><a href="#L-8"><span class="linenos"> 8</span></a>
-</span><span id="L-9"><a href="#L-9"><span class="linenos"> 9</span></a><span class="sd">    The controller accepts data from the route layer and delegates the</span>
-</span><span id="L-10"><a href="#L-10"><span class="linenos">10</span></a><span class="sd">    actual business logic to the service layer.</span>
-</span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a>
-</span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">record_service</span> <span class="o">=</span> <span class="n">RecordService</span><span class="p">()</span>
-</span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">user_repository</span> <span class="o">=</span> <span class="n">UserRepository</span><span class="p">()</span>
-</span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a>
-</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_record</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a><span class="sd">        Look up the requesting user, then delegate secure record retrieval</span>
-</span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a><span class="sd">        to the service layer.</span>
-</span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a>        <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_repository</span><span class="o">.</span><span class="n">find_by_username</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
+</span><span id="L-5"><a href="#L-5"><span class="linenos"> 5</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">apps.repositories.userRepo</span><span class="w"> </span><span class="kn">import</span> <span class="n">UserRepository</span>
+</span><span id="L-6"><a href="#L-6"><span class="linenos"> 6</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">apps.services.accessControlSvc</span><span class="w"> </span><span class="kn">import</span> <span class="n">AccessControlService</span>
+</span><span id="L-7"><a href="#L-7"><span class="linenos"> 7</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">apps.services.auditLogger</span><span class="w"> </span><span class="kn">import</span> <span class="n">AuditLogger</span>
+</span><span id="L-8"><a href="#L-8"><span class="linenos"> 8</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">apps.services.recordSvc</span><span class="w"> </span><span class="kn">import</span> <span class="n">RecordService</span>
+</span><span id="L-9"><a href="#L-9"><span class="linenos"> 9</span></a>
+</span><span id="L-10"><a href="#L-10"><span class="linenos">10</span></a>
+</span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a><span class="k">class</span><span class="w"> </span><span class="nc">RecordController</span><span class="p">:</span>
+</span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Controller for protected record requests.</span>
+</span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a>
+</span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a><span class="sd">    The controller accepts data from the route layer, verifies the requesting</span>
+</span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a><span class="sd">    user, applies role-based access control, records audit events, and delegates</span>
+</span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a><span class="sd">    approved provider record retrieval to the service layer.</span>
+</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a>
+</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a><span class="sd">    Role behavior:</span>
+</span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a><span class="sd">    - Providers can retrieve Jane Doe&#39;s protected asthma record.</span>
+</span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a><span class="sd">    - Patients only receive their own patient dashboard message.</span>
+</span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a><span class="sd">    - Admins cannot retrieve patient records and should only view audit logs.</span>
+</span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a><span class="sd">    &quot;&quot;&quot;</span>
 </span><span id="L-23"><a href="#L-23"><span class="linenos">23</span></a>
-</span><span id="L-24"><a href="#L-24"><span class="linenos">24</span></a>        <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="L-25"><a href="#L-25"><span class="linenos">25</span></a>            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;failure&quot;</span><span class="p">,</span> <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;User not found&quot;</span><span class="p">}</span>
-</span><span id="L-26"><a href="#L-26"><span class="linenos">26</span></a>
-</span><span id="L-27"><a href="#L-27"><span class="linenos">27</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">record_service</span><span class="o">.</span><span class="n">get_masked_record</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">record_id</span><span class="p">)</span>
+</span><span id="L-24"><a href="#L-24"><span class="linenos">24</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="L-25"><a href="#L-25"><span class="linenos">25</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create controller dependencies.&quot;&quot;&quot;</span>
+</span><span id="L-26"><a href="#L-26"><span class="linenos">26</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">record_service</span> <span class="o">=</span> <span class="n">RecordService</span><span class="p">()</span>
+</span><span id="L-27"><a href="#L-27"><span class="linenos">27</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">user_repository</span> <span class="o">=</span> <span class="n">UserRepository</span><span class="p">()</span>
+</span><span id="L-28"><a href="#L-28"><span class="linenos">28</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">access_control_service</span> <span class="o">=</span> <span class="n">AccessControlService</span><span class="p">()</span>
+</span><span id="L-29"><a href="#L-29"><span class="linenos">29</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">audit_logger</span> <span class="o">=</span> <span class="n">AuditLogger</span><span class="p">()</span>
+</span><span id="L-30"><a href="#L-30"><span class="linenos">30</span></a>
+</span><span id="L-31"><a href="#L-31"><span class="linenos">31</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_record</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+</span><span id="L-32"><a href="#L-32"><span class="linenos">32</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return record access results based on the authenticated user&#39;s role.&quot;&quot;&quot;</span>
+</span><span id="L-33"><a href="#L-33"><span class="linenos">33</span></a>        <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_repository</span><span class="o">.</span><span class="n">find_by_username</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
+</span><span id="L-34"><a href="#L-34"><span class="linenos">34</span></a>
+</span><span id="L-35"><a href="#L-35"><span class="linenos">35</span></a>        <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="L-36"><a href="#L-36"><span class="linenos">36</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">audit_logger</span><span class="o">.</span><span class="n">log_event</span><span class="p">(</span>
+</span><span id="L-37"><a href="#L-37"><span class="linenos">37</span></a>                <span class="s2">&quot;record_access_unknown_user&quot;</span><span class="p">,</span>
+</span><span id="L-38"><a href="#L-38"><span class="linenos">38</span></a>                <span class="n">username</span><span class="p">,</span>
+</span><span id="L-39"><a href="#L-39"><span class="linenos">39</span></a>                <span class="s2">&quot;failure&quot;</span><span class="p">,</span>
+</span><span id="L-40"><a href="#L-40"><span class="linenos">40</span></a>            <span class="p">)</span>
+</span><span id="L-41"><a href="#L-41"><span class="linenos">41</span></a>            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;failure&quot;</span><span class="p">,</span> <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;User not found&quot;</span><span class="p">}</span>
+</span><span id="L-42"><a href="#L-42"><span class="linenos">42</span></a>
+</span><span id="L-43"><a href="#L-43"><span class="linenos">43</span></a>        <span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">role</span> <span class="o">==</span> <span class="s2">&quot;patient&quot;</span><span class="p">:</span>
+</span><span id="L-44"><a href="#L-44"><span class="linenos">44</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">audit_logger</span><span class="o">.</span><span class="n">log_event</span><span class="p">(</span>
+</span><span id="L-45"><a href="#L-45"><span class="linenos">45</span></a>                <span class="s2">&quot;patient_record_viewed&quot;</span><span class="p">,</span>
+</span><span id="L-46"><a href="#L-46"><span class="linenos">46</span></a>                <span class="n">username</span><span class="p">,</span>
+</span><span id="L-47"><a href="#L-47"><span class="linenos">47</span></a>                <span class="s2">&quot;success&quot;</span><span class="p">,</span>
+</span><span id="L-48"><a href="#L-48"><span class="linenos">48</span></a>            <span class="p">)</span>
+</span><span id="L-49"><a href="#L-49"><span class="linenos">49</span></a>            <span class="k">return</span> <span class="p">{</span>
+</span><span id="L-50"><a href="#L-50"><span class="linenos">50</span></a>                <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;success&quot;</span><span class="p">,</span>
+</span><span id="L-51"><a href="#L-51"><span class="linenos">51</span></a>                <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;patient&quot;</span><span class="p">,</span>
+</span><span id="L-52"><a href="#L-52"><span class="linenos">52</span></a>                <span class="s2">&quot;records&quot;</span><span class="p">:</span> <span class="p">[],</span>
+</span><span id="L-53"><a href="#L-53"><span class="linenos">53</span></a>                <span class="s2">&quot;appointments&quot;</span><span class="p">:</span> <span class="p">[],</span>
+</span><span id="L-54"><a href="#L-54"><span class="linenos">54</span></a>                <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="p">(</span>
+</span><span id="L-55"><a href="#L-55"><span class="linenos">55</span></a>                    <span class="s2">&quot;No appointments, please book one by calling &quot;</span>
+</span><span id="L-56"><a href="#L-56"><span class="linenos">56</span></a>                    <span class="s2">&quot;12345678910 to schedule.&quot;</span>
+</span><span id="L-57"><a href="#L-57"><span class="linenos">57</span></a>                <span class="p">),</span>
+</span><span id="L-58"><a href="#L-58"><span class="linenos">58</span></a>            <span class="p">}</span>
+</span><span id="L-59"><a href="#L-59"><span class="linenos">59</span></a>
+</span><span id="L-60"><a href="#L-60"><span class="linenos">60</span></a>        <span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">role</span> <span class="o">==</span> <span class="s2">&quot;admin&quot;</span><span class="p">:</span>
+</span><span id="L-61"><a href="#L-61"><span class="linenos">61</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">audit_logger</span><span class="o">.</span><span class="n">log_event</span><span class="p">(</span>
+</span><span id="L-62"><a href="#L-62"><span class="linenos">62</span></a>                <span class="s2">&quot;admin_record_access_denied&quot;</span><span class="p">,</span>
+</span><span id="L-63"><a href="#L-63"><span class="linenos">63</span></a>                <span class="n">username</span><span class="p">,</span>
+</span><span id="L-64"><a href="#L-64"><span class="linenos">64</span></a>                <span class="s2">&quot;failure&quot;</span><span class="p">,</span>
+</span><span id="L-65"><a href="#L-65"><span class="linenos">65</span></a>            <span class="p">)</span>
+</span><span id="L-66"><a href="#L-66"><span class="linenos">66</span></a>            <span class="k">return</span> <span class="p">{</span>
+</span><span id="L-67"><a href="#L-67"><span class="linenos">67</span></a>                <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;failure&quot;</span><span class="p">,</span>
+</span><span id="L-68"><a href="#L-68"><span class="linenos">68</span></a>                <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="p">(</span>
+</span><span id="L-69"><a href="#L-69"><span class="linenos">69</span></a>                    <span class="s2">&quot;Admin access is limited to audit logs. &quot;</span>
+</span><span id="L-70"><a href="#L-70"><span class="linenos">70</span></a>                    <span class="s2">&quot;Admins cannot retrieve patient records.&quot;</span>
+</span><span id="L-71"><a href="#L-71"><span class="linenos">71</span></a>                <span class="p">),</span>
+</span><span id="L-72"><a href="#L-72"><span class="linenos">72</span></a>            <span class="p">}</span>
+</span><span id="L-73"><a href="#L-73"><span class="linenos">73</span></a>
+</span><span id="L-74"><a href="#L-74"><span class="linenos">74</span></a>        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">access_control_service</span><span class="o">.</span><span class="n">is_authorized</span><span class="p">(</span>
+</span><span id="L-75"><a href="#L-75"><span class="linenos">75</span></a>            <span class="n">user</span><span class="p">,</span>
+</span><span id="L-76"><a href="#L-76"><span class="linenos">76</span></a>            <span class="s2">&quot;view_masked_record&quot;</span><span class="p">,</span>
+</span><span id="L-77"><a href="#L-77"><span class="linenos">77</span></a>        <span class="p">):</span>
+</span><span id="L-78"><a href="#L-78"><span class="linenos">78</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">audit_logger</span><span class="o">.</span><span class="n">log_event</span><span class="p">(</span>
+</span><span id="L-79"><a href="#L-79"><span class="linenos">79</span></a>                <span class="s2">&quot;record_access_denied&quot;</span><span class="p">,</span>
+</span><span id="L-80"><a href="#L-80"><span class="linenos">80</span></a>                <span class="n">username</span><span class="p">,</span>
+</span><span id="L-81"><a href="#L-81"><span class="linenos">81</span></a>                <span class="s2">&quot;failure&quot;</span><span class="p">,</span>
+</span><span id="L-82"><a href="#L-82"><span class="linenos">82</span></a>            <span class="p">)</span>
+</span><span id="L-83"><a href="#L-83"><span class="linenos">83</span></a>            <span class="k">return</span> <span class="p">{</span>
+</span><span id="L-84"><a href="#L-84"><span class="linenos">84</span></a>                <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;failure&quot;</span><span class="p">,</span>
+</span><span id="L-85"><a href="#L-85"><span class="linenos">85</span></a>                <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;Only providers can retrieve Jane Doe&#39;s protected record.&quot;</span><span class="p">,</span>
+</span><span id="L-86"><a href="#L-86"><span class="linenos">86</span></a>            <span class="p">}</span>
+</span><span id="L-87"><a href="#L-87"><span class="linenos">87</span></a>
+</span><span id="L-88"><a href="#L-88"><span class="linenos">88</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">audit_logger</span><span class="o">.</span><span class="n">log_event</span><span class="p">(</span>
+</span><span id="L-89"><a href="#L-89"><span class="linenos">89</span></a>            <span class="s2">&quot;provider_record_access_requested&quot;</span><span class="p">,</span>
+</span><span id="L-90"><a href="#L-90"><span class="linenos">90</span></a>            <span class="n">username</span><span class="p">,</span>
+</span><span id="L-91"><a href="#L-91"><span class="linenos">91</span></a>            <span class="s2">&quot;success&quot;</span><span class="p">,</span>
+</span><span id="L-92"><a href="#L-92"><span class="linenos">92</span></a>        <span class="p">)</span>
+</span><span id="L-93"><a href="#L-93"><span class="linenos">93</span></a>
+</span><span id="L-94"><a href="#L-94"><span class="linenos">94</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">record_service</span><span class="o">.</span><span class="n">get_masked_record</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">record_id</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -108,39 +186,133 @@
 
     </div>
     <a class="headerlink" href="#RecordController"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="RecordController-6"><a href="#RecordController-6"><span class="linenos"> 6</span></a><span class="k">class</span><span class="w"> </span><span class="nc">RecordController</span><span class="p">:</span>
-</span><span id="RecordController-7"><a href="#RecordController-7"><span class="linenos"> 7</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="RecordController-8"><a href="#RecordController-8"><span class="linenos"> 8</span></a><span class="sd">    Controller for protected record requests.</span>
-</span><span id="RecordController-9"><a href="#RecordController-9"><span class="linenos"> 9</span></a>
-</span><span id="RecordController-10"><a href="#RecordController-10"><span class="linenos">10</span></a><span class="sd">    The controller accepts data from the route layer and delegates the</span>
-</span><span id="RecordController-11"><a href="#RecordController-11"><span class="linenos">11</span></a><span class="sd">    actual business logic to the service layer.</span>
-</span><span id="RecordController-12"><a href="#RecordController-12"><span class="linenos">12</span></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="RecordController-13"><a href="#RecordController-13"><span class="linenos">13</span></a>
-</span><span id="RecordController-14"><a href="#RecordController-14"><span class="linenos">14</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="RecordController-15"><a href="#RecordController-15"><span class="linenos">15</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">record_service</span> <span class="o">=</span> <span class="n">RecordService</span><span class="p">()</span>
-</span><span id="RecordController-16"><a href="#RecordController-16"><span class="linenos">16</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">user_repository</span> <span class="o">=</span> <span class="n">UserRepository</span><span class="p">()</span>
-</span><span id="RecordController-17"><a href="#RecordController-17"><span class="linenos">17</span></a>
-</span><span id="RecordController-18"><a href="#RecordController-18"><span class="linenos">18</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_record</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-</span><span id="RecordController-19"><a href="#RecordController-19"><span class="linenos">19</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="RecordController-20"><a href="#RecordController-20"><span class="linenos">20</span></a><span class="sd">        Look up the requesting user, then delegate secure record retrieval</span>
-</span><span id="RecordController-21"><a href="#RecordController-21"><span class="linenos">21</span></a><span class="sd">        to the service layer.</span>
-</span><span id="RecordController-22"><a href="#RecordController-22"><span class="linenos">22</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="RecordController-23"><a href="#RecordController-23"><span class="linenos">23</span></a>        <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_repository</span><span class="o">.</span><span class="n">find_by_username</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="RecordController-12"><a href="#RecordController-12"><span class="linenos">12</span></a><span class="k">class</span><span class="w"> </span><span class="nc">RecordController</span><span class="p">:</span>
+</span><span id="RecordController-13"><a href="#RecordController-13"><span class="linenos">13</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Controller for protected record requests.</span>
+</span><span id="RecordController-14"><a href="#RecordController-14"><span class="linenos">14</span></a>
+</span><span id="RecordController-15"><a href="#RecordController-15"><span class="linenos">15</span></a><span class="sd">    The controller accepts data from the route layer, verifies the requesting</span>
+</span><span id="RecordController-16"><a href="#RecordController-16"><span class="linenos">16</span></a><span class="sd">    user, applies role-based access control, records audit events, and delegates</span>
+</span><span id="RecordController-17"><a href="#RecordController-17"><span class="linenos">17</span></a><span class="sd">    approved provider record retrieval to the service layer.</span>
+</span><span id="RecordController-18"><a href="#RecordController-18"><span class="linenos">18</span></a>
+</span><span id="RecordController-19"><a href="#RecordController-19"><span class="linenos">19</span></a><span class="sd">    Role behavior:</span>
+</span><span id="RecordController-20"><a href="#RecordController-20"><span class="linenos">20</span></a><span class="sd">    - Providers can retrieve Jane Doe&#39;s protected asthma record.</span>
+</span><span id="RecordController-21"><a href="#RecordController-21"><span class="linenos">21</span></a><span class="sd">    - Patients only receive their own patient dashboard message.</span>
+</span><span id="RecordController-22"><a href="#RecordController-22"><span class="linenos">22</span></a><span class="sd">    - Admins cannot retrieve patient records and should only view audit logs.</span>
+</span><span id="RecordController-23"><a href="#RecordController-23"><span class="linenos">23</span></a><span class="sd">    &quot;&quot;&quot;</span>
 </span><span id="RecordController-24"><a href="#RecordController-24"><span class="linenos">24</span></a>
-</span><span id="RecordController-25"><a href="#RecordController-25"><span class="linenos">25</span></a>        <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="RecordController-26"><a href="#RecordController-26"><span class="linenos">26</span></a>            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;failure&quot;</span><span class="p">,</span> <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;User not found&quot;</span><span class="p">}</span>
-</span><span id="RecordController-27"><a href="#RecordController-27"><span class="linenos">27</span></a>
-</span><span id="RecordController-28"><a href="#RecordController-28"><span class="linenos">28</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">record_service</span><span class="o">.</span><span class="n">get_masked_record</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">record_id</span><span class="p">)</span>
+</span><span id="RecordController-25"><a href="#RecordController-25"><span class="linenos">25</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="RecordController-26"><a href="#RecordController-26"><span class="linenos">26</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create controller dependencies.&quot;&quot;&quot;</span>
+</span><span id="RecordController-27"><a href="#RecordController-27"><span class="linenos">27</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">record_service</span> <span class="o">=</span> <span class="n">RecordService</span><span class="p">()</span>
+</span><span id="RecordController-28"><a href="#RecordController-28"><span class="linenos">28</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">user_repository</span> <span class="o">=</span> <span class="n">UserRepository</span><span class="p">()</span>
+</span><span id="RecordController-29"><a href="#RecordController-29"><span class="linenos">29</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">access_control_service</span> <span class="o">=</span> <span class="n">AccessControlService</span><span class="p">()</span>
+</span><span id="RecordController-30"><a href="#RecordController-30"><span class="linenos">30</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">audit_logger</span> <span class="o">=</span> <span class="n">AuditLogger</span><span class="p">()</span>
+</span><span id="RecordController-31"><a href="#RecordController-31"><span class="linenos">31</span></a>
+</span><span id="RecordController-32"><a href="#RecordController-32"><span class="linenos">32</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_record</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+</span><span id="RecordController-33"><a href="#RecordController-33"><span class="linenos">33</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return record access results based on the authenticated user&#39;s role.&quot;&quot;&quot;</span>
+</span><span id="RecordController-34"><a href="#RecordController-34"><span class="linenos">34</span></a>        <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_repository</span><span class="o">.</span><span class="n">find_by_username</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
+</span><span id="RecordController-35"><a href="#RecordController-35"><span class="linenos">35</span></a>
+</span><span id="RecordController-36"><a href="#RecordController-36"><span class="linenos">36</span></a>        <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="RecordController-37"><a href="#RecordController-37"><span class="linenos">37</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">audit_logger</span><span class="o">.</span><span class="n">log_event</span><span class="p">(</span>
+</span><span id="RecordController-38"><a href="#RecordController-38"><span class="linenos">38</span></a>                <span class="s2">&quot;record_access_unknown_user&quot;</span><span class="p">,</span>
+</span><span id="RecordController-39"><a href="#RecordController-39"><span class="linenos">39</span></a>                <span class="n">username</span><span class="p">,</span>
+</span><span id="RecordController-40"><a href="#RecordController-40"><span class="linenos">40</span></a>                <span class="s2">&quot;failure&quot;</span><span class="p">,</span>
+</span><span id="RecordController-41"><a href="#RecordController-41"><span class="linenos">41</span></a>            <span class="p">)</span>
+</span><span id="RecordController-42"><a href="#RecordController-42"><span class="linenos">42</span></a>            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;failure&quot;</span><span class="p">,</span> <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;User not found&quot;</span><span class="p">}</span>
+</span><span id="RecordController-43"><a href="#RecordController-43"><span class="linenos">43</span></a>
+</span><span id="RecordController-44"><a href="#RecordController-44"><span class="linenos">44</span></a>        <span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">role</span> <span class="o">==</span> <span class="s2">&quot;patient&quot;</span><span class="p">:</span>
+</span><span id="RecordController-45"><a href="#RecordController-45"><span class="linenos">45</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">audit_logger</span><span class="o">.</span><span class="n">log_event</span><span class="p">(</span>
+</span><span id="RecordController-46"><a href="#RecordController-46"><span class="linenos">46</span></a>                <span class="s2">&quot;patient_record_viewed&quot;</span><span class="p">,</span>
+</span><span id="RecordController-47"><a href="#RecordController-47"><span class="linenos">47</span></a>                <span class="n">username</span><span class="p">,</span>
+</span><span id="RecordController-48"><a href="#RecordController-48"><span class="linenos">48</span></a>                <span class="s2">&quot;success&quot;</span><span class="p">,</span>
+</span><span id="RecordController-49"><a href="#RecordController-49"><span class="linenos">49</span></a>            <span class="p">)</span>
+</span><span id="RecordController-50"><a href="#RecordController-50"><span class="linenos">50</span></a>            <span class="k">return</span> <span class="p">{</span>
+</span><span id="RecordController-51"><a href="#RecordController-51"><span class="linenos">51</span></a>                <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;success&quot;</span><span class="p">,</span>
+</span><span id="RecordController-52"><a href="#RecordController-52"><span class="linenos">52</span></a>                <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;patient&quot;</span><span class="p">,</span>
+</span><span id="RecordController-53"><a href="#RecordController-53"><span class="linenos">53</span></a>                <span class="s2">&quot;records&quot;</span><span class="p">:</span> <span class="p">[],</span>
+</span><span id="RecordController-54"><a href="#RecordController-54"><span class="linenos">54</span></a>                <span class="s2">&quot;appointments&quot;</span><span class="p">:</span> <span class="p">[],</span>
+</span><span id="RecordController-55"><a href="#RecordController-55"><span class="linenos">55</span></a>                <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="p">(</span>
+</span><span id="RecordController-56"><a href="#RecordController-56"><span class="linenos">56</span></a>                    <span class="s2">&quot;No appointments, please book one by calling &quot;</span>
+</span><span id="RecordController-57"><a href="#RecordController-57"><span class="linenos">57</span></a>                    <span class="s2">&quot;12345678910 to schedule.&quot;</span>
+</span><span id="RecordController-58"><a href="#RecordController-58"><span class="linenos">58</span></a>                <span class="p">),</span>
+</span><span id="RecordController-59"><a href="#RecordController-59"><span class="linenos">59</span></a>            <span class="p">}</span>
+</span><span id="RecordController-60"><a href="#RecordController-60"><span class="linenos">60</span></a>
+</span><span id="RecordController-61"><a href="#RecordController-61"><span class="linenos">61</span></a>        <span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">role</span> <span class="o">==</span> <span class="s2">&quot;admin&quot;</span><span class="p">:</span>
+</span><span id="RecordController-62"><a href="#RecordController-62"><span class="linenos">62</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">audit_logger</span><span class="o">.</span><span class="n">log_event</span><span class="p">(</span>
+</span><span id="RecordController-63"><a href="#RecordController-63"><span class="linenos">63</span></a>                <span class="s2">&quot;admin_record_access_denied&quot;</span><span class="p">,</span>
+</span><span id="RecordController-64"><a href="#RecordController-64"><span class="linenos">64</span></a>                <span class="n">username</span><span class="p">,</span>
+</span><span id="RecordController-65"><a href="#RecordController-65"><span class="linenos">65</span></a>                <span class="s2">&quot;failure&quot;</span><span class="p">,</span>
+</span><span id="RecordController-66"><a href="#RecordController-66"><span class="linenos">66</span></a>            <span class="p">)</span>
+</span><span id="RecordController-67"><a href="#RecordController-67"><span class="linenos">67</span></a>            <span class="k">return</span> <span class="p">{</span>
+</span><span id="RecordController-68"><a href="#RecordController-68"><span class="linenos">68</span></a>                <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;failure&quot;</span><span class="p">,</span>
+</span><span id="RecordController-69"><a href="#RecordController-69"><span class="linenos">69</span></a>                <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="p">(</span>
+</span><span id="RecordController-70"><a href="#RecordController-70"><span class="linenos">70</span></a>                    <span class="s2">&quot;Admin access is limited to audit logs. &quot;</span>
+</span><span id="RecordController-71"><a href="#RecordController-71"><span class="linenos">71</span></a>                    <span class="s2">&quot;Admins cannot retrieve patient records.&quot;</span>
+</span><span id="RecordController-72"><a href="#RecordController-72"><span class="linenos">72</span></a>                <span class="p">),</span>
+</span><span id="RecordController-73"><a href="#RecordController-73"><span class="linenos">73</span></a>            <span class="p">}</span>
+</span><span id="RecordController-74"><a href="#RecordController-74"><span class="linenos">74</span></a>
+</span><span id="RecordController-75"><a href="#RecordController-75"><span class="linenos">75</span></a>        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">access_control_service</span><span class="o">.</span><span class="n">is_authorized</span><span class="p">(</span>
+</span><span id="RecordController-76"><a href="#RecordController-76"><span class="linenos">76</span></a>            <span class="n">user</span><span class="p">,</span>
+</span><span id="RecordController-77"><a href="#RecordController-77"><span class="linenos">77</span></a>            <span class="s2">&quot;view_masked_record&quot;</span><span class="p">,</span>
+</span><span id="RecordController-78"><a href="#RecordController-78"><span class="linenos">78</span></a>        <span class="p">):</span>
+</span><span id="RecordController-79"><a href="#RecordController-79"><span class="linenos">79</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">audit_logger</span><span class="o">.</span><span class="n">log_event</span><span class="p">(</span>
+</span><span id="RecordController-80"><a href="#RecordController-80"><span class="linenos">80</span></a>                <span class="s2">&quot;record_access_denied&quot;</span><span class="p">,</span>
+</span><span id="RecordController-81"><a href="#RecordController-81"><span class="linenos">81</span></a>                <span class="n">username</span><span class="p">,</span>
+</span><span id="RecordController-82"><a href="#RecordController-82"><span class="linenos">82</span></a>                <span class="s2">&quot;failure&quot;</span><span class="p">,</span>
+</span><span id="RecordController-83"><a href="#RecordController-83"><span class="linenos">83</span></a>            <span class="p">)</span>
+</span><span id="RecordController-84"><a href="#RecordController-84"><span class="linenos">84</span></a>            <span class="k">return</span> <span class="p">{</span>
+</span><span id="RecordController-85"><a href="#RecordController-85"><span class="linenos">85</span></a>                <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;failure&quot;</span><span class="p">,</span>
+</span><span id="RecordController-86"><a href="#RecordController-86"><span class="linenos">86</span></a>                <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;Only providers can retrieve Jane Doe&#39;s protected record.&quot;</span><span class="p">,</span>
+</span><span id="RecordController-87"><a href="#RecordController-87"><span class="linenos">87</span></a>            <span class="p">}</span>
+</span><span id="RecordController-88"><a href="#RecordController-88"><span class="linenos">88</span></a>
+</span><span id="RecordController-89"><a href="#RecordController-89"><span class="linenos">89</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">audit_logger</span><span class="o">.</span><span class="n">log_event</span><span class="p">(</span>
+</span><span id="RecordController-90"><a href="#RecordController-90"><span class="linenos">90</span></a>            <span class="s2">&quot;provider_record_access_requested&quot;</span><span class="p">,</span>
+</span><span id="RecordController-91"><a href="#RecordController-91"><span class="linenos">91</span></a>            <span class="n">username</span><span class="p">,</span>
+</span><span id="RecordController-92"><a href="#RecordController-92"><span class="linenos">92</span></a>            <span class="s2">&quot;success&quot;</span><span class="p">,</span>
+</span><span id="RecordController-93"><a href="#RecordController-93"><span class="linenos">93</span></a>        <span class="p">)</span>
+</span><span id="RecordController-94"><a href="#RecordController-94"><span class="linenos">94</span></a>
+</span><span id="RecordController-95"><a href="#RecordController-95"><span class="linenos">95</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">record_service</span><span class="o">.</span><span class="n">get_masked_record</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">record_id</span><span class="p">)</span>
 </span></pre></div>
 
 
             <div class="docstring"><p>Controller for protected record requests.</p>
 
-<p>The controller accepts data from the route layer and delegates the
-actual business logic to the service layer.</p>
+<p>The controller accepts data from the route layer, verifies the requesting
+user, applies role-based access control, records audit events, and delegates
+approved provider record retrieval to the service layer.</p>
+
+<p>Role behavior:</p>
+
+<ul>
+<li>Providers can retrieve Jane Doe's protected asthma record.</li>
+<li>Patients only receive their own patient dashboard message.</li>
+<li>Admins cannot retrieve patient records and should only view audit logs.</li>
+</ul>
 </div>
 
 
+                            <div id="RecordController.__init__" class="classattr">
+                                        <input id="RecordController.__init__-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+<div class="attr function">
+            
+        <span class="name">RecordController</span><span class="signature pdoc-code condensed">()</span>
+
+                <label class="view-source-button" for="RecordController.__init__-view-source"><span>View Source</span></label>
+
+    </div>
+    <a class="headerlink" href="#RecordController.__init__"></a>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="RecordController.__init__-25"><a href="#RecordController.__init__-25"><span class="linenos">25</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="RecordController.__init__-26"><a href="#RecordController.__init__-26"><span class="linenos">26</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create controller dependencies.&quot;&quot;&quot;</span>
+</span><span id="RecordController.__init__-27"><a href="#RecordController.__init__-27"><span class="linenos">27</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">record_service</span> <span class="o">=</span> <span class="n">RecordService</span><span class="p">()</span>
+</span><span id="RecordController.__init__-28"><a href="#RecordController.__init__-28"><span class="linenos">28</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">user_repository</span> <span class="o">=</span> <span class="n">UserRepository</span><span class="p">()</span>
+</span><span id="RecordController.__init__-29"><a href="#RecordController.__init__-29"><span class="linenos">29</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">access_control_service</span> <span class="o">=</span> <span class="n">AccessControlService</span><span class="p">()</span>
+</span><span id="RecordController.__init__-30"><a href="#RecordController.__init__-30"><span class="linenos">30</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">audit_logger</span> <span class="o">=</span> <span class="n">AuditLogger</span><span class="p">()</span>
+</span></pre></div>
+
+
+            <div class="docstring"><p>Create controller dependencies.</p>
+</div>
+
+
+                            </div>
                             <div id="RecordController.record_service" class="classattr">
                                 <div class="attr variable">
             <span class="name">record_service</span>
@@ -163,33 +335,107 @@ actual business logic to the service layer.</p>
     
 
                             </div>
+                            <div id="RecordController.access_control_service" class="classattr">
+                                <div class="attr variable">
+            <span class="name">access_control_service</span>
+
+        
+    </div>
+    <a class="headerlink" href="#RecordController.access_control_service"></a>
+    
+    
+
+                            </div>
+                            <div id="RecordController.audit_logger" class="classattr">
+                                <div class="attr variable">
+            <span class="name">audit_logger</span>
+
+        
+    </div>
+    <a class="headerlink" href="#RecordController.audit_logger"></a>
+    
+    
+
+                            </div>
                             <div id="RecordController.get_record" class="classattr">
                                         <input id="RecordController.get_record-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">get_record</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="n">record_id</span><span class="p">:</span> <span class="nb">int</span>, </span><span class="param"><span class="n">username</span><span class="p">:</span> <span class="nb">str</span></span><span class="return-annotation">) -> <span class="nb">dict</span>:</span></span>
+        <span class="name">get_record</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="n">record_id</span><span class="p">:</span> <span class="nb">int</span>, </span><span class="param"><span class="n">username</span><span class="p">:</span> <span class="nb">str</span></span><span class="return-annotation">) -> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]</span>:</span></span>
 
                 <label class="view-source-button" for="RecordController.get_record-view-source"><span>View Source</span></label>
 
     </div>
     <a class="headerlink" href="#RecordController.get_record"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="RecordController.get_record-18"><a href="#RecordController.get_record-18"><span class="linenos">18</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_record</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-</span><span id="RecordController.get_record-19"><a href="#RecordController.get_record-19"><span class="linenos">19</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="RecordController.get_record-20"><a href="#RecordController.get_record-20"><span class="linenos">20</span></a><span class="sd">        Look up the requesting user, then delegate secure record retrieval</span>
-</span><span id="RecordController.get_record-21"><a href="#RecordController.get_record-21"><span class="linenos">21</span></a><span class="sd">        to the service layer.</span>
-</span><span id="RecordController.get_record-22"><a href="#RecordController.get_record-22"><span class="linenos">22</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="RecordController.get_record-23"><a href="#RecordController.get_record-23"><span class="linenos">23</span></a>        <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_repository</span><span class="o">.</span><span class="n">find_by_username</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
-</span><span id="RecordController.get_record-24"><a href="#RecordController.get_record-24"><span class="linenos">24</span></a>
-</span><span id="RecordController.get_record-25"><a href="#RecordController.get_record-25"><span class="linenos">25</span></a>        <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="RecordController.get_record-26"><a href="#RecordController.get_record-26"><span class="linenos">26</span></a>            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;failure&quot;</span><span class="p">,</span> <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;User not found&quot;</span><span class="p">}</span>
-</span><span id="RecordController.get_record-27"><a href="#RecordController.get_record-27"><span class="linenos">27</span></a>
-</span><span id="RecordController.get_record-28"><a href="#RecordController.get_record-28"><span class="linenos">28</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">record_service</span><span class="o">.</span><span class="n">get_masked_record</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">record_id</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="RecordController.get_record-32"><a href="#RecordController.get_record-32"><span class="linenos">32</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_record</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+</span><span id="RecordController.get_record-33"><a href="#RecordController.get_record-33"><span class="linenos">33</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return record access results based on the authenticated user&#39;s role.&quot;&quot;&quot;</span>
+</span><span id="RecordController.get_record-34"><a href="#RecordController.get_record-34"><span class="linenos">34</span></a>        <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_repository</span><span class="o">.</span><span class="n">find_by_username</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
+</span><span id="RecordController.get_record-35"><a href="#RecordController.get_record-35"><span class="linenos">35</span></a>
+</span><span id="RecordController.get_record-36"><a href="#RecordController.get_record-36"><span class="linenos">36</span></a>        <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="RecordController.get_record-37"><a href="#RecordController.get_record-37"><span class="linenos">37</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">audit_logger</span><span class="o">.</span><span class="n">log_event</span><span class="p">(</span>
+</span><span id="RecordController.get_record-38"><a href="#RecordController.get_record-38"><span class="linenos">38</span></a>                <span class="s2">&quot;record_access_unknown_user&quot;</span><span class="p">,</span>
+</span><span id="RecordController.get_record-39"><a href="#RecordController.get_record-39"><span class="linenos">39</span></a>                <span class="n">username</span><span class="p">,</span>
+</span><span id="RecordController.get_record-40"><a href="#RecordController.get_record-40"><span class="linenos">40</span></a>                <span class="s2">&quot;failure&quot;</span><span class="p">,</span>
+</span><span id="RecordController.get_record-41"><a href="#RecordController.get_record-41"><span class="linenos">41</span></a>            <span class="p">)</span>
+</span><span id="RecordController.get_record-42"><a href="#RecordController.get_record-42"><span class="linenos">42</span></a>            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;failure&quot;</span><span class="p">,</span> <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;User not found&quot;</span><span class="p">}</span>
+</span><span id="RecordController.get_record-43"><a href="#RecordController.get_record-43"><span class="linenos">43</span></a>
+</span><span id="RecordController.get_record-44"><a href="#RecordController.get_record-44"><span class="linenos">44</span></a>        <span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">role</span> <span class="o">==</span> <span class="s2">&quot;patient&quot;</span><span class="p">:</span>
+</span><span id="RecordController.get_record-45"><a href="#RecordController.get_record-45"><span class="linenos">45</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">audit_logger</span><span class="o">.</span><span class="n">log_event</span><span class="p">(</span>
+</span><span id="RecordController.get_record-46"><a href="#RecordController.get_record-46"><span class="linenos">46</span></a>                <span class="s2">&quot;patient_record_viewed&quot;</span><span class="p">,</span>
+</span><span id="RecordController.get_record-47"><a href="#RecordController.get_record-47"><span class="linenos">47</span></a>                <span class="n">username</span><span class="p">,</span>
+</span><span id="RecordController.get_record-48"><a href="#RecordController.get_record-48"><span class="linenos">48</span></a>                <span class="s2">&quot;success&quot;</span><span class="p">,</span>
+</span><span id="RecordController.get_record-49"><a href="#RecordController.get_record-49"><span class="linenos">49</span></a>            <span class="p">)</span>
+</span><span id="RecordController.get_record-50"><a href="#RecordController.get_record-50"><span class="linenos">50</span></a>            <span class="k">return</span> <span class="p">{</span>
+</span><span id="RecordController.get_record-51"><a href="#RecordController.get_record-51"><span class="linenos">51</span></a>                <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;success&quot;</span><span class="p">,</span>
+</span><span id="RecordController.get_record-52"><a href="#RecordController.get_record-52"><span class="linenos">52</span></a>                <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;patient&quot;</span><span class="p">,</span>
+</span><span id="RecordController.get_record-53"><a href="#RecordController.get_record-53"><span class="linenos">53</span></a>                <span class="s2">&quot;records&quot;</span><span class="p">:</span> <span class="p">[],</span>
+</span><span id="RecordController.get_record-54"><a href="#RecordController.get_record-54"><span class="linenos">54</span></a>                <span class="s2">&quot;appointments&quot;</span><span class="p">:</span> <span class="p">[],</span>
+</span><span id="RecordController.get_record-55"><a href="#RecordController.get_record-55"><span class="linenos">55</span></a>                <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="p">(</span>
+</span><span id="RecordController.get_record-56"><a href="#RecordController.get_record-56"><span class="linenos">56</span></a>                    <span class="s2">&quot;No appointments, please book one by calling &quot;</span>
+</span><span id="RecordController.get_record-57"><a href="#RecordController.get_record-57"><span class="linenos">57</span></a>                    <span class="s2">&quot;12345678910 to schedule.&quot;</span>
+</span><span id="RecordController.get_record-58"><a href="#RecordController.get_record-58"><span class="linenos">58</span></a>                <span class="p">),</span>
+</span><span id="RecordController.get_record-59"><a href="#RecordController.get_record-59"><span class="linenos">59</span></a>            <span class="p">}</span>
+</span><span id="RecordController.get_record-60"><a href="#RecordController.get_record-60"><span class="linenos">60</span></a>
+</span><span id="RecordController.get_record-61"><a href="#RecordController.get_record-61"><span class="linenos">61</span></a>        <span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">role</span> <span class="o">==</span> <span class="s2">&quot;admin&quot;</span><span class="p">:</span>
+</span><span id="RecordController.get_record-62"><a href="#RecordController.get_record-62"><span class="linenos">62</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">audit_logger</span><span class="o">.</span><span class="n">log_event</span><span class="p">(</span>
+</span><span id="RecordController.get_record-63"><a href="#RecordController.get_record-63"><span class="linenos">63</span></a>                <span class="s2">&quot;admin_record_access_denied&quot;</span><span class="p">,</span>
+</span><span id="RecordController.get_record-64"><a href="#RecordController.get_record-64"><span class="linenos">64</span></a>                <span class="n">username</span><span class="p">,</span>
+</span><span id="RecordController.get_record-65"><a href="#RecordController.get_record-65"><span class="linenos">65</span></a>                <span class="s2">&quot;failure&quot;</span><span class="p">,</span>
+</span><span id="RecordController.get_record-66"><a href="#RecordController.get_record-66"><span class="linenos">66</span></a>            <span class="p">)</span>
+</span><span id="RecordController.get_record-67"><a href="#RecordController.get_record-67"><span class="linenos">67</span></a>            <span class="k">return</span> <span class="p">{</span>
+</span><span id="RecordController.get_record-68"><a href="#RecordController.get_record-68"><span class="linenos">68</span></a>                <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;failure&quot;</span><span class="p">,</span>
+</span><span id="RecordController.get_record-69"><a href="#RecordController.get_record-69"><span class="linenos">69</span></a>                <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="p">(</span>
+</span><span id="RecordController.get_record-70"><a href="#RecordController.get_record-70"><span class="linenos">70</span></a>                    <span class="s2">&quot;Admin access is limited to audit logs. &quot;</span>
+</span><span id="RecordController.get_record-71"><a href="#RecordController.get_record-71"><span class="linenos">71</span></a>                    <span class="s2">&quot;Admins cannot retrieve patient records.&quot;</span>
+</span><span id="RecordController.get_record-72"><a href="#RecordController.get_record-72"><span class="linenos">72</span></a>                <span class="p">),</span>
+</span><span id="RecordController.get_record-73"><a href="#RecordController.get_record-73"><span class="linenos">73</span></a>            <span class="p">}</span>
+</span><span id="RecordController.get_record-74"><a href="#RecordController.get_record-74"><span class="linenos">74</span></a>
+</span><span id="RecordController.get_record-75"><a href="#RecordController.get_record-75"><span class="linenos">75</span></a>        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">access_control_service</span><span class="o">.</span><span class="n">is_authorized</span><span class="p">(</span>
+</span><span id="RecordController.get_record-76"><a href="#RecordController.get_record-76"><span class="linenos">76</span></a>            <span class="n">user</span><span class="p">,</span>
+</span><span id="RecordController.get_record-77"><a href="#RecordController.get_record-77"><span class="linenos">77</span></a>            <span class="s2">&quot;view_masked_record&quot;</span><span class="p">,</span>
+</span><span id="RecordController.get_record-78"><a href="#RecordController.get_record-78"><span class="linenos">78</span></a>        <span class="p">):</span>
+</span><span id="RecordController.get_record-79"><a href="#RecordController.get_record-79"><span class="linenos">79</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">audit_logger</span><span class="o">.</span><span class="n">log_event</span><span class="p">(</span>
+</span><span id="RecordController.get_record-80"><a href="#RecordController.get_record-80"><span class="linenos">80</span></a>                <span class="s2">&quot;record_access_denied&quot;</span><span class="p">,</span>
+</span><span id="RecordController.get_record-81"><a href="#RecordController.get_record-81"><span class="linenos">81</span></a>                <span class="n">username</span><span class="p">,</span>
+</span><span id="RecordController.get_record-82"><a href="#RecordController.get_record-82"><span class="linenos">82</span></a>                <span class="s2">&quot;failure&quot;</span><span class="p">,</span>
+</span><span id="RecordController.get_record-83"><a href="#RecordController.get_record-83"><span class="linenos">83</span></a>            <span class="p">)</span>
+</span><span id="RecordController.get_record-84"><a href="#RecordController.get_record-84"><span class="linenos">84</span></a>            <span class="k">return</span> <span class="p">{</span>
+</span><span id="RecordController.get_record-85"><a href="#RecordController.get_record-85"><span class="linenos">85</span></a>                <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;failure&quot;</span><span class="p">,</span>
+</span><span id="RecordController.get_record-86"><a href="#RecordController.get_record-86"><span class="linenos">86</span></a>                <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;Only providers can retrieve Jane Doe&#39;s protected record.&quot;</span><span class="p">,</span>
+</span><span id="RecordController.get_record-87"><a href="#RecordController.get_record-87"><span class="linenos">87</span></a>            <span class="p">}</span>
+</span><span id="RecordController.get_record-88"><a href="#RecordController.get_record-88"><span class="linenos">88</span></a>
+</span><span id="RecordController.get_record-89"><a href="#RecordController.get_record-89"><span class="linenos">89</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">audit_logger</span><span class="o">.</span><span class="n">log_event</span><span class="p">(</span>
+</span><span id="RecordController.get_record-90"><a href="#RecordController.get_record-90"><span class="linenos">90</span></a>            <span class="s2">&quot;provider_record_access_requested&quot;</span><span class="p">,</span>
+</span><span id="RecordController.get_record-91"><a href="#RecordController.get_record-91"><span class="linenos">91</span></a>            <span class="n">username</span><span class="p">,</span>
+</span><span id="RecordController.get_record-92"><a href="#RecordController.get_record-92"><span class="linenos">92</span></a>            <span class="s2">&quot;success&quot;</span><span class="p">,</span>
+</span><span id="RecordController.get_record-93"><a href="#RecordController.get_record-93"><span class="linenos">93</span></a>        <span class="p">)</span>
+</span><span id="RecordController.get_record-94"><a href="#RecordController.get_record-94"><span class="linenos">94</span></a>
+</span><span id="RecordController.get_record-95"><a href="#RecordController.get_record-95"><span class="linenos">95</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">record_service</span><span class="o">.</span><span class="n">get_masked_record</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">record_id</span><span class="p">)</span>
 </span></pre></div>
 
 
-            <div class="docstring"><p>Look up the requesting user, then delegate secure record retrieval
-to the service layer.</p>
+            <div class="docstring"><p>Return record access results based on the authenticated user's role.</p>
 </div>
 
 

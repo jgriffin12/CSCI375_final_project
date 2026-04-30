@@ -48,6 +48,9 @@
                         <li>
                                 <a class="function" href="#AuditLogger.get_all_events">get_all_events</a>
                         </li>
+                        <li>
+                                <a class="function" href="#AuditLogger.get_log_text">get_log_text</a>
+                        </li>
                 </ul>
 
             </li>
@@ -67,73 +70,73 @@
                     <h1 class="modulename">
 <a href="./../../apps.html">apps</a><wbr>.<a href="./../services.html">services</a><wbr>.auditLogger    </h1>
 
-                
+                        <div class="docstring"><p>Singleton audit logging service.</p>
+</div>
+
                         <input id="mod-auditLogger-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
 
                         <label class="view-source-button" for="mod-auditLogger-view-source"><span>View Source</span></label>
 
-                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos"> 1</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span>
-</span><span id="L-2"><a href="#L-2"><span class="linenos"> 2</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">apps.models.secEvent</span><span class="w"> </span><span class="kn">import</span> <span class="n">SecurityEvent</span>
-</span><span id="L-3"><a href="#L-3"><span class="linenos"> 3</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">apps.repositories.auditRepo</span><span class="w"> </span><span class="kn">import</span> <span class="n">AuditRepository</span>
+                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos"> 1</span></a><span class="sd">&quot;&quot;&quot;Singleton audit logging service.&quot;&quot;&quot;</span>
+</span><span id="L-2"><a href="#L-2"><span class="linenos"> 2</span></a>
+</span><span id="L-3"><a href="#L-3"><span class="linenos"> 3</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span>
 </span><span id="L-4"><a href="#L-4"><span class="linenos"> 4</span></a>
-</span><span id="L-5"><a href="#L-5"><span class="linenos"> 5</span></a>
-</span><span id="L-6"><a href="#L-6"><span class="linenos"> 6</span></a><span class="k">class</span><span class="w"> </span><span class="nc">AuditLogger</span><span class="p">:</span>
-</span><span id="L-7"><a href="#L-7"><span class="linenos"> 7</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="L-8"><a href="#L-8"><span class="linenos"> 8</span></a><span class="sd">    Singleton service responsible for recording security-related actions.</span>
-</span><span id="L-9"><a href="#L-9"><span class="linenos"> 9</span></a>
-</span><span id="L-10"><a href="#L-10"><span class="linenos">10</span></a><span class="sd">    This ensures the application uses one shared audit logger so audit</span>
-</span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a><span class="sd">    events are collected in a single place across the system.</span>
-</span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a>
-</span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a>    <span class="n">_instance</span> <span class="o">=</span> <span class="kc">None</span>
-</span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a>    <span class="n">_initialized</span> <span class="o">=</span> <span class="kc">False</span>
-</span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a>
-</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a><span class="sd">        Ensure only one AuditLogger instance is ever created.</span>
-</span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a>        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_instance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a>            <span class="bp">cls</span><span class="o">.</span><span class="n">_instance</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">AuditLogger</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
-</span><span id="L-23"><a href="#L-23"><span class="linenos">23</span></a>        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_instance</span>
-</span><span id="L-24"><a href="#L-24"><span class="linenos">24</span></a>
-</span><span id="L-25"><a href="#L-25"><span class="linenos">25</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="L-26"><a href="#L-26"><span class="linenos">26</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="L-27"><a href="#L-27"><span class="linenos">27</span></a><span class="sd">        Initialize the singleton only once.</span>
-</span><span id="L-28"><a href="#L-28"><span class="linenos">28</span></a>
-</span><span id="L-29"><a href="#L-29"><span class="linenos">29</span></a><span class="sd">        Without this guard, every call to AuditLogger() would reset the</span>
-</span><span id="L-30"><a href="#L-30"><span class="linenos">30</span></a><span class="sd">        repository and event counter.</span>
-</span><span id="L-31"><a href="#L-31"><span class="linenos">31</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="L-32"><a href="#L-32"><span class="linenos">32</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">_initialized</span><span class="p">:</span>
-</span><span id="L-33"><a href="#L-33"><span class="linenos">33</span></a>            <span class="k">return</span>
-</span><span id="L-34"><a href="#L-34"><span class="linenos">34</span></a>
-</span><span id="L-35"><a href="#L-35"><span class="linenos">35</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">audit_repository</span> <span class="o">=</span> <span class="n">AuditRepository</span><span class="p">()</span>
-</span><span id="L-36"><a href="#L-36"><span class="linenos">36</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">next_event_id</span> <span class="o">=</span> <span class="mi">1</span>
-</span><span id="L-37"><a href="#L-37"><span class="linenos">37</span></a>        <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">True</span>
-</span><span id="L-38"><a href="#L-38"><span class="linenos">38</span></a>
-</span><span id="L-39"><a href="#L-39"><span class="linenos">39</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">log_event</span><span class="p">(</span>
-</span><span id="L-40"><a href="#L-40"><span class="linenos">40</span></a>            <span class="bp">self</span><span class="p">,</span>
-</span><span id="L-41"><a href="#L-41"><span class="linenos">41</span></a>            <span class="n">event_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-</span><span id="L-42"><a href="#L-42"><span class="linenos">42</span></a>            <span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-</span><span id="L-43"><a href="#L-43"><span class="linenos">43</span></a>            <span class="n">status</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SecurityEvent</span><span class="p">:</span>
-</span><span id="L-44"><a href="#L-44"><span class="linenos">44</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="L-45"><a href="#L-45"><span class="linenos">45</span></a><span class="sd">        Create and store a new security event.</span>
-</span><span id="L-46"><a href="#L-46"><span class="linenos">46</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="L-47"><a href="#L-47"><span class="linenos">47</span></a>        <span class="n">event</span> <span class="o">=</span> <span class="n">SecurityEvent</span><span class="p">(</span>
-</span><span id="L-48"><a href="#L-48"><span class="linenos">48</span></a>            <span class="n">event_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">next_event_id</span><span class="p">,</span>
-</span><span id="L-49"><a href="#L-49"><span class="linenos">49</span></a>            <span class="n">timestamp</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">),</span>
-</span><span id="L-50"><a href="#L-50"><span class="linenos">50</span></a>            <span class="n">event_type</span><span class="o">=</span><span class="n">event_type</span><span class="p">,</span>
-</span><span id="L-51"><a href="#L-51"><span class="linenos">51</span></a>            <span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">,</span>
-</span><span id="L-52"><a href="#L-52"><span class="linenos">52</span></a>            <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="p">,</span>
-</span><span id="L-53"><a href="#L-53"><span class="linenos">53</span></a>        <span class="p">)</span>
-</span><span id="L-54"><a href="#L-54"><span class="linenos">54</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">audit_repository</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
-</span><span id="L-55"><a href="#L-55"><span class="linenos">55</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">next_event_id</span> <span class="o">+=</span> <span class="mi">1</span>
-</span><span id="L-56"><a href="#L-56"><span class="linenos">56</span></a>        <span class="k">return</span> <span class="n">event</span>
+</span><span id="L-5"><a href="#L-5"><span class="linenos"> 5</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">apps.models.secEvent</span><span class="w"> </span><span class="kn">import</span> <span class="n">SecurityEvent</span>
+</span><span id="L-6"><a href="#L-6"><span class="linenos"> 6</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">apps.repositories.auditRepo</span><span class="w"> </span><span class="kn">import</span> <span class="n">AuditRepository</span>
+</span><span id="L-7"><a href="#L-7"><span class="linenos"> 7</span></a>
+</span><span id="L-8"><a href="#L-8"><span class="linenos"> 8</span></a>
+</span><span id="L-9"><a href="#L-9"><span class="linenos"> 9</span></a><span class="k">class</span><span class="w"> </span><span class="nc">AuditLogger</span><span class="p">:</span>
+</span><span id="L-10"><a href="#L-10"><span class="linenos">10</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Centralized singleton service for recording security events.&quot;&quot;&quot;</span>
+</span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a>
+</span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a>    <span class="n">_instance</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a>    <span class="n">_initialized</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a>
+</span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;AuditLogger&quot;</span><span class="p">:</span>
+</span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create or return the shared AuditLogger instance.&quot;&quot;&quot;</span>
+</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a>        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_instance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a>            <span class="bp">cls</span><span class="o">.</span><span class="n">_instance</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">AuditLogger</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+</span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a>        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_instance</span>
+</span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a>
+</span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the audit logger once.&quot;&quot;&quot;</span>
+</span><span id="L-23"><a href="#L-23"><span class="linenos">23</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">_initialized</span><span class="p">:</span>
+</span><span id="L-24"><a href="#L-24"><span class="linenos">24</span></a>            <span class="k">return</span>
+</span><span id="L-25"><a href="#L-25"><span class="linenos">25</span></a>
+</span><span id="L-26"><a href="#L-26"><span class="linenos">26</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">audit_repository</span> <span class="o">=</span> <span class="n">AuditRepository</span><span class="p">()</span>
+</span><span id="L-27"><a href="#L-27"><span class="linenos">27</span></a>        <span class="n">existing_events</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">audit_repository</span><span class="o">.</span><span class="n">get_all</span><span class="p">()</span>
+</span><span id="L-28"><a href="#L-28"><span class="linenos">28</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">next_event_id</span> <span class="o">=</span> <span class="p">(</span>
+</span><span id="L-29"><a href="#L-29"><span class="linenos">29</span></a>            <span class="nb">max</span><span class="p">((</span><span class="n">event</span><span class="o">.</span><span class="n">event_id</span> <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">existing_events</span><span class="p">),</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+</span><span id="L-30"><a href="#L-30"><span class="linenos">30</span></a>        <span class="p">)</span>
+</span><span id="L-31"><a href="#L-31"><span class="linenos">31</span></a>
+</span><span id="L-32"><a href="#L-32"><span class="linenos">32</span></a>        <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span id="L-33"><a href="#L-33"><span class="linenos">33</span></a>
+</span><span id="L-34"><a href="#L-34"><span class="linenos">34</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">log_event</span><span class="p">(</span>
+</span><span id="L-35"><a href="#L-35"><span class="linenos">35</span></a>        <span class="bp">self</span><span class="p">,</span>
+</span><span id="L-36"><a href="#L-36"><span class="linenos">36</span></a>        <span class="n">event_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span id="L-37"><a href="#L-37"><span class="linenos">37</span></a>        <span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span id="L-38"><a href="#L-38"><span class="linenos">38</span></a>        <span class="n">status</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span id="L-39"><a href="#L-39"><span class="linenos">39</span></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SecurityEvent</span><span class="p">:</span>
+</span><span id="L-40"><a href="#L-40"><span class="linenos">40</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create, store, and return a new security event.&quot;&quot;&quot;</span>
+</span><span id="L-41"><a href="#L-41"><span class="linenos">41</span></a>        <span class="n">event</span> <span class="o">=</span> <span class="n">SecurityEvent</span><span class="p">(</span>
+</span><span id="L-42"><a href="#L-42"><span class="linenos">42</span></a>            <span class="n">event_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">next_event_id</span><span class="p">,</span>
+</span><span id="L-43"><a href="#L-43"><span class="linenos">43</span></a>            <span class="n">timestamp</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">),</span>
+</span><span id="L-44"><a href="#L-44"><span class="linenos">44</span></a>            <span class="n">event_type</span><span class="o">=</span><span class="n">event_type</span><span class="p">,</span>
+</span><span id="L-45"><a href="#L-45"><span class="linenos">45</span></a>            <span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">,</span>
+</span><span id="L-46"><a href="#L-46"><span class="linenos">46</span></a>            <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="p">,</span>
+</span><span id="L-47"><a href="#L-47"><span class="linenos">47</span></a>        <span class="p">)</span>
+</span><span id="L-48"><a href="#L-48"><span class="linenos">48</span></a>
+</span><span id="L-49"><a href="#L-49"><span class="linenos">49</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">audit_repository</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+</span><span id="L-50"><a href="#L-50"><span class="linenos">50</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">next_event_id</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span id="L-51"><a href="#L-51"><span class="linenos">51</span></a>
+</span><span id="L-52"><a href="#L-52"><span class="linenos">52</span></a>        <span class="k">return</span> <span class="n">event</span>
+</span><span id="L-53"><a href="#L-53"><span class="linenos">53</span></a>
+</span><span id="L-54"><a href="#L-54"><span class="linenos">54</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_all_events</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">SecurityEvent</span><span class="p">]:</span>
+</span><span id="L-55"><a href="#L-55"><span class="linenos">55</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return every stored audit event.&quot;&quot;&quot;</span>
+</span><span id="L-56"><a href="#L-56"><span class="linenos">56</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">audit_repository</span><span class="o">.</span><span class="n">get_all</span><span class="p">()</span>
 </span><span id="L-57"><a href="#L-57"><span class="linenos">57</span></a>
-</span><span id="L-58"><a href="#L-58"><span class="linenos">58</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_all_events</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="L-59"><a href="#L-59"><span class="linenos">59</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="L-60"><a href="#L-60"><span class="linenos">60</span></a><span class="sd">        Return every stored audit event.</span>
-</span><span id="L-61"><a href="#L-61"><span class="linenos">61</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="L-62"><a href="#L-62"><span class="linenos">62</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">audit_repository</span><span class="o">.</span><span class="n">get_all</span><span class="p">()</span>
+</span><span id="L-58"><a href="#L-58"><span class="linenos">58</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_log_text</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span id="L-59"><a href="#L-59"><span class="linenos">59</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a readable text version of the audit log.&quot;&quot;&quot;</span>
+</span><span id="L-60"><a href="#L-60"><span class="linenos">60</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">audit_repository</span><span class="o">.</span><span class="n">get_log_text</span><span class="p">()</span>
 </span></pre></div>
 
 
@@ -149,70 +152,62 @@
 
     </div>
     <a class="headerlink" href="#AuditLogger"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="AuditLogger-7"><a href="#AuditLogger-7"><span class="linenos"> 7</span></a><span class="k">class</span><span class="w"> </span><span class="nc">AuditLogger</span><span class="p">:</span>
-</span><span id="AuditLogger-8"><a href="#AuditLogger-8"><span class="linenos"> 8</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="AuditLogger-9"><a href="#AuditLogger-9"><span class="linenos"> 9</span></a><span class="sd">    Singleton service responsible for recording security-related actions.</span>
-</span><span id="AuditLogger-10"><a href="#AuditLogger-10"><span class="linenos">10</span></a>
-</span><span id="AuditLogger-11"><a href="#AuditLogger-11"><span class="linenos">11</span></a><span class="sd">    This ensures the application uses one shared audit logger so audit</span>
-</span><span id="AuditLogger-12"><a href="#AuditLogger-12"><span class="linenos">12</span></a><span class="sd">    events are collected in a single place across the system.</span>
-</span><span id="AuditLogger-13"><a href="#AuditLogger-13"><span class="linenos">13</span></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="AuditLogger-14"><a href="#AuditLogger-14"><span class="linenos">14</span></a>
-</span><span id="AuditLogger-15"><a href="#AuditLogger-15"><span class="linenos">15</span></a>    <span class="n">_instance</span> <span class="o">=</span> <span class="kc">None</span>
-</span><span id="AuditLogger-16"><a href="#AuditLogger-16"><span class="linenos">16</span></a>    <span class="n">_initialized</span> <span class="o">=</span> <span class="kc">False</span>
-</span><span id="AuditLogger-17"><a href="#AuditLogger-17"><span class="linenos">17</span></a>
-</span><span id="AuditLogger-18"><a href="#AuditLogger-18"><span class="linenos">18</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-</span><span id="AuditLogger-19"><a href="#AuditLogger-19"><span class="linenos">19</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="AuditLogger-20"><a href="#AuditLogger-20"><span class="linenos">20</span></a><span class="sd">        Ensure only one AuditLogger instance is ever created.</span>
-</span><span id="AuditLogger-21"><a href="#AuditLogger-21"><span class="linenos">21</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="AuditLogger-22"><a href="#AuditLogger-22"><span class="linenos">22</span></a>        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_instance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="AuditLogger-23"><a href="#AuditLogger-23"><span class="linenos">23</span></a>            <span class="bp">cls</span><span class="o">.</span><span class="n">_instance</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">AuditLogger</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
-</span><span id="AuditLogger-24"><a href="#AuditLogger-24"><span class="linenos">24</span></a>        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_instance</span>
-</span><span id="AuditLogger-25"><a href="#AuditLogger-25"><span class="linenos">25</span></a>
-</span><span id="AuditLogger-26"><a href="#AuditLogger-26"><span class="linenos">26</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="AuditLogger-27"><a href="#AuditLogger-27"><span class="linenos">27</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="AuditLogger-28"><a href="#AuditLogger-28"><span class="linenos">28</span></a><span class="sd">        Initialize the singleton only once.</span>
-</span><span id="AuditLogger-29"><a href="#AuditLogger-29"><span class="linenos">29</span></a>
-</span><span id="AuditLogger-30"><a href="#AuditLogger-30"><span class="linenos">30</span></a><span class="sd">        Without this guard, every call to AuditLogger() would reset the</span>
-</span><span id="AuditLogger-31"><a href="#AuditLogger-31"><span class="linenos">31</span></a><span class="sd">        repository and event counter.</span>
-</span><span id="AuditLogger-32"><a href="#AuditLogger-32"><span class="linenos">32</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="AuditLogger-33"><a href="#AuditLogger-33"><span class="linenos">33</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">_initialized</span><span class="p">:</span>
-</span><span id="AuditLogger-34"><a href="#AuditLogger-34"><span class="linenos">34</span></a>            <span class="k">return</span>
-</span><span id="AuditLogger-35"><a href="#AuditLogger-35"><span class="linenos">35</span></a>
-</span><span id="AuditLogger-36"><a href="#AuditLogger-36"><span class="linenos">36</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">audit_repository</span> <span class="o">=</span> <span class="n">AuditRepository</span><span class="p">()</span>
-</span><span id="AuditLogger-37"><a href="#AuditLogger-37"><span class="linenos">37</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">next_event_id</span> <span class="o">=</span> <span class="mi">1</span>
-</span><span id="AuditLogger-38"><a href="#AuditLogger-38"><span class="linenos">38</span></a>        <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">True</span>
-</span><span id="AuditLogger-39"><a href="#AuditLogger-39"><span class="linenos">39</span></a>
-</span><span id="AuditLogger-40"><a href="#AuditLogger-40"><span class="linenos">40</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">log_event</span><span class="p">(</span>
-</span><span id="AuditLogger-41"><a href="#AuditLogger-41"><span class="linenos">41</span></a>            <span class="bp">self</span><span class="p">,</span>
-</span><span id="AuditLogger-42"><a href="#AuditLogger-42"><span class="linenos">42</span></a>            <span class="n">event_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-</span><span id="AuditLogger-43"><a href="#AuditLogger-43"><span class="linenos">43</span></a>            <span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-</span><span id="AuditLogger-44"><a href="#AuditLogger-44"><span class="linenos">44</span></a>            <span class="n">status</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SecurityEvent</span><span class="p">:</span>
-</span><span id="AuditLogger-45"><a href="#AuditLogger-45"><span class="linenos">45</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="AuditLogger-46"><a href="#AuditLogger-46"><span class="linenos">46</span></a><span class="sd">        Create and store a new security event.</span>
-</span><span id="AuditLogger-47"><a href="#AuditLogger-47"><span class="linenos">47</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="AuditLogger-48"><a href="#AuditLogger-48"><span class="linenos">48</span></a>        <span class="n">event</span> <span class="o">=</span> <span class="n">SecurityEvent</span><span class="p">(</span>
-</span><span id="AuditLogger-49"><a href="#AuditLogger-49"><span class="linenos">49</span></a>            <span class="n">event_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">next_event_id</span><span class="p">,</span>
-</span><span id="AuditLogger-50"><a href="#AuditLogger-50"><span class="linenos">50</span></a>            <span class="n">timestamp</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">),</span>
-</span><span id="AuditLogger-51"><a href="#AuditLogger-51"><span class="linenos">51</span></a>            <span class="n">event_type</span><span class="o">=</span><span class="n">event_type</span><span class="p">,</span>
-</span><span id="AuditLogger-52"><a href="#AuditLogger-52"><span class="linenos">52</span></a>            <span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">,</span>
-</span><span id="AuditLogger-53"><a href="#AuditLogger-53"><span class="linenos">53</span></a>            <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="p">,</span>
-</span><span id="AuditLogger-54"><a href="#AuditLogger-54"><span class="linenos">54</span></a>        <span class="p">)</span>
-</span><span id="AuditLogger-55"><a href="#AuditLogger-55"><span class="linenos">55</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">audit_repository</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
-</span><span id="AuditLogger-56"><a href="#AuditLogger-56"><span class="linenos">56</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">next_event_id</span> <span class="o">+=</span> <span class="mi">1</span>
-</span><span id="AuditLogger-57"><a href="#AuditLogger-57"><span class="linenos">57</span></a>        <span class="k">return</span> <span class="n">event</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="AuditLogger-10"><a href="#AuditLogger-10"><span class="linenos">10</span></a><span class="k">class</span><span class="w"> </span><span class="nc">AuditLogger</span><span class="p">:</span>
+</span><span id="AuditLogger-11"><a href="#AuditLogger-11"><span class="linenos">11</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Centralized singleton service for recording security events.&quot;&quot;&quot;</span>
+</span><span id="AuditLogger-12"><a href="#AuditLogger-12"><span class="linenos">12</span></a>
+</span><span id="AuditLogger-13"><a href="#AuditLogger-13"><span class="linenos">13</span></a>    <span class="n">_instance</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span id="AuditLogger-14"><a href="#AuditLogger-14"><span class="linenos">14</span></a>    <span class="n">_initialized</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span id="AuditLogger-15"><a href="#AuditLogger-15"><span class="linenos">15</span></a>
+</span><span id="AuditLogger-16"><a href="#AuditLogger-16"><span class="linenos">16</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;AuditLogger&quot;</span><span class="p">:</span>
+</span><span id="AuditLogger-17"><a href="#AuditLogger-17"><span class="linenos">17</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create or return the shared AuditLogger instance.&quot;&quot;&quot;</span>
+</span><span id="AuditLogger-18"><a href="#AuditLogger-18"><span class="linenos">18</span></a>        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_instance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="AuditLogger-19"><a href="#AuditLogger-19"><span class="linenos">19</span></a>            <span class="bp">cls</span><span class="o">.</span><span class="n">_instance</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">AuditLogger</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+</span><span id="AuditLogger-20"><a href="#AuditLogger-20"><span class="linenos">20</span></a>        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_instance</span>
+</span><span id="AuditLogger-21"><a href="#AuditLogger-21"><span class="linenos">21</span></a>
+</span><span id="AuditLogger-22"><a href="#AuditLogger-22"><span class="linenos">22</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="AuditLogger-23"><a href="#AuditLogger-23"><span class="linenos">23</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the audit logger once.&quot;&quot;&quot;</span>
+</span><span id="AuditLogger-24"><a href="#AuditLogger-24"><span class="linenos">24</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">_initialized</span><span class="p">:</span>
+</span><span id="AuditLogger-25"><a href="#AuditLogger-25"><span class="linenos">25</span></a>            <span class="k">return</span>
+</span><span id="AuditLogger-26"><a href="#AuditLogger-26"><span class="linenos">26</span></a>
+</span><span id="AuditLogger-27"><a href="#AuditLogger-27"><span class="linenos">27</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">audit_repository</span> <span class="o">=</span> <span class="n">AuditRepository</span><span class="p">()</span>
+</span><span id="AuditLogger-28"><a href="#AuditLogger-28"><span class="linenos">28</span></a>        <span class="n">existing_events</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">audit_repository</span><span class="o">.</span><span class="n">get_all</span><span class="p">()</span>
+</span><span id="AuditLogger-29"><a href="#AuditLogger-29"><span class="linenos">29</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">next_event_id</span> <span class="o">=</span> <span class="p">(</span>
+</span><span id="AuditLogger-30"><a href="#AuditLogger-30"><span class="linenos">30</span></a>            <span class="nb">max</span><span class="p">((</span><span class="n">event</span><span class="o">.</span><span class="n">event_id</span> <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">existing_events</span><span class="p">),</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+</span><span id="AuditLogger-31"><a href="#AuditLogger-31"><span class="linenos">31</span></a>        <span class="p">)</span>
+</span><span id="AuditLogger-32"><a href="#AuditLogger-32"><span class="linenos">32</span></a>
+</span><span id="AuditLogger-33"><a href="#AuditLogger-33"><span class="linenos">33</span></a>        <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span id="AuditLogger-34"><a href="#AuditLogger-34"><span class="linenos">34</span></a>
+</span><span id="AuditLogger-35"><a href="#AuditLogger-35"><span class="linenos">35</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">log_event</span><span class="p">(</span>
+</span><span id="AuditLogger-36"><a href="#AuditLogger-36"><span class="linenos">36</span></a>        <span class="bp">self</span><span class="p">,</span>
+</span><span id="AuditLogger-37"><a href="#AuditLogger-37"><span class="linenos">37</span></a>        <span class="n">event_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span id="AuditLogger-38"><a href="#AuditLogger-38"><span class="linenos">38</span></a>        <span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span id="AuditLogger-39"><a href="#AuditLogger-39"><span class="linenos">39</span></a>        <span class="n">status</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span id="AuditLogger-40"><a href="#AuditLogger-40"><span class="linenos">40</span></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SecurityEvent</span><span class="p">:</span>
+</span><span id="AuditLogger-41"><a href="#AuditLogger-41"><span class="linenos">41</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create, store, and return a new security event.&quot;&quot;&quot;</span>
+</span><span id="AuditLogger-42"><a href="#AuditLogger-42"><span class="linenos">42</span></a>        <span class="n">event</span> <span class="o">=</span> <span class="n">SecurityEvent</span><span class="p">(</span>
+</span><span id="AuditLogger-43"><a href="#AuditLogger-43"><span class="linenos">43</span></a>            <span class="n">event_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">next_event_id</span><span class="p">,</span>
+</span><span id="AuditLogger-44"><a href="#AuditLogger-44"><span class="linenos">44</span></a>            <span class="n">timestamp</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">),</span>
+</span><span id="AuditLogger-45"><a href="#AuditLogger-45"><span class="linenos">45</span></a>            <span class="n">event_type</span><span class="o">=</span><span class="n">event_type</span><span class="p">,</span>
+</span><span id="AuditLogger-46"><a href="#AuditLogger-46"><span class="linenos">46</span></a>            <span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">,</span>
+</span><span id="AuditLogger-47"><a href="#AuditLogger-47"><span class="linenos">47</span></a>            <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="p">,</span>
+</span><span id="AuditLogger-48"><a href="#AuditLogger-48"><span class="linenos">48</span></a>        <span class="p">)</span>
+</span><span id="AuditLogger-49"><a href="#AuditLogger-49"><span class="linenos">49</span></a>
+</span><span id="AuditLogger-50"><a href="#AuditLogger-50"><span class="linenos">50</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">audit_repository</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+</span><span id="AuditLogger-51"><a href="#AuditLogger-51"><span class="linenos">51</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">next_event_id</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span id="AuditLogger-52"><a href="#AuditLogger-52"><span class="linenos">52</span></a>
+</span><span id="AuditLogger-53"><a href="#AuditLogger-53"><span class="linenos">53</span></a>        <span class="k">return</span> <span class="n">event</span>
+</span><span id="AuditLogger-54"><a href="#AuditLogger-54"><span class="linenos">54</span></a>
+</span><span id="AuditLogger-55"><a href="#AuditLogger-55"><span class="linenos">55</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_all_events</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">SecurityEvent</span><span class="p">]:</span>
+</span><span id="AuditLogger-56"><a href="#AuditLogger-56"><span class="linenos">56</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return every stored audit event.&quot;&quot;&quot;</span>
+</span><span id="AuditLogger-57"><a href="#AuditLogger-57"><span class="linenos">57</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">audit_repository</span><span class="o">.</span><span class="n">get_all</span><span class="p">()</span>
 </span><span id="AuditLogger-58"><a href="#AuditLogger-58"><span class="linenos">58</span></a>
-</span><span id="AuditLogger-59"><a href="#AuditLogger-59"><span class="linenos">59</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_all_events</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="AuditLogger-60"><a href="#AuditLogger-60"><span class="linenos">60</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="AuditLogger-61"><a href="#AuditLogger-61"><span class="linenos">61</span></a><span class="sd">        Return every stored audit event.</span>
-</span><span id="AuditLogger-62"><a href="#AuditLogger-62"><span class="linenos">62</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="AuditLogger-63"><a href="#AuditLogger-63"><span class="linenos">63</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">audit_repository</span><span class="o">.</span><span class="n">get_all</span><span class="p">()</span>
+</span><span id="AuditLogger-59"><a href="#AuditLogger-59"><span class="linenos">59</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_log_text</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span id="AuditLogger-60"><a href="#AuditLogger-60"><span class="linenos">60</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a readable text version of the audit log.&quot;&quot;&quot;</span>
+</span><span id="AuditLogger-61"><a href="#AuditLogger-61"><span class="linenos">61</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">audit_repository</span><span class="o">.</span><span class="n">get_log_text</span><span class="p">()</span>
 </span></pre></div>
 
 
-            <div class="docstring"><p>Singleton service responsible for recording security-related actions.</p>
-
-<p>This ensures the application uses one shared audit logger so audit
-events are collected in a single place across the system.</p>
+            <div class="docstring"><p>Centralized singleton service for recording security events.</p>
 </div>
 
 
@@ -226,26 +221,22 @@ events are collected in a single place across the system.</p>
 
     </div>
     <a class="headerlink" href="#AuditLogger.__init__"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="AuditLogger.__init__-26"><a href="#AuditLogger.__init__-26"><span class="linenos">26</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="AuditLogger.__init__-27"><a href="#AuditLogger.__init__-27"><span class="linenos">27</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="AuditLogger.__init__-28"><a href="#AuditLogger.__init__-28"><span class="linenos">28</span></a><span class="sd">        Initialize the singleton only once.</span>
-</span><span id="AuditLogger.__init__-29"><a href="#AuditLogger.__init__-29"><span class="linenos">29</span></a>
-</span><span id="AuditLogger.__init__-30"><a href="#AuditLogger.__init__-30"><span class="linenos">30</span></a><span class="sd">        Without this guard, every call to AuditLogger() would reset the</span>
-</span><span id="AuditLogger.__init__-31"><a href="#AuditLogger.__init__-31"><span class="linenos">31</span></a><span class="sd">        repository and event counter.</span>
-</span><span id="AuditLogger.__init__-32"><a href="#AuditLogger.__init__-32"><span class="linenos">32</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="AuditLogger.__init__-33"><a href="#AuditLogger.__init__-33"><span class="linenos">33</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">_initialized</span><span class="p">:</span>
-</span><span id="AuditLogger.__init__-34"><a href="#AuditLogger.__init__-34"><span class="linenos">34</span></a>            <span class="k">return</span>
-</span><span id="AuditLogger.__init__-35"><a href="#AuditLogger.__init__-35"><span class="linenos">35</span></a>
-</span><span id="AuditLogger.__init__-36"><a href="#AuditLogger.__init__-36"><span class="linenos">36</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">audit_repository</span> <span class="o">=</span> <span class="n">AuditRepository</span><span class="p">()</span>
-</span><span id="AuditLogger.__init__-37"><a href="#AuditLogger.__init__-37"><span class="linenos">37</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">next_event_id</span> <span class="o">=</span> <span class="mi">1</span>
-</span><span id="AuditLogger.__init__-38"><a href="#AuditLogger.__init__-38"><span class="linenos">38</span></a>        <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">True</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="AuditLogger.__init__-22"><a href="#AuditLogger.__init__-22"><span class="linenos">22</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="AuditLogger.__init__-23"><a href="#AuditLogger.__init__-23"><span class="linenos">23</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the audit logger once.&quot;&quot;&quot;</span>
+</span><span id="AuditLogger.__init__-24"><a href="#AuditLogger.__init__-24"><span class="linenos">24</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">_initialized</span><span class="p">:</span>
+</span><span id="AuditLogger.__init__-25"><a href="#AuditLogger.__init__-25"><span class="linenos">25</span></a>            <span class="k">return</span>
+</span><span id="AuditLogger.__init__-26"><a href="#AuditLogger.__init__-26"><span class="linenos">26</span></a>
+</span><span id="AuditLogger.__init__-27"><a href="#AuditLogger.__init__-27"><span class="linenos">27</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">audit_repository</span> <span class="o">=</span> <span class="n">AuditRepository</span><span class="p">()</span>
+</span><span id="AuditLogger.__init__-28"><a href="#AuditLogger.__init__-28"><span class="linenos">28</span></a>        <span class="n">existing_events</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">audit_repository</span><span class="o">.</span><span class="n">get_all</span><span class="p">()</span>
+</span><span id="AuditLogger.__init__-29"><a href="#AuditLogger.__init__-29"><span class="linenos">29</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">next_event_id</span> <span class="o">=</span> <span class="p">(</span>
+</span><span id="AuditLogger.__init__-30"><a href="#AuditLogger.__init__-30"><span class="linenos">30</span></a>            <span class="nb">max</span><span class="p">((</span><span class="n">event</span><span class="o">.</span><span class="n">event_id</span> <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">existing_events</span><span class="p">),</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+</span><span id="AuditLogger.__init__-31"><a href="#AuditLogger.__init__-31"><span class="linenos">31</span></a>        <span class="p">)</span>
+</span><span id="AuditLogger.__init__-32"><a href="#AuditLogger.__init__-32"><span class="linenos">32</span></a>
+</span><span id="AuditLogger.__init__-33"><a href="#AuditLogger.__init__-33"><span class="linenos">33</span></a>        <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">True</span>
 </span></pre></div>
 
 
-            <div class="docstring"><p>Initialize the singleton only once.</p>
-
-<p>Without this guard, every call to AuditLogger() would reset the
-repository and event counter.</p>
+            <div class="docstring"><p>Initialize the audit logger once.</p>
 </div>
 
 
@@ -283,28 +274,29 @@ repository and event counter.</p>
 
     </div>
     <a class="headerlink" href="#AuditLogger.log_event"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="AuditLogger.log_event-40"><a href="#AuditLogger.log_event-40"><span class="linenos">40</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">log_event</span><span class="p">(</span>
-</span><span id="AuditLogger.log_event-41"><a href="#AuditLogger.log_event-41"><span class="linenos">41</span></a>            <span class="bp">self</span><span class="p">,</span>
-</span><span id="AuditLogger.log_event-42"><a href="#AuditLogger.log_event-42"><span class="linenos">42</span></a>            <span class="n">event_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-</span><span id="AuditLogger.log_event-43"><a href="#AuditLogger.log_event-43"><span class="linenos">43</span></a>            <span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-</span><span id="AuditLogger.log_event-44"><a href="#AuditLogger.log_event-44"><span class="linenos">44</span></a>            <span class="n">status</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SecurityEvent</span><span class="p">:</span>
-</span><span id="AuditLogger.log_event-45"><a href="#AuditLogger.log_event-45"><span class="linenos">45</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="AuditLogger.log_event-46"><a href="#AuditLogger.log_event-46"><span class="linenos">46</span></a><span class="sd">        Create and store a new security event.</span>
-</span><span id="AuditLogger.log_event-47"><a href="#AuditLogger.log_event-47"><span class="linenos">47</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="AuditLogger.log_event-48"><a href="#AuditLogger.log_event-48"><span class="linenos">48</span></a>        <span class="n">event</span> <span class="o">=</span> <span class="n">SecurityEvent</span><span class="p">(</span>
-</span><span id="AuditLogger.log_event-49"><a href="#AuditLogger.log_event-49"><span class="linenos">49</span></a>            <span class="n">event_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">next_event_id</span><span class="p">,</span>
-</span><span id="AuditLogger.log_event-50"><a href="#AuditLogger.log_event-50"><span class="linenos">50</span></a>            <span class="n">timestamp</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">),</span>
-</span><span id="AuditLogger.log_event-51"><a href="#AuditLogger.log_event-51"><span class="linenos">51</span></a>            <span class="n">event_type</span><span class="o">=</span><span class="n">event_type</span><span class="p">,</span>
-</span><span id="AuditLogger.log_event-52"><a href="#AuditLogger.log_event-52"><span class="linenos">52</span></a>            <span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">,</span>
-</span><span id="AuditLogger.log_event-53"><a href="#AuditLogger.log_event-53"><span class="linenos">53</span></a>            <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="p">,</span>
-</span><span id="AuditLogger.log_event-54"><a href="#AuditLogger.log_event-54"><span class="linenos">54</span></a>        <span class="p">)</span>
-</span><span id="AuditLogger.log_event-55"><a href="#AuditLogger.log_event-55"><span class="linenos">55</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">audit_repository</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
-</span><span id="AuditLogger.log_event-56"><a href="#AuditLogger.log_event-56"><span class="linenos">56</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">next_event_id</span> <span class="o">+=</span> <span class="mi">1</span>
-</span><span id="AuditLogger.log_event-57"><a href="#AuditLogger.log_event-57"><span class="linenos">57</span></a>        <span class="k">return</span> <span class="n">event</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="AuditLogger.log_event-35"><a href="#AuditLogger.log_event-35"><span class="linenos">35</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">log_event</span><span class="p">(</span>
+</span><span id="AuditLogger.log_event-36"><a href="#AuditLogger.log_event-36"><span class="linenos">36</span></a>        <span class="bp">self</span><span class="p">,</span>
+</span><span id="AuditLogger.log_event-37"><a href="#AuditLogger.log_event-37"><span class="linenos">37</span></a>        <span class="n">event_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span id="AuditLogger.log_event-38"><a href="#AuditLogger.log_event-38"><span class="linenos">38</span></a>        <span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span id="AuditLogger.log_event-39"><a href="#AuditLogger.log_event-39"><span class="linenos">39</span></a>        <span class="n">status</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span id="AuditLogger.log_event-40"><a href="#AuditLogger.log_event-40"><span class="linenos">40</span></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SecurityEvent</span><span class="p">:</span>
+</span><span id="AuditLogger.log_event-41"><a href="#AuditLogger.log_event-41"><span class="linenos">41</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create, store, and return a new security event.&quot;&quot;&quot;</span>
+</span><span id="AuditLogger.log_event-42"><a href="#AuditLogger.log_event-42"><span class="linenos">42</span></a>        <span class="n">event</span> <span class="o">=</span> <span class="n">SecurityEvent</span><span class="p">(</span>
+</span><span id="AuditLogger.log_event-43"><a href="#AuditLogger.log_event-43"><span class="linenos">43</span></a>            <span class="n">event_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">next_event_id</span><span class="p">,</span>
+</span><span id="AuditLogger.log_event-44"><a href="#AuditLogger.log_event-44"><span class="linenos">44</span></a>            <span class="n">timestamp</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">),</span>
+</span><span id="AuditLogger.log_event-45"><a href="#AuditLogger.log_event-45"><span class="linenos">45</span></a>            <span class="n">event_type</span><span class="o">=</span><span class="n">event_type</span><span class="p">,</span>
+</span><span id="AuditLogger.log_event-46"><a href="#AuditLogger.log_event-46"><span class="linenos">46</span></a>            <span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">,</span>
+</span><span id="AuditLogger.log_event-47"><a href="#AuditLogger.log_event-47"><span class="linenos">47</span></a>            <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="p">,</span>
+</span><span id="AuditLogger.log_event-48"><a href="#AuditLogger.log_event-48"><span class="linenos">48</span></a>        <span class="p">)</span>
+</span><span id="AuditLogger.log_event-49"><a href="#AuditLogger.log_event-49"><span class="linenos">49</span></a>
+</span><span id="AuditLogger.log_event-50"><a href="#AuditLogger.log_event-50"><span class="linenos">50</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">audit_repository</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+</span><span id="AuditLogger.log_event-51"><a href="#AuditLogger.log_event-51"><span class="linenos">51</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">next_event_id</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span id="AuditLogger.log_event-52"><a href="#AuditLogger.log_event-52"><span class="linenos">52</span></a>
+</span><span id="AuditLogger.log_event-53"><a href="#AuditLogger.log_event-53"><span class="linenos">53</span></a>        <span class="k">return</span> <span class="n">event</span>
 </span></pre></div>
 
 
-            <div class="docstring"><p>Create and store a new security event.</p>
+            <div class="docstring"><p>Create, store, and return a new security event.</p>
 </div>
 
 
@@ -314,21 +306,41 @@ repository and event counter.</p>
 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">get_all_events</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span></span><span class="return-annotation">):</span></span>
+        <span class="name">get_all_events</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span></span><span class="return-annotation">) -> <span class="nb">list</span><span class="p">[</span><span class="n"><a href="../models/secEvent.html#SecurityEvent">apps.models.secEvent.SecurityEvent</a></span><span class="p">]</span>:</span></span>
 
                 <label class="view-source-button" for="AuditLogger.get_all_events-view-source"><span>View Source</span></label>
 
     </div>
     <a class="headerlink" href="#AuditLogger.get_all_events"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="AuditLogger.get_all_events-59"><a href="#AuditLogger.get_all_events-59"><span class="linenos">59</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_all_events</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="AuditLogger.get_all_events-60"><a href="#AuditLogger.get_all_events-60"><span class="linenos">60</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="AuditLogger.get_all_events-61"><a href="#AuditLogger.get_all_events-61"><span class="linenos">61</span></a><span class="sd">        Return every stored audit event.</span>
-</span><span id="AuditLogger.get_all_events-62"><a href="#AuditLogger.get_all_events-62"><span class="linenos">62</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="AuditLogger.get_all_events-63"><a href="#AuditLogger.get_all_events-63"><span class="linenos">63</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">audit_repository</span><span class="o">.</span><span class="n">get_all</span><span class="p">()</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="AuditLogger.get_all_events-55"><a href="#AuditLogger.get_all_events-55"><span class="linenos">55</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_all_events</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">SecurityEvent</span><span class="p">]:</span>
+</span><span id="AuditLogger.get_all_events-56"><a href="#AuditLogger.get_all_events-56"><span class="linenos">56</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return every stored audit event.&quot;&quot;&quot;</span>
+</span><span id="AuditLogger.get_all_events-57"><a href="#AuditLogger.get_all_events-57"><span class="linenos">57</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">audit_repository</span><span class="o">.</span><span class="n">get_all</span><span class="p">()</span>
 </span></pre></div>
 
 
             <div class="docstring"><p>Return every stored audit event.</p>
+</div>
+
+
+                            </div>
+                            <div id="AuditLogger.get_log_text" class="classattr">
+                                        <input id="AuditLogger.get_log_text-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+<div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">get_log_text</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span></span><span class="return-annotation">) -> <span class="nb">str</span>:</span></span>
+
+                <label class="view-source-button" for="AuditLogger.get_log_text-view-source"><span>View Source</span></label>
+
+    </div>
+    <a class="headerlink" href="#AuditLogger.get_log_text"></a>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="AuditLogger.get_log_text-59"><a href="#AuditLogger.get_log_text-59"><span class="linenos">59</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_log_text</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span id="AuditLogger.get_log_text-60"><a href="#AuditLogger.get_log_text-60"><span class="linenos">60</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a readable text version of the audit log.&quot;&quot;&quot;</span>
+</span><span id="AuditLogger.get_log_text-61"><a href="#AuditLogger.get_log_text-61"><span class="linenos">61</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">audit_repository</span><span class="o">.</span><span class="n">get_log_text</span><span class="p">()</span>
+</span></pre></div>
+
+
+            <div class="docstring"><p>Return a readable text version of the audit log.</p>
 </div>
 
 

@@ -34,6 +34,12 @@
                     <a class="class" href="#AuditRepository">AuditRepository</a>
                             <ul class="memberlist">
                         <li>
+                                <a class="function" href="#AuditRepository.__init__">AuditRepository</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#AuditRepository.file_path">file_path</a>
+                        </li>
+                        <li>
                                 <a class="variable" href="#AuditRepository.events">events</a>
                         </li>
                         <li>
@@ -41,6 +47,9 @@
                         </li>
                         <li>
                                 <a class="function" href="#AuditRepository.get_all">get_all</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#AuditRepository.get_log_text">get_log_text</a>
                         </li>
                 </ul>
 
@@ -61,37 +70,79 @@
                     <h1 class="modulename">
 <a href="./../../apps.html">apps</a><wbr>.<a href="./../repositories.html">repositories</a><wbr>.auditRepo    </h1>
 
-                
+                        <div class="docstring"><p>Repository for storing and loading audit log events.</p>
+</div>
+
                         <input id="mod-auditRepo-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
 
                         <label class="view-source-button" for="mod-auditRepo-view-source"><span>View Source</span></label>
 
-                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos"> 1</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
-</span><span id="L-2"><a href="#L-2"><span class="linenos"> 2</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">apps.models.secEvent</span><span class="w"> </span><span class="kn">import</span> <span class="n">SecurityEvent</span>
-</span><span id="L-3"><a href="#L-3"><span class="linenos"> 3</span></a>
-</span><span id="L-4"><a href="#L-4"><span class="linenos"> 4</span></a>
-</span><span id="L-5"><a href="#L-5"><span class="linenos"> 5</span></a><span class="k">class</span><span class="w"> </span><span class="nc">AuditRepository</span><span class="p">:</span>
-</span><span id="L-6"><a href="#L-6"><span class="linenos"> 6</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="L-7"><a href="#L-7"><span class="linenos"> 7</span></a><span class="sd">    Repository responsible for storing audit events.</span>
+                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos"> 1</span></a><span class="sd">&quot;&quot;&quot;Repository for storing and loading audit log events.&quot;&quot;&quot;</span>
+</span><span id="L-2"><a href="#L-2"><span class="linenos"> 2</span></a>
+</span><span id="L-3"><a href="#L-3"><span class="linenos"> 3</span></a><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+</span><span id="L-4"><a href="#L-4"><span class="linenos"> 4</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+</span><span id="L-5"><a href="#L-5"><span class="linenos"> 5</span></a>
+</span><span id="L-6"><a href="#L-6"><span class="linenos"> 6</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">apps.models.secEvent</span><span class="w"> </span><span class="kn">import</span> <span class="n">SecurityEvent</span>
+</span><span id="L-7"><a href="#L-7"><span class="linenos"> 7</span></a>
 </span><span id="L-8"><a href="#L-8"><span class="linenos"> 8</span></a>
-</span><span id="L-9"><a href="#L-9"><span class="linenos"> 9</span></a><span class="sd">    This starter version keeps audit events in memory. Later, these events</span>
-</span><span id="L-10"><a href="#L-10"><span class="linenos">10</span></a><span class="sd">    can be stored in a database or secure logging system.</span>
-</span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a>
-</span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">events</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">SecurityEvent</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span id="L-9"><a href="#L-9"><span class="linenos"> 9</span></a><span class="k">class</span><span class="w"> </span><span class="nc">AuditRepository</span><span class="p">:</span>
+</span><span id="L-10"><a href="#L-10"><span class="linenos">10</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Stores audit events in memory and persists them to a text file.</span>
+</span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a>
+</span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a><span class="sd">    The file uses JSON lines format. Each line is one event. This keeps the</span>
+</span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a><span class="sd">    file readable for the demo while still allowing the backend to reload it.</span>
+</span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a><span class="sd">    &quot;&quot;&quot;</span>
 </span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a>
-</span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">SecurityEvent</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a><span class="sd">        Store a security event in the in-memory list.</span>
-</span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">events</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+</span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;data/audit_log.txt&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the repository and load existing audit events.&quot;&quot;&quot;</span>
+</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">file_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+</span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">file_path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">events</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">SecurityEvent</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_events</span><span class="p">()</span>
 </span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a>
-</span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_all</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">SecurityEvent</span><span class="p">]:</span>
-</span><span id="L-23"><a href="#L-23"><span class="linenos">23</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="L-24"><a href="#L-24"><span class="linenos">24</span></a><span class="sd">        Return all stored audit events.</span>
-</span><span id="L-25"><a href="#L-25"><span class="linenos">25</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="L-26"><a href="#L-26"><span class="linenos">26</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">events</span>
+</span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">SecurityEvent</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="L-23"><a href="#L-23"><span class="linenos">23</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Store a security event in memory and append it to the log file.&quot;&quot;&quot;</span>
+</span><span id="L-24"><a href="#L-24"><span class="linenos">24</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">events</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+</span><span id="L-25"><a href="#L-25"><span class="linenos">25</span></a>
+</span><span id="L-26"><a href="#L-26"><span class="linenos">26</span></a>        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_path</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">audit_file</span><span class="p">:</span>
+</span><span id="L-27"><a href="#L-27"><span class="linenos">27</span></a>            <span class="n">audit_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">to_dict</span><span class="p">())</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span id="L-28"><a href="#L-28"><span class="linenos">28</span></a>
+</span><span id="L-29"><a href="#L-29"><span class="linenos">29</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_all</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">SecurityEvent</span><span class="p">]:</span>
+</span><span id="L-30"><a href="#L-30"><span class="linenos">30</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return all stored audit events.&quot;&quot;&quot;</span>
+</span><span id="L-31"><a href="#L-31"><span class="linenos">31</span></a>        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">events</span><span class="p">)</span>
+</span><span id="L-32"><a href="#L-32"><span class="linenos">32</span></a>
+</span><span id="L-33"><a href="#L-33"><span class="linenos">33</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_log_text</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span id="L-34"><a href="#L-34"><span class="linenos">34</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return audit events as readable text for frontend display.&quot;&quot;&quot;</span>
+</span><span id="L-35"><a href="#L-35"><span class="linenos">35</span></a>        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">events</span><span class="p">:</span>
+</span><span id="L-36"><a href="#L-36"><span class="linenos">36</span></a>            <span class="k">return</span> <span class="s2">&quot;No audit events have been recorded yet.&quot;</span>
+</span><span id="L-37"><a href="#L-37"><span class="linenos">37</span></a>
+</span><span id="L-38"><a href="#L-38"><span class="linenos">38</span></a>        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+</span><span id="L-39"><a href="#L-39"><span class="linenos">39</span></a>            <span class="p">(</span>
+</span><span id="L-40"><a href="#L-40"><span class="linenos">40</span></a>                <span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">event</span><span class="o">.</span><span class="n">timestamp</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span><span class="si">}</span><span class="s2">] &quot;</span>
+</span><span id="L-41"><a href="#L-41"><span class="linenos">41</span></a>                <span class="sa">f</span><span class="s2">&quot;event_id=</span><span class="si">{</span><span class="n">event</span><span class="o">.</span><span class="n">event_id</span><span class="si">}</span><span class="s2"> &quot;</span>
+</span><span id="L-42"><a href="#L-42"><span class="linenos">42</span></a>                <span class="sa">f</span><span class="s2">&quot;type=</span><span class="si">{</span><span class="n">event</span><span class="o">.</span><span class="n">event_type</span><span class="si">}</span><span class="s2"> &quot;</span>
+</span><span id="L-43"><a href="#L-43"><span class="linenos">43</span></a>                <span class="sa">f</span><span class="s2">&quot;user=</span><span class="si">{</span><span class="n">event</span><span class="o">.</span><span class="n">username</span><span class="si">}</span><span class="s2"> &quot;</span>
+</span><span id="L-44"><a href="#L-44"><span class="linenos">44</span></a>                <span class="sa">f</span><span class="s2">&quot;status=</span><span class="si">{</span><span class="n">event</span><span class="o">.</span><span class="n">status</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span id="L-45"><a href="#L-45"><span class="linenos">45</span></a>            <span class="p">)</span>
+</span><span id="L-46"><a href="#L-46"><span class="linenos">46</span></a>            <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">events</span>
+</span><span id="L-47"><a href="#L-47"><span class="linenos">47</span></a>        <span class="p">)</span>
+</span><span id="L-48"><a href="#L-48"><span class="linenos">48</span></a>
+</span><span id="L-49"><a href="#L-49"><span class="linenos">49</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">_load_events</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">SecurityEvent</span><span class="p">]:</span>
+</span><span id="L-50"><a href="#L-50"><span class="linenos">50</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Load previously saved events from the audit log file.&quot;&quot;&quot;</span>
+</span><span id="L-51"><a href="#L-51"><span class="linenos">51</span></a>        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+</span><span id="L-52"><a href="#L-52"><span class="linenos">52</span></a>            <span class="k">return</span> <span class="p">[]</span>
+</span><span id="L-53"><a href="#L-53"><span class="linenos">53</span></a>
+</span><span id="L-54"><a href="#L-54"><span class="linenos">54</span></a>        <span class="n">loaded_events</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">SecurityEvent</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span id="L-55"><a href="#L-55"><span class="linenos">55</span></a>
+</span><span id="L-56"><a href="#L-56"><span class="linenos">56</span></a>        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_path</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">splitlines</span><span class="p">():</span>
+</span><span id="L-57"><a href="#L-57"><span class="linenos">57</span></a>            <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+</span><span id="L-58"><a href="#L-58"><span class="linenos">58</span></a>                <span class="k">continue</span>
+</span><span id="L-59"><a href="#L-59"><span class="linenos">59</span></a>
+</span><span id="L-60"><a href="#L-60"><span class="linenos">60</span></a>            <span class="k">try</span><span class="p">:</span>
+</span><span id="L-61"><a href="#L-61"><span class="linenos">61</span></a>                <span class="n">event_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+</span><span id="L-62"><a href="#L-62"><span class="linenos">62</span></a>                <span class="n">loaded_events</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">SecurityEvent</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">event_data</span><span class="p">))</span>
+</span><span id="L-63"><a href="#L-63"><span class="linenos">63</span></a>            <span class="k">except</span> <span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">JSONDecodeError</span><span class="p">,</span> <span class="ne">KeyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+</span><span id="L-64"><a href="#L-64"><span class="linenos">64</span></a>                <span class="k">continue</span>
+</span><span id="L-65"><a href="#L-65"><span class="linenos">65</span></a>
+</span><span id="L-66"><a href="#L-66"><span class="linenos">66</span></a>        <span class="k">return</span> <span class="n">loaded_events</span>
 </span></pre></div>
 
 
@@ -107,41 +158,111 @@
 
     </div>
     <a class="headerlink" href="#AuditRepository"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="AuditRepository-6"><a href="#AuditRepository-6"><span class="linenos"> 6</span></a><span class="k">class</span><span class="w"> </span><span class="nc">AuditRepository</span><span class="p">:</span>
-</span><span id="AuditRepository-7"><a href="#AuditRepository-7"><span class="linenos"> 7</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="AuditRepository-8"><a href="#AuditRepository-8"><span class="linenos"> 8</span></a><span class="sd">    Repository responsible for storing audit events.</span>
-</span><span id="AuditRepository-9"><a href="#AuditRepository-9"><span class="linenos"> 9</span></a>
-</span><span id="AuditRepository-10"><a href="#AuditRepository-10"><span class="linenos">10</span></a><span class="sd">    This starter version keeps audit events in memory. Later, these events</span>
-</span><span id="AuditRepository-11"><a href="#AuditRepository-11"><span class="linenos">11</span></a><span class="sd">    can be stored in a database or secure logging system.</span>
-</span><span id="AuditRepository-12"><a href="#AuditRepository-12"><span class="linenos">12</span></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="AuditRepository-13"><a href="#AuditRepository-13"><span class="linenos">13</span></a>
-</span><span id="AuditRepository-14"><a href="#AuditRepository-14"><span class="linenos">14</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="AuditRepository-15"><a href="#AuditRepository-15"><span class="linenos">15</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">events</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">SecurityEvent</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="AuditRepository-10"><a href="#AuditRepository-10"><span class="linenos">10</span></a><span class="k">class</span><span class="w"> </span><span class="nc">AuditRepository</span><span class="p">:</span>
+</span><span id="AuditRepository-11"><a href="#AuditRepository-11"><span class="linenos">11</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Stores audit events in memory and persists them to a text file.</span>
+</span><span id="AuditRepository-12"><a href="#AuditRepository-12"><span class="linenos">12</span></a>
+</span><span id="AuditRepository-13"><a href="#AuditRepository-13"><span class="linenos">13</span></a><span class="sd">    The file uses JSON lines format. Each line is one event. This keeps the</span>
+</span><span id="AuditRepository-14"><a href="#AuditRepository-14"><span class="linenos">14</span></a><span class="sd">    file readable for the demo while still allowing the backend to reload it.</span>
+</span><span id="AuditRepository-15"><a href="#AuditRepository-15"><span class="linenos">15</span></a><span class="sd">    &quot;&quot;&quot;</span>
 </span><span id="AuditRepository-16"><a href="#AuditRepository-16"><span class="linenos">16</span></a>
-</span><span id="AuditRepository-17"><a href="#AuditRepository-17"><span class="linenos">17</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">SecurityEvent</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="AuditRepository-18"><a href="#AuditRepository-18"><span class="linenos">18</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="AuditRepository-19"><a href="#AuditRepository-19"><span class="linenos">19</span></a><span class="sd">        Store a security event in the in-memory list.</span>
-</span><span id="AuditRepository-20"><a href="#AuditRepository-20"><span class="linenos">20</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="AuditRepository-21"><a href="#AuditRepository-21"><span class="linenos">21</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">events</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+</span><span id="AuditRepository-17"><a href="#AuditRepository-17"><span class="linenos">17</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;data/audit_log.txt&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="AuditRepository-18"><a href="#AuditRepository-18"><span class="linenos">18</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the repository and load existing audit events.&quot;&quot;&quot;</span>
+</span><span id="AuditRepository-19"><a href="#AuditRepository-19"><span class="linenos">19</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">file_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+</span><span id="AuditRepository-20"><a href="#AuditRepository-20"><span class="linenos">20</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">file_path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="AuditRepository-21"><a href="#AuditRepository-21"><span class="linenos">21</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">events</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">SecurityEvent</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_events</span><span class="p">()</span>
 </span><span id="AuditRepository-22"><a href="#AuditRepository-22"><span class="linenos">22</span></a>
-</span><span id="AuditRepository-23"><a href="#AuditRepository-23"><span class="linenos">23</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_all</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">SecurityEvent</span><span class="p">]:</span>
-</span><span id="AuditRepository-24"><a href="#AuditRepository-24"><span class="linenos">24</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="AuditRepository-25"><a href="#AuditRepository-25"><span class="linenos">25</span></a><span class="sd">        Return all stored audit events.</span>
-</span><span id="AuditRepository-26"><a href="#AuditRepository-26"><span class="linenos">26</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="AuditRepository-27"><a href="#AuditRepository-27"><span class="linenos">27</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">events</span>
+</span><span id="AuditRepository-23"><a href="#AuditRepository-23"><span class="linenos">23</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">SecurityEvent</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="AuditRepository-24"><a href="#AuditRepository-24"><span class="linenos">24</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Store a security event in memory and append it to the log file.&quot;&quot;&quot;</span>
+</span><span id="AuditRepository-25"><a href="#AuditRepository-25"><span class="linenos">25</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">events</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+</span><span id="AuditRepository-26"><a href="#AuditRepository-26"><span class="linenos">26</span></a>
+</span><span id="AuditRepository-27"><a href="#AuditRepository-27"><span class="linenos">27</span></a>        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_path</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">audit_file</span><span class="p">:</span>
+</span><span id="AuditRepository-28"><a href="#AuditRepository-28"><span class="linenos">28</span></a>            <span class="n">audit_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">to_dict</span><span class="p">())</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span id="AuditRepository-29"><a href="#AuditRepository-29"><span class="linenos">29</span></a>
+</span><span id="AuditRepository-30"><a href="#AuditRepository-30"><span class="linenos">30</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_all</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">SecurityEvent</span><span class="p">]:</span>
+</span><span id="AuditRepository-31"><a href="#AuditRepository-31"><span class="linenos">31</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return all stored audit events.&quot;&quot;&quot;</span>
+</span><span id="AuditRepository-32"><a href="#AuditRepository-32"><span class="linenos">32</span></a>        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">events</span><span class="p">)</span>
+</span><span id="AuditRepository-33"><a href="#AuditRepository-33"><span class="linenos">33</span></a>
+</span><span id="AuditRepository-34"><a href="#AuditRepository-34"><span class="linenos">34</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_log_text</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span id="AuditRepository-35"><a href="#AuditRepository-35"><span class="linenos">35</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return audit events as readable text for frontend display.&quot;&quot;&quot;</span>
+</span><span id="AuditRepository-36"><a href="#AuditRepository-36"><span class="linenos">36</span></a>        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">events</span><span class="p">:</span>
+</span><span id="AuditRepository-37"><a href="#AuditRepository-37"><span class="linenos">37</span></a>            <span class="k">return</span> <span class="s2">&quot;No audit events have been recorded yet.&quot;</span>
+</span><span id="AuditRepository-38"><a href="#AuditRepository-38"><span class="linenos">38</span></a>
+</span><span id="AuditRepository-39"><a href="#AuditRepository-39"><span class="linenos">39</span></a>        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+</span><span id="AuditRepository-40"><a href="#AuditRepository-40"><span class="linenos">40</span></a>            <span class="p">(</span>
+</span><span id="AuditRepository-41"><a href="#AuditRepository-41"><span class="linenos">41</span></a>                <span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">event</span><span class="o">.</span><span class="n">timestamp</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span><span class="si">}</span><span class="s2">] &quot;</span>
+</span><span id="AuditRepository-42"><a href="#AuditRepository-42"><span class="linenos">42</span></a>                <span class="sa">f</span><span class="s2">&quot;event_id=</span><span class="si">{</span><span class="n">event</span><span class="o">.</span><span class="n">event_id</span><span class="si">}</span><span class="s2"> &quot;</span>
+</span><span id="AuditRepository-43"><a href="#AuditRepository-43"><span class="linenos">43</span></a>                <span class="sa">f</span><span class="s2">&quot;type=</span><span class="si">{</span><span class="n">event</span><span class="o">.</span><span class="n">event_type</span><span class="si">}</span><span class="s2"> &quot;</span>
+</span><span id="AuditRepository-44"><a href="#AuditRepository-44"><span class="linenos">44</span></a>                <span class="sa">f</span><span class="s2">&quot;user=</span><span class="si">{</span><span class="n">event</span><span class="o">.</span><span class="n">username</span><span class="si">}</span><span class="s2"> &quot;</span>
+</span><span id="AuditRepository-45"><a href="#AuditRepository-45"><span class="linenos">45</span></a>                <span class="sa">f</span><span class="s2">&quot;status=</span><span class="si">{</span><span class="n">event</span><span class="o">.</span><span class="n">status</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span id="AuditRepository-46"><a href="#AuditRepository-46"><span class="linenos">46</span></a>            <span class="p">)</span>
+</span><span id="AuditRepository-47"><a href="#AuditRepository-47"><span class="linenos">47</span></a>            <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">events</span>
+</span><span id="AuditRepository-48"><a href="#AuditRepository-48"><span class="linenos">48</span></a>        <span class="p">)</span>
+</span><span id="AuditRepository-49"><a href="#AuditRepository-49"><span class="linenos">49</span></a>
+</span><span id="AuditRepository-50"><a href="#AuditRepository-50"><span class="linenos">50</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">_load_events</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">SecurityEvent</span><span class="p">]:</span>
+</span><span id="AuditRepository-51"><a href="#AuditRepository-51"><span class="linenos">51</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Load previously saved events from the audit log file.&quot;&quot;&quot;</span>
+</span><span id="AuditRepository-52"><a href="#AuditRepository-52"><span class="linenos">52</span></a>        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+</span><span id="AuditRepository-53"><a href="#AuditRepository-53"><span class="linenos">53</span></a>            <span class="k">return</span> <span class="p">[]</span>
+</span><span id="AuditRepository-54"><a href="#AuditRepository-54"><span class="linenos">54</span></a>
+</span><span id="AuditRepository-55"><a href="#AuditRepository-55"><span class="linenos">55</span></a>        <span class="n">loaded_events</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">SecurityEvent</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span id="AuditRepository-56"><a href="#AuditRepository-56"><span class="linenos">56</span></a>
+</span><span id="AuditRepository-57"><a href="#AuditRepository-57"><span class="linenos">57</span></a>        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_path</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">splitlines</span><span class="p">():</span>
+</span><span id="AuditRepository-58"><a href="#AuditRepository-58"><span class="linenos">58</span></a>            <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+</span><span id="AuditRepository-59"><a href="#AuditRepository-59"><span class="linenos">59</span></a>                <span class="k">continue</span>
+</span><span id="AuditRepository-60"><a href="#AuditRepository-60"><span class="linenos">60</span></a>
+</span><span id="AuditRepository-61"><a href="#AuditRepository-61"><span class="linenos">61</span></a>            <span class="k">try</span><span class="p">:</span>
+</span><span id="AuditRepository-62"><a href="#AuditRepository-62"><span class="linenos">62</span></a>                <span class="n">event_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+</span><span id="AuditRepository-63"><a href="#AuditRepository-63"><span class="linenos">63</span></a>                <span class="n">loaded_events</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">SecurityEvent</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">event_data</span><span class="p">))</span>
+</span><span id="AuditRepository-64"><a href="#AuditRepository-64"><span class="linenos">64</span></a>            <span class="k">except</span> <span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">JSONDecodeError</span><span class="p">,</span> <span class="ne">KeyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+</span><span id="AuditRepository-65"><a href="#AuditRepository-65"><span class="linenos">65</span></a>                <span class="k">continue</span>
+</span><span id="AuditRepository-66"><a href="#AuditRepository-66"><span class="linenos">66</span></a>
+</span><span id="AuditRepository-67"><a href="#AuditRepository-67"><span class="linenos">67</span></a>        <span class="k">return</span> <span class="n">loaded_events</span>
 </span></pre></div>
 
 
-            <div class="docstring"><p>Repository responsible for storing audit events.</p>
+            <div class="docstring"><p>Stores audit events in memory and persists them to a text file.</p>
 
-<p>This starter version keeps audit events in memory. Later, these events
-can be stored in a database or secure logging system.</p>
+<p>The file uses JSON lines format. Each line is one event. This keeps the
+file readable for the demo while still allowing the backend to reload it.</p>
 </div>
 
 
+                            <div id="AuditRepository.__init__" class="classattr">
+                                        <input id="AuditRepository.__init__-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+<div class="attr function">
+            
+        <span class="name">AuditRepository</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;data/audit_log.txt&#39;</span></span>)</span>
+
+                <label class="view-source-button" for="AuditRepository.__init__-view-source"><span>View Source</span></label>
+
+    </div>
+    <a class="headerlink" href="#AuditRepository.__init__"></a>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="AuditRepository.__init__-17"><a href="#AuditRepository.__init__-17"><span class="linenos">17</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;data/audit_log.txt&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="AuditRepository.__init__-18"><a href="#AuditRepository.__init__-18"><span class="linenos">18</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the repository and load existing audit events.&quot;&quot;&quot;</span>
+</span><span id="AuditRepository.__init__-19"><a href="#AuditRepository.__init__-19"><span class="linenos">19</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">file_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+</span><span id="AuditRepository.__init__-20"><a href="#AuditRepository.__init__-20"><span class="linenos">20</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">file_path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="AuditRepository.__init__-21"><a href="#AuditRepository.__init__-21"><span class="linenos">21</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">events</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">SecurityEvent</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_events</span><span class="p">()</span>
+</span></pre></div>
+
+
+            <div class="docstring"><p>Initialize the repository and load existing audit events.</p>
+</div>
+
+
+                            </div>
+                            <div id="AuditRepository.file_path" class="classattr">
+                                <div class="attr variable">
+            <span class="name">file_path</span>
+
+        
+    </div>
+    <a class="headerlink" href="#AuditRepository.file_path"></a>
+    
+    
+
+                            </div>
                             <div id="AuditRepository.events" class="classattr">
                                 <div class="attr variable">
-            <span class="name">events</span><span class="annotation">: List[<a href="../models/secEvent.html#SecurityEvent">apps.models.secEvent.SecurityEvent</a>]</span>
+            <span class="name">events</span><span class="annotation">: list[<a href="../models/secEvent.html#SecurityEvent">apps.models.secEvent.SecurityEvent</a>]</span>
 
         
     </div>
@@ -161,15 +282,16 @@ can be stored in a database or secure logging system.</p>
 
     </div>
     <a class="headerlink" href="#AuditRepository.save"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="AuditRepository.save-17"><a href="#AuditRepository.save-17"><span class="linenos">17</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">SecurityEvent</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="AuditRepository.save-18"><a href="#AuditRepository.save-18"><span class="linenos">18</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="AuditRepository.save-19"><a href="#AuditRepository.save-19"><span class="linenos">19</span></a><span class="sd">        Store a security event in the in-memory list.</span>
-</span><span id="AuditRepository.save-20"><a href="#AuditRepository.save-20"><span class="linenos">20</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="AuditRepository.save-21"><a href="#AuditRepository.save-21"><span class="linenos">21</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">events</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="AuditRepository.save-23"><a href="#AuditRepository.save-23"><span class="linenos">23</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">SecurityEvent</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="AuditRepository.save-24"><a href="#AuditRepository.save-24"><span class="linenos">24</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Store a security event in memory and append it to the log file.&quot;&quot;&quot;</span>
+</span><span id="AuditRepository.save-25"><a href="#AuditRepository.save-25"><span class="linenos">25</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">events</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+</span><span id="AuditRepository.save-26"><a href="#AuditRepository.save-26"><span class="linenos">26</span></a>
+</span><span id="AuditRepository.save-27"><a href="#AuditRepository.save-27"><span class="linenos">27</span></a>        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_path</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">audit_file</span><span class="p">:</span>
+</span><span id="AuditRepository.save-28"><a href="#AuditRepository.save-28"><span class="linenos">28</span></a>            <span class="n">audit_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">to_dict</span><span class="p">())</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
 </span></pre></div>
 
 
-            <div class="docstring"><p>Store a security event in the in-memory list.</p>
+            <div class="docstring"><p>Store a security event in memory and append it to the log file.</p>
 </div>
 
 
@@ -179,21 +301,53 @@ can be stored in a database or secure logging system.</p>
 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">get_all</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span></span><span class="return-annotation">) -> <span class="n">List</span><span class="p">[</span><span class="n"><a href="../models/secEvent.html#SecurityEvent">apps.models.secEvent.SecurityEvent</a></span><span class="p">]</span>:</span></span>
+        <span class="name">get_all</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span></span><span class="return-annotation">) -> <span class="nb">list</span><span class="p">[</span><span class="n"><a href="../models/secEvent.html#SecurityEvent">apps.models.secEvent.SecurityEvent</a></span><span class="p">]</span>:</span></span>
 
                 <label class="view-source-button" for="AuditRepository.get_all-view-source"><span>View Source</span></label>
 
     </div>
     <a class="headerlink" href="#AuditRepository.get_all"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="AuditRepository.get_all-23"><a href="#AuditRepository.get_all-23"><span class="linenos">23</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_all</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">SecurityEvent</span><span class="p">]:</span>
-</span><span id="AuditRepository.get_all-24"><a href="#AuditRepository.get_all-24"><span class="linenos">24</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="AuditRepository.get_all-25"><a href="#AuditRepository.get_all-25"><span class="linenos">25</span></a><span class="sd">        Return all stored audit events.</span>
-</span><span id="AuditRepository.get_all-26"><a href="#AuditRepository.get_all-26"><span class="linenos">26</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="AuditRepository.get_all-27"><a href="#AuditRepository.get_all-27"><span class="linenos">27</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">events</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="AuditRepository.get_all-30"><a href="#AuditRepository.get_all-30"><span class="linenos">30</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_all</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">SecurityEvent</span><span class="p">]:</span>
+</span><span id="AuditRepository.get_all-31"><a href="#AuditRepository.get_all-31"><span class="linenos">31</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return all stored audit events.&quot;&quot;&quot;</span>
+</span><span id="AuditRepository.get_all-32"><a href="#AuditRepository.get_all-32"><span class="linenos">32</span></a>        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">events</span><span class="p">)</span>
 </span></pre></div>
 
 
             <div class="docstring"><p>Return all stored audit events.</p>
+</div>
+
+
+                            </div>
+                            <div id="AuditRepository.get_log_text" class="classattr">
+                                        <input id="AuditRepository.get_log_text-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+<div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">get_log_text</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span></span><span class="return-annotation">) -> <span class="nb">str</span>:</span></span>
+
+                <label class="view-source-button" for="AuditRepository.get_log_text-view-source"><span>View Source</span></label>
+
+    </div>
+    <a class="headerlink" href="#AuditRepository.get_log_text"></a>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="AuditRepository.get_log_text-34"><a href="#AuditRepository.get_log_text-34"><span class="linenos">34</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_log_text</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span id="AuditRepository.get_log_text-35"><a href="#AuditRepository.get_log_text-35"><span class="linenos">35</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return audit events as readable text for frontend display.&quot;&quot;&quot;</span>
+</span><span id="AuditRepository.get_log_text-36"><a href="#AuditRepository.get_log_text-36"><span class="linenos">36</span></a>        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">events</span><span class="p">:</span>
+</span><span id="AuditRepository.get_log_text-37"><a href="#AuditRepository.get_log_text-37"><span class="linenos">37</span></a>            <span class="k">return</span> <span class="s2">&quot;No audit events have been recorded yet.&quot;</span>
+</span><span id="AuditRepository.get_log_text-38"><a href="#AuditRepository.get_log_text-38"><span class="linenos">38</span></a>
+</span><span id="AuditRepository.get_log_text-39"><a href="#AuditRepository.get_log_text-39"><span class="linenos">39</span></a>        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+</span><span id="AuditRepository.get_log_text-40"><a href="#AuditRepository.get_log_text-40"><span class="linenos">40</span></a>            <span class="p">(</span>
+</span><span id="AuditRepository.get_log_text-41"><a href="#AuditRepository.get_log_text-41"><span class="linenos">41</span></a>                <span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">event</span><span class="o">.</span><span class="n">timestamp</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span><span class="si">}</span><span class="s2">] &quot;</span>
+</span><span id="AuditRepository.get_log_text-42"><a href="#AuditRepository.get_log_text-42"><span class="linenos">42</span></a>                <span class="sa">f</span><span class="s2">&quot;event_id=</span><span class="si">{</span><span class="n">event</span><span class="o">.</span><span class="n">event_id</span><span class="si">}</span><span class="s2"> &quot;</span>
+</span><span id="AuditRepository.get_log_text-43"><a href="#AuditRepository.get_log_text-43"><span class="linenos">43</span></a>                <span class="sa">f</span><span class="s2">&quot;type=</span><span class="si">{</span><span class="n">event</span><span class="o">.</span><span class="n">event_type</span><span class="si">}</span><span class="s2"> &quot;</span>
+</span><span id="AuditRepository.get_log_text-44"><a href="#AuditRepository.get_log_text-44"><span class="linenos">44</span></a>                <span class="sa">f</span><span class="s2">&quot;user=</span><span class="si">{</span><span class="n">event</span><span class="o">.</span><span class="n">username</span><span class="si">}</span><span class="s2"> &quot;</span>
+</span><span id="AuditRepository.get_log_text-45"><a href="#AuditRepository.get_log_text-45"><span class="linenos">45</span></a>                <span class="sa">f</span><span class="s2">&quot;status=</span><span class="si">{</span><span class="n">event</span><span class="o">.</span><span class="n">status</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span id="AuditRepository.get_log_text-46"><a href="#AuditRepository.get_log_text-46"><span class="linenos">46</span></a>            <span class="p">)</span>
+</span><span id="AuditRepository.get_log_text-47"><a href="#AuditRepository.get_log_text-47"><span class="linenos">47</span></a>            <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">events</span>
+</span><span id="AuditRepository.get_log_text-48"><a href="#AuditRepository.get_log_text-48"><span class="linenos">48</span></a>        <span class="p">)</span>
+</span></pre></div>
+
+
+            <div class="docstring"><p>Return audit events as readable text for frontend display.</p>
 </div>
 
 
