@@ -37,6 +37,13 @@ class FakeAuthService:
             "code": code,
         }
 
+    def logout(self, username):
+        """Return a fake logout response for route/controller tests."""
+        return {
+            "status": "success",
+            "message": f"{username} logged out.",
+        }
+
 
 class FakeUserRepository:
     """Fake user repository for controller tests."""

@@ -5,30 +5,22 @@ from typing import Any
 
 from apps.repositories.userRepo import UserRepository
 from apps.security.passHash import PasswordHasher
+from apps.services.auditLogger import AuditLogger
 from apps.services.mfaSvc import MFAService
 
 
 class AuthService:
-    """
-    Service responsible for authentication.
-
-    This class handles one-time user registration, username/password login,
-    MFA code delivery, and MFA verification.
-    """
+    """Service responsible for registration, login, MFA, and audit logging."""
 
     def __init__(self) -> None:
-        """Create the dependencies needed for authentication."""
+        """Create authentication service dependencies."""
         self.user_repository = UserRepository()
         self.password_hasher = PasswordHasher()
         self.mfa_service = MFAService()
+        self.audit_logger = AuditLogger()
 
     def _get_mfa_method(self) -> str:
-        """
-        Read the MFA method from the environment.
-
-        Default is email for the real SendGrid workflow.
-        For testing and demo reliability, use MFA_METHOD=totp.
-        """
+        """Return the configured MFA method."""
         return os.getenv("MFA_METHOD", "email").strip().lower() or "email"
 
     def register_user(
@@ -38,14 +30,13 @@ class AuthService:
         role: str,
         email: str,
     ) -> dict[str, Any]:
-        """
-        Register a user one time.
-
-        The user provides their email during registration. After that,
-        login only needs username, password, and role. The stored email
-        is used later for MFA delivery.
-        """
+        """Register a user and write the result to the audit log."""
         if not username or not password or not role or not email:
+            self.audit_logger.log_event(
+                "registration_missing_fields",
+                username or "unknown",
+                "failure",
+            )
             return {
                 "status": "error",
                 "message": "Username, password, role, and email are required.",
@@ -54,16 +45,38 @@ class AuthService:
         existing_user = self.user_repository.find_by_username(username)
 
         if existing_user is not None:
+            self.audit_logger.log_event(
+                "registration_duplicate_username",
+                username,
+                "failure",
+            )
             return {
                 "status": "error",
                 "message": "Username already exists.",
             }
 
-        self.user_repository.create_user(
-            username=username,
-            password=password,
-            role=role,
-            email=email,
+        try:
+            self.user_repository.create_user(
+                username=username,
+                password=password,
+                role=role,
+                email=email,
+            )
+        except ValueError as error:
+            self.audit_logger.log_event(
+                "registration_failed",
+                username,
+                "failure",
+            )
+            return {
+                "status": "error",
+                "message": str(error),
+            }
+
+        self.audit_logger.log_event(
+            "registration_success",
+            username,
+            "success",
         )
 
         return {
@@ -79,28 +92,40 @@ class AuthService:
         password: str,
         role: str,
     ) -> dict[str, Any]:
-        """
-        Authenticate a user and send an MFA code.
-
-        The email is not entered during login. It is pulled from the stored
-        user account that was created during registration.
-        """
+        """Authenticate a user, send MFA, and write the result to the audit log."""
         user = self.user_repository.find_by_username(username)
 
         if user is None:
+            self.audit_logger.log_event(
+                "login_unknown_user",
+                username,
+                "failure",
+            )
             return {
                 "status": "error",
                 "message": "Invalid username or password.",
             }
 
         if user.role != role:
+            self.audit_logger.log_event(
+                "login_role_mismatch",
+                username,
+                "failure",
+            )
             return {
                 "status": "error",
                 "message": "Selected role does not match this user.",
             }
 
         if not self.password_hasher.verify_password(
-                password, user.password_hash):
+            password,
+            user.password_hash,
+        ):
+            self.audit_logger.log_event(
+                "login_bad_password",
+                username,
+                "failure",
+            )
             return {
                 "status": "error",
                 "message": "Invalid username or password.",
@@ -108,6 +133,12 @@ class AuthService:
 
         method = self._get_mfa_method()
         self.mfa_service.send_mfa_code(user, method)
+
+        self.audit_logger.log_event(
+            "login_mfa_sent",
+            username,
+            "success",
+        )
 
         return {
             "status": "pending",
@@ -117,12 +148,15 @@ class AuthService:
         }
 
     def verify_mfa(self, username: str, code: str) -> dict[str, Any]:
-        """
-        Verify the MFA code entered by the user.
-        """
+        """Verify MFA and write the result to the audit log."""
         user = self.user_repository.find_by_username(username)
 
         if user is None:
+            self.audit_logger.log_event(
+                "mfa_unknown_user",
+                username,
+                "failure",
+            )
             return {
                 "status": "error",
                 "message": "User not found.",
@@ -132,14 +166,49 @@ class AuthService:
         verified = self.mfa_service.verify_mfa_code(user, code, method)
 
         if not verified:
+            self.audit_logger.log_event(
+                "mfa_failed",
+                username,
+                "failure",
+            )
             return {
                 "status": "error",
                 "message": "Invalid MFA code.",
             }
+
+        self.audit_logger.log_event(
+            "mfa_success",
+            username,
+            "success",
+        )
 
         return {
             "status": "success",
             "message": "MFA verified. Login complete.",
             "username": username,
             "role": user.role,
+        }
+
+    def logout(self, username: str) -> dict[str, str]:
+        """Log out a user and write the action to the audit log."""
+        if not username:
+            self.audit_logger.log_event(
+                "logout_missing_username",
+                "unknown",
+                "failure",
+            )
+            return {
+                "status": "error",
+                "message": "Username is required.",
+            }
+
+        self.audit_logger.log_event(
+            "logout",
+            username,
+            "success",
+        )
+
+        return {
+            "status": "success",
+            "message": f"{username} logged out.",
         }

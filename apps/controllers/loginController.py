@@ -122,7 +122,7 @@ class LoginController:
         if not username:
             return {"status": "error", "message": "Username is required."}
 
-        return {"status": "success", "message": f"{username} logged out."}
+        return self.auth_service.logout(username)
 
     def _is_valid_email(self, email: str) -> bool:
         """
