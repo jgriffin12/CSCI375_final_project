@@ -17,34 +17,31 @@ node "User Browser" as Browser {
   artifact "CJ Secure UI" as UI
 }
 
-node "Frontend Files" as Frontend {
-  artifact "frontend/index.html" as HTML
-  artifact "frontend/style.css" as CSS
-  artifact "frontend/script.js" as JS
+node "Frontend (Static Files)" as Frontend {
+  artifact "HTML / CSS / JS" as Static
 }
 
 node "Docker Backend" as Backend {
-  artifact "Flask Backend API" as API
-  artifact "apps/main.py" as Main
-  artifact "Routes" as Routes
-  artifact "Controllers" as Controllers
-  artifact "Services" as Services
+  artifact "Flask API" as API
 }
 
-database "Data Folder" as Data {
-  artifact "data/users.json" as Users
-  artifact "data/audit_log.txt" as Logs
+database "Data Storage" as Data {
+  artifact "users.json" as Users
+  artifact "audit_log.txt" as Logs
 }
 
-Browser --> Frontend : loads frontend
-Browser --> Backend : sends API requests
-Backend --> Data : reads users
-Backend --> Data : writes audit logs
+' Connections 
+Browser --> Frontend : loads UI
+Browser --> Backend : API requests
+
+Frontend --> Backend : HTTP calls
+
+Backend --> Data : read/write data
 
 note right of Logs
-Audit log stores
-action-based events:
+Audit log tracks:
 login, MFA, records,
-admin review, sign out.
+admin actions, logout
 end note
+
 @enduml

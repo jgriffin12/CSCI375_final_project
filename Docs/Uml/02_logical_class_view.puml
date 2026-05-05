@@ -1,6 +1,6 @@
-@startuml
+@startuml Logical/Class View
 skinparam classAttributeIconSize 0
-title Logical / Class View - CJ Secure
+title Logical / Class View - CJ Secure 
 
 package "controllers" {
   class LoginController
@@ -12,7 +12,6 @@ package "services" {
   class AuthService
   class RecordService
   class MFAService
-  class AccessControlService
   class AuditLogger
 }
 
@@ -32,39 +31,28 @@ package "security" {
   abstract class MFAStrategy
   class EmailOTPStrategy
   class TOTPStrategy
-  class MFAFactory
-  class PasswordHasher
-  class SensitiveDataMasker
-  class Tokenizer
 }
 
+' Core layer flow 
 LoginController --> AuthService
 RecordController --> RecordService
-RecordController --> UserRepository
-RecordController --> AccessControlService
-RecordController --> AuditLogger
-AdminController --> UserRepository
-AdminController --> AccessControlService
 AdminController --> AuditLogger
 
 AuthService --> UserRepository
-AuthService --> PasswordHasher
 AuthService --> MFAService
-AuthService --> AuditLogger
-
-MFAService --> MFAFactory
-MFAFactory --> MFAStrategy
-MFAStrategy <|-- EmailOTPStrategy
-MFAStrategy <|-- TOTPStrategy
 
 RecordService --> RecordRepository
-RecordService --> AccessControlService
-RecordService --> AuditLogger
-RecordService --> SensitiveDataMasker
-RecordService --> Tokenizer
 
 AuditLogger --> AuditRepository
-AuditRepository --> SecurityEvent
+
+' Models 
 UserRepository --> User
 RecordRepository --> Record
+AuditRepository --> SecurityEvent
+
+' Strategy pattern 
+MFAStrategy <|-- EmailOTPStrategy
+MFAStrategy <|-- TOTPStrategy
+MFAService --> MFAStrategy
+
 @enduml

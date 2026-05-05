@@ -1,73 +1,54 @@
-@startuml
+@startuml 03_process_sequence_view
 title Process / Sequence View - Login, MFA, and Role-Based Access
 
 actor User
 participant "Frontend" as FE
-participant "authRoutes" as AR
+participant "Auth Route" as AR
 participant "LoginController" as LC
 participant "AuthService" as AS
 participant "UserRepository" as UR
-participant "PasswordHasher" as PH
 participant "MFAService" as MS
-participant "MFAFactory" as MF
-participant "MFAStrategy" as STRAT
 participant "AuditLogger" as AL
 
 User -> FE : Enter email
 FE -> AR : POST /check-email
-AR -> LC : check_email_request(data)
+AR -> LC : check email
 LC -> AS : check_email(email)
 AS -> UR : find_by_email(email)
 UR --> AS : user / none
-AS --> LC : existing_user / new_user
-LC --> AR : result
-AR --> FE : response
+AS --> FE : existing or new user
 
 User -> FE : Enter username, role, password
 FE -> AR : POST /login
-AR -> LC : login_request(data)
-LC -> AS : authenticate(username, password, role)
+AR -> LC : login request
+LC -> AS : authenticate(user info)
 AS -> UR : find_by_username(username)
 UR --> AS : user
-AS -> PH : verify_password(password, hash)
-PH --> AS : true / false
 
 alt valid credentials
-  AS -> MS : send_mfa_code(user, method)
-  MS -> MF : create_strategy(method)
-  MF --> MS : strategy
-  MS -> STRAT : send_code(user)
-  STRAT --> MS : code sent
-  AS -> AL : log_event("login_mfa_sent", username, "success")
-  AS --> LC : pending
+  AS -> MS : send MFA code
+  MS --> AS : code sent
+  AS -> AL : log MFA sent
+  AS --> FE : MFA required
 else invalid credentials
-  AS -> AL : log_event("login_bad_password", username, "failure")
-  AS --> LC : error
+  AS -> AL : log failed login
+  AS --> FE : login error
 end
-
-LC --> AR : result
-AR --> FE : response
 
 User -> FE : Enter MFA code
 FE -> AR : POST /verify-mfa
-AR -> LC : verify_mfa_request(data)
+AR -> LC : verify MFA
 LC -> AS : verify_mfa(username, code)
-AS -> UR : find_by_username(username)
-UR --> AS : user
-AS -> MS : verify_mfa_code(user, code, method)
-MS -> MF : create_strategy(method)
-MF --> MS : strategy
-MS -> STRAT : verify_code(user, code)
-STRAT --> MS : valid / invalid
+AS -> MS : verify code
 
 alt MFA success
-  AS -> AL : log_event("mfa_success", username, "success")
-  AS --> LC : success with role
+  MS --> AS : valid
+  AS -> AL : log success
+  AS --> FE : authenticated with role
 else MFA failure
-  AS -> AL : log_event("mfa_failed", username, "failure")
-  AS --> LC : error
+  MS --> AS : invalid
+  AS -> AL : log failure
+  AS --> FE : error
 end
 
-LC --> AR : result
-AR --> FE : authenticated response
 @enduml
