@@ -51,6 +51,30 @@ After login, a verification code is sent to the registered email address for the
 
 At the moment, the backend stores `alice` with an admin-level role, which makes that account best for provider or admin-style demonstrations such as secure record access and audit-log viewing.
 
+## 👩‍💻 Team Responsibilities
+
+| Area / Feature                | Janet (Backend / Coordinator)                     | Chica (Frontend / Security Lead)              |
+|-----------------------------|--------------------------------------------------|----------------------------------------------|
+| Project Coordination        | Task planning, repo management, integration      | Assist with task updates and testing         |
+| Backend Architecture        | Flask API, services, repositories                | N/A                                         |
+| Authentication (Login)      | Backend auth flow, validation                    | Secure login UI, input handling              |
+| MFA (Email / TOTP)          | Backend MFA flow integration                     | Security implementation, secure code handling|
+| Role-Based Access Control   | Backend role enforcement                         | UI restrictions + security considerations    |
+| Audit Logging               | Logging integration                              | Security event design and validation         |
+| Data Security               | Backend integration                              | Masking, tokenization, security logic        |
+| API Development             | Flask routes (auth, records, admin)              | Secure API calls, error handling             |
+| Frontend Development        | N/A                                              | React UI, user experience                    |
+| Testing                     | Backend unit tests, coverage                     | Security + UI testing                        |
+| Deployment                  | Render (backend setup)                           | GitHub Pages (frontend deployment)           |
+| UML & Design Patterns       | Contributed to backend structure                 | Contributed to diagrams and security design  |
+
+### 🛠️ Tools Used
+- GitHub (version control & branching)
+- GitHub Issues (task tracking)
+- Docker (environment setup)
+- Render (backend hosting)
+- GitHub Pages (frontend hosting)
+
 ## Architecture Overview
 The project uses a layered object-oriented architecture.
 
@@ -174,10 +198,20 @@ python -m apps.main
 
 ### Backup MFA Demo Mode
 
-For the class demo, the project can use the backup TOTP MFA strategy so the demo does not depend on email delivery.
+For the class demo, the project can use the backup TOTP MFA strategy so the demo does not depend on email delivery. 
 
 ```bash
-export MFA_METHOD=totp
+Terminal 1: 
+export MFA_METHOD="email"
+export SENDGRID_API_KEY=""
+export FROM_EMAIL="" - your personal through sendgrid
+docker compose build backend
+docker compose up backend
+
+Terminal 2:
+# Port 5000 needs to be made public and that API website is correct. 
+tail -f data/audit_log.txt
+
 python -m apps.main 
 
 tools we used for images and format : 
@@ -193,3 +227,4 @@ To generate the documentation inside Docker:
 
 ```bash
 make docker-docs
+
