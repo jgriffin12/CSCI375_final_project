@@ -51,7 +51,7 @@ After login, a verification code is sent to the registered email address for the
 
 At the moment, the backend stores `alice` with an admin-level role, which makes that account best for provider or admin-style demonstrations such as secure record access and audit-log viewing.
 
-## 👩‍💻 Team Responsibilities
+## Team Responsibilities
 
 | Area / Feature                | Janet (Backend / Coordinator)                     | Chica (Frontend / Security Lead)              |
 |-----------------------------|--------------------------------------------------|----------------------------------------------|
@@ -68,7 +68,7 @@ At the moment, the backend stores `alice` with an admin-level role, which makes 
 | Deployment                  | Render (backend setup)                           | GitHub Pages (frontend deployment)           |
 | UML & Design Patterns       | Contributed to backend structure                 | Contributed to diagrams and security design  |
 
-### 🛠️ Tools Used
+### Tools Used
 - GitHub (version control & branching)
 - GitHub Issues (task tracking)
 - Docker (environment setup)
