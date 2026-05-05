@@ -36,12 +36,11 @@ Thumbs.db
 node_modules/
 npm-debug.log*
 
-# Generated UML exports (ignore all images/docs by default)
+# Generated UML exports
 *.png
-*.pdf
 *.svg
+*.pdf
 
-# Allow UML screenshots + exports
 !Docs/
 !Docs/Uml/
 !Docs/Uml/dist_puml/
@@ -50,6 +49,11 @@ npm-debug.log*
 !Docs/Uml/dist_puml/*.png
 !Docs/Uml/*.pdf
 !Docs/Uml/dist_puml/*.pdf
+
+# Allow screenshots folder
+!screenshots/
+!screenshots/*.png
+!screenshots/*.pdf
 
 # Environment variables / secrets
 .env
