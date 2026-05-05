@@ -201,6 +201,7 @@ python -m apps.main
 For the class demo, the project can use the backup TOTP MFA strategy so the demo does not depend on email delivery. 
 
 ```bash
+# In order for this to work properly, you must modify script.js line 1 with the correct local address port 5000. 
 Terminal 1: 
 export MFA_METHOD="email"
 export SENDGRID_API_KEY=""
@@ -209,7 +210,7 @@ docker compose build backend
 docker compose up backend
 
 Terminal 2:
-# Port 5000 needs to be made public and that API website is correct. 
+# Port 5000 needs to be made public and that API website is correct.
 tail -f data/audit_log.txt
 
 python -m apps.main 
