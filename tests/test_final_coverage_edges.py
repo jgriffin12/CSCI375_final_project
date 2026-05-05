@@ -347,3 +347,301 @@ def test_user_repository_read_users_returns_empty_for_invalid_json_shape(
     repository = UserRepository(file_path=str(users_file))
 
     assert repository._read_users() == []
+
+
+def test_admin_controller_event_to_dict_uses_to_dict():
+    """AdminController should use to_dict when the event provides it."""
+    from apps.controllers.adminController import AdminController
+
+    class FakeEvent:
+        def to_dict(self):
+            return {
+                "event_id": 99,
+                "event_type": "fake_event",
+                "username": "alice",
+                "status": "success",
+            }
+
+    controller = AdminController()
+    result = controller._event_to_dict(FakeEvent())
+
+    assert result["event_id"] == 99
+    assert result["event_type"] == "fake_event"
+
+
+def test_audit_repository_empty_and_invalid_lines(tmp_path):
+    """AuditRepository should handle empty, blank, and invalid audit files."""
+    from apps.repositories.auditRepo import AuditRepository
+
+    missing_file = tmp_path / "missing-audit.txt"
+    missing_repository = AuditRepository(file_path=str(missing_file))
+
+    assert missing_repository.get_all() == []
+    assert (
+        missing_repository.get_log_text()
+        == "No audit events have been recorded yet."
+    )
+
+    bad_file = tmp_path / "bad-audit.txt"
+    bad_file.write_text("\nnot json\n{}\n", encoding="utf-8")
+
+    bad_repository = AuditRepository(file_path=str(bad_file))
+
+    assert bad_repository.get_all() == []
+    assert (
+        bad_repository.get_log_text()
+        == "No audit events have been recorded yet."
+    )
+
+
+def test_user_repository_seed_and_read_bad_files(tmp_path):
+    """UserRepository should handle malformed and non-list user files."""
+    from apps.repositories.userRepo import UserRepository
+
+    bad_seed_file = tmp_path / "bad-seed-users.json"
+    bad_seed_file.write_text("{bad json", encoding="utf-8")
+
+    bad_seed_repository = UserRepository(file_path=str(bad_seed_file))
+    assert bad_seed_repository._read_users() == []
+
+    wrong_shape_file = tmp_path / "wrong-shape-users.json"
+    wrong_shape_file.write_text(
+        '{"alice": {"role": "provider"}}',
+        encoding="utf-8",
+    )
+
+    wrong_shape_repository = UserRepository(file_path=str(wrong_shape_file))
+    assert wrong_shape_repository._read_users() == []
+
+    missing_file = tmp_path / "missing-users.json"
+    missing_repository = UserRepository(file_path=str(missing_file))
+    missing_file.unlink()
+
+    assert missing_repository._read_users() == []
+
+
+def test_audit_logger_get_log_text(tmp_path, monkeypatch):
+    """AuditLogger should expose readable audit log text."""
+    from apps.services.auditLogger import AuditLogger
+
+    monkeypatch.chdir(tmp_path)
+
+    logger = AuditLogger()
+    text = logger.get_log_text()
+
+    assert isinstance(text, str)
+
+
+def test_auth_service_registration_failure_and_logout(tmp_path, monkeypatch):
+    """AuthService should cover duplicate registration and logout paths."""
+    from apps.services.authSvc import AuthService
+
+    monkeypatch.chdir(tmp_path)
+
+    service = AuthService()
+
+    first = service.register_user(
+        username="chica",
+        password="password123",
+        role="patient",
+        email="chica@example.com",
+    )
+    assert first["status"] == "success"
+
+    duplicate = service.register_user(
+        username="chica",
+        password="password123",
+        role="patient",
+        email="different@example.com",
+    )
+    assert duplicate["status"] == "error"
+
+    missing_logout = service.logout("")
+    assert missing_logout["status"] == "error"
+
+    successful_logout = service.logout("chica")
+    assert successful_logout["status"] == "success"
+
+
+def test_admin_controller_audit_text_failure_and_success_paths(
+    tmp_path,
+    monkeypatch,
+):
+    """AdminController should handle audit text denied and allowed paths."""
+    from types import SimpleNamespace
+
+    from apps.controllers.adminController import AdminController
+
+    monkeypatch.chdir(tmp_path)
+
+    controller = AdminController()
+
+    class FakeUsers:
+        def __init__(self, user):
+            self.user = user
+
+        def find_by_username(self, username):
+            return self.user
+
+    class FakeAccess:
+        def __init__(self, allowed):
+            self.allowed = allowed
+
+        def is_authorized(self, user, permission):
+            return self.allowed
+
+    class FakeAuditLogger:
+        def __init__(self):
+            self.events = []
+
+        def log_event(self, event_type, username, status):
+            self.events.append((event_type, username, status))
+
+        def get_log_text(self):
+            return "audit text"
+
+    controller.user_repository = FakeUsers(None)
+
+    missing = controller.get_audit_log_text("missing-user")
+    assert missing["status"] == "failure"
+    assert missing["message"] == "User not found"
+
+    fake_user = SimpleNamespace(username="bob", role="patient")
+    controller.user_repository = FakeUsers(fake_user)
+    controller.access_control_service = FakeAccess(False)
+    controller.audit_logger = FakeAuditLogger()
+
+    denied = controller.get_audit_log_text("bob")
+    assert denied["status"] == "failure"
+    assert denied["message"] == "Access denied"
+
+    admin_user = SimpleNamespace(username="admin", role="admin")
+    controller.user_repository = FakeUsers(admin_user)
+    controller.access_control_service = FakeAccess(True)
+    controller.audit_logger = FakeAuditLogger()
+
+    allowed = controller.get_audit_log_text("admin")
+    assert allowed["status"] == "success"
+    assert allowed["audit_text"] == "audit text"
+
+
+def test_record_controller_patient_admin_unknown_and_denied_paths(
+    tmp_path,
+    monkeypatch,
+):
+    """RecordController should cover patient, admin, unknown, and denied paths."""
+    from types import SimpleNamespace
+
+    from apps.controllers.recordController import RecordController
+
+    monkeypatch.chdir(tmp_path)
+
+    controller = RecordController()
+
+    patient_result = controller.get_record(1, "bob")
+    assert patient_result["status"] == "success"
+    assert patient_result["role"] == "patient"
+    assert patient_result["records"] == []
+    assert "No appointments" in patient_result["message"]
+
+    missing_result = controller.get_record(1, "missing-user")
+    assert missing_result["status"] == "failure"
+    assert missing_result["message"] == "User not found"
+
+    class FakeAdminUsers:
+        def find_by_username(self, username):
+            return SimpleNamespace(username=username, role="admin")
+
+    controller.user_repository = FakeAdminUsers()
+
+    admin_result = controller.get_record(1, "admin-user")
+    assert admin_result["status"] == "failure"
+    assert "Admins cannot retrieve patient records" in admin_result["message"]
+
+    class FakeNurseUsers:
+        def find_by_username(self, username):
+            return SimpleNamespace(username=username, role="nurse")
+
+    class FakeAccess:
+        def is_authorized(self, user, permission):
+            return False
+
+    controller.user_repository = FakeNurseUsers()
+    controller.access_control_service = FakeAccess()
+
+    denied_result = controller.get_record(1, "nurse-user")
+    assert denied_result["status"] == "failure"
+    assert "Only providers" in denied_result["message"]
+
+
+def test_admin_audit_text_route_paths(tmp_path, monkeypatch):
+    """The audit-text route should cover missing, failure, and success paths."""
+    from apps.main import create_app
+    import apps.routes.adminroutes as adminroutes
+
+    monkeypatch.chdir(tmp_path)
+
+    class FakeAdminController:
+        def get_audit_log_text(self, username):
+            if username == "alice":
+                return {
+                    "status": "success",
+                    "audit_text": "audit text",
+                }
+
+            return {
+                "status": "failure",
+                "message": "Access denied",
+            }
+
+    monkeypatch.setattr(
+        adminroutes,
+        "admin_controller",
+        FakeAdminController(),
+    )
+
+    app = create_app()
+    client = app.test_client()
+
+    missing_response = client.get("/admin/audit-text")
+    assert missing_response.status_code == 400
+    assert missing_response.get_json()["status"] == "failure"
+
+    denied_response = client.get("/admin/audit-text?username=bob")
+    assert denied_response.status_code == 400
+    assert denied_response.get_json()["status"] == "failure"
+
+    allowed_response = client.get("/admin/audit-text?username=alice")
+    assert allowed_response.status_code == 200
+    assert allowed_response.get_json()["status"] == "success"
+
+
+def test_auth_service_registration_value_error_path(tmp_path, monkeypatch):
+    """AuthService should return an error when user creation raises ValueError."""
+    from apps.services.authSvc import AuthService
+
+    monkeypatch.chdir(tmp_path)
+
+    service = AuthService()
+
+    class FakeUserRepository:
+        def find_by_username(self, username):
+            return None
+
+        def find_by_email(self, email):
+            return None
+
+        def create_user(self, username, password, role, email):
+            raise ValueError("forced duplicate")
+
+    service.user_repository = FakeUserRepository()
+
+    result = service.register_user(
+        username="chica",
+        password="password123",
+        role="patient",
+        email="chica@example.com",
+    )
+
+    assert result["status"] == "error"
+    assert result["message"] == "forced duplicate"
