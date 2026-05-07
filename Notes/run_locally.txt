@@ -1,45 +1,56 @@
-## How to Run Program Locally
+## Running with Docker
 
-1. Create virtual environment (venv).
+1. Set the MFA environment variables.
 
-    source venv/bin/activate
+    ```bash
+    export MFA_METHOD="email"
+    export SENDGRID_API_KEY="your_sendgrid_api_key_here"
+    export FROM_EMAIL="your_verified_sender_email_here"
+    ```
 
-2. Install Dependencies (Should only have to do once.)
+    Example:
 
-    pip install -r requirements.txt
+    ```bash
+    export MFA_METHOD="email"
+    export SENDGRID_API_KEY="no"
+    export FROM_EMAIL="Lia03gomes@gmail.com"
+    ```
 
-3. Run application. 
+    Note: If SendGrid is actually being used, `SENDGRID_API_KEY` must be a valid SendGrid API key and `FROM_EMAIL` should be a verified sender email.
 
-    python3 -m apps.main
+2. Build the backend Docker image.
 
-4. Open a new terminal and run the following: 
+    ```bash
+    docker compose build backend
+    ```
 
-    Test Endpoints:
+3. Run the backend container.
+
+    ```bash
+    docker compose up backend
+    ```
+
+4. Open a second terminal and watch the audit log.
+
+    ```bash
+    tail -f data/audit_log.txt
+    ```
+
+5. In a third terminal, test the endpoints.
+
+    Login:
+
+    ```bash
+    curl -X POST http://127.0.0.1:5000/login \
+      -H "Content-Type: application/json" \
+      -d '{"username":"alice","password":"password123"}'
+    ```
+
+    Verify MFA:
+
+    ```bash
+    curl -X POST http://127.0.0.1:5000/verify-mfa \
+      -H "Content-Type: application/json" \
+      -d '{"username":"alice","code":"123456"}'
+    ```
     
-    Login: 
-    Note - Currently the only role
-    curl -X POST http://127.0.0.1:5000/login -H "Content-Type: application/json" -d '{"username":"alice","password":"password123"}'
-
-    MFA: 
-    curl -X POST http://127.0.0.1:5000/verify-mfa -H "Content-Type: application/json" -d '{"username":"alice","code":"123456"}'
-
-
-Using Render
-
-1. Create virtual environment (venv).
-
-    source venv/bin/activate
-
-2. Install Dependencies (Should only have to do once.)
-
-    pip install -r requirements.txt
-
-3. Run application. 
-
-    python3 -m gunicorn apps.main:app
-
-
-Render Website: 
-
-https://cj-secure-webs.onrender.com/
-
