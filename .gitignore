@@ -41,7 +41,16 @@ npm-debug.log*
 *.svg
 *.pdf
 
+# Allow Docs folders
 !Docs/
+!Docs/Files/
+!Docs/Files/Presentation/
+
+# Allow presentation screenshots/files
+!Docs/Files/Presentation/*.png
+!Docs/Files/Presentation/*.pdf
+
+# UML exports
 !Docs/Uml/
 !Docs/Uml/dist_puml/
 
@@ -64,7 +73,3 @@ npm-debug.log*
 # Local demo user storage
 data/users.json
 data/audit_log.txt
-
-# Allow presentation files
-!Presentation/
-!Presentation/*.pdf
