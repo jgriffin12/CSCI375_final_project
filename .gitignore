@@ -64,3 +64,7 @@ npm-debug.log*
 # Local demo user storage
 data/users.json
 data/audit_log.txt
+
+# Allow presentation files
+!Presentation/
+!Presentation/*.pdf
