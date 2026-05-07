@@ -52,8 +52,8 @@ npm-debug.log*
 
 # Allow screenshots folder
 !Screenshots/
-!Screenshots/*.png
-!Screenshots/*.pdf
+!Screenshots/**/*.png
+!Screenshots/**/*.pdf
 
 # Environment variables / secrets
 .env
