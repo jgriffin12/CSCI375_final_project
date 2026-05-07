@@ -44,15 +44,18 @@ npm-debug.log*
 # Allow Docs folders
 !Docs/
 !Docs/Presentation/
+!Docs/Uml/
+!Docs/Uml/dist_puml/
+
+# Allow specific Docs PDFs
+!Docs/Judge Scores.pdf
+!Docs/OOP Self Rubric.pdf
 
 # Allow presentation screenshots/files
 !Docs/Presentation/*.png
 !Docs/Presentation/*.pdf
 
 # UML exports
-!Docs/Uml/
-!Docs/Uml/dist_puml/
-
 !Docs/Uml/*.png
 !Docs/Uml/dist_puml/*.png
 !Docs/Uml/*.pdf
