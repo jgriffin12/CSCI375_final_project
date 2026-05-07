@@ -8,7 +8,7 @@ record_bp = Blueprint("records", __name__)
 record_controller = RecordController()
 
 
-@record_bp.route("/records/<int:record_id>", methods=["GET"])
+@record_bp.route("/records/<int:record_id>", methods=["GET"]) 
 def get_record(record_id: int):
     """Return a protected medical record for an authorized provider."""
     username = request.args.get("username")
