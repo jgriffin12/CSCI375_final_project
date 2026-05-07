@@ -43,12 +43,11 @@ npm-debug.log*
 
 # Allow Docs folders
 !Docs/
-!Docs/Files/
-!Docs/Files/Presentation/
+!Docs/Presentation/
 
 # Allow presentation screenshots/files
-!Docs/Files/Presentation/*.png
-!Docs/Files/Presentation/*.pdf
+!Docs/Presentation/*.png
+!Docs/Presentation/*.pdf
 
 # UML exports
 !Docs/Uml/
