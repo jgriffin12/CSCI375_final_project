@@ -86,17 +86,18 @@ For the email demo, set the SendGrid environment variables and use `MFA_METHOD=e
 
 | Area / Feature | Janet | Chica |
 |---|---|---|
-| Project Coordination | Task planning, repo management, integration support | Task updates, testing, issue tracking, integration support |
-| Backend Architecture | Flask API, services, repositories, route/controller structure | Security behavior, audit logging, RBAC integration, testing support |
-| Authentication and MFA | Login/MFA backend flow, SendGrid/TOTP integration | Secure UI flow, MFA demo testing, security validation |
-| Role-Based Access Control | Backend role enforcement support | UI restrictions, provider/patient/admin dashboard behavior, access testing |
-| Audit Logging | Logger integration and Singleton pattern support | File-backed audit behavior, browser/action logging, validation |
-| Data Security | Backend integration support | Masking, tokenization, protected-record behavior |
-| API Development | Auth, records, and admin route support | Secure API calls, frontend integration, endpoint testing |
-| Frontend Development | Deployment support | Static HTML, CSS, and JavaScript interface and user experience |
-| Testing and Quality | Backend/unit testing support | Security tests, route tests, CI fixes, coverage improvements |
-| Deployment | Render/backend setup support | GitHub Pages/frontend workflow and Docker/Codespaces testing |
-| UML and Design Patterns | Backend/design-pattern contributions | UML diagrams, design analysis, security design explanation |
+| Project Coordination | Repo ownership, task planning support, documentation support, screenshot/presentation support | Primary implementation coordination, task updates, issue tracking, integration work, testing, final cleanup, and PR/commit follow-through |
+| Backend Architecture | Backend support on selected authentication, MFA, repository, route, and service updates | Primary backend implementation, security behavior, RBAC flow, audit logging, record access, route fixes, testing, CI cleanup, and final integration |
+| Authentication and MFA | Login/MFA flow support, role-based user updates, and backend integration support | Primary authentication and MFA implementation, original SendGrid email MFA support, MFA strategy behavior, secure UI flow, MFA demo testing, and security validation |
+| Role-Based Access Control | Supported backend role-user setup and authentication-flow updates | Primary RBAC implementation, role-based dashboards, provider/patient/admin behavior, UI restrictions, and access testing |
+| Audit Logging | Singleton logger support and logging-related support | Primary audit logging implementation, file-backed audit behavior, browser/action audit logging, audit validation, and security-event testing |
+| Data Security | Backend integration support | Primary data-security implementation, masking, tokenization, protected-record behavior, security tests, and record-access validation |
+| API Development | Auth/MFA route, controller, repository, and service support | Primary API integration, frontend API calls, backend/frontend endpoint fixes, route testing, and final record-route fixes |
+| Frontend Development | Deployment support, screenshot support, and presentation support | Primary frontend implementation, static HTML/CSS/JavaScript interface, dashboard flow, layout, visual assets, API integration, and user experience |
+| Testing and Quality | Backend testing support and project review | Primary testing and quality work, security tests, route tests, edge-case tests, CI fixes, mypy/flake8 fixes, and coverage improvements |
+| Deployment | Render/backend deployment notes and deployment support | Docker/Codespaces testing, GitHub Pages/frontend workflow work, API URL fixes, and final demo setup |
+| UML and Design Patterns | UML/design-pattern contributions, presentation materials, and Singleton support | UML updates, design analysis, security design explanation, README cleanup, and final documentation polish |
+
 
 ## Tools Used
 
