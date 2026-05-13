@@ -1,5 +1,3 @@
-"""Recursive-descent parser for the CJ Secure policy language."""
-
 from apps.compiler.ast_nodes import DenyRule, MaskRule, Program, RoleRule, Statement
 from apps.compiler.errors import ParseError
 from apps.compiler.tokens import Token, TokenType

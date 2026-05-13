@@ -1,5 +1,3 @@
-"""Semantic analysis for CJ Secure policy programs."""
-
 from apps.compiler.ast_nodes import DenyRule, MaskRule, Program, RoleRule
 from apps.compiler.errors import SemanticError
 

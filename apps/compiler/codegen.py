@@ -1,5 +1,3 @@
-"""Code generation for CJ Secure policy programs."""
-
 import json
 from pathlib import Path
 from typing import Any

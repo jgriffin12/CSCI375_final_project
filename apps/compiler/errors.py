@@ -1,6 +1,3 @@
-"""Compiler-specific exceptions."""
-
-
 class PolicyCompilerError(Exception):
     """Base class for policy compiler errors."""
 
